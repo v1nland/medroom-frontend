@@ -1,6 +1,6 @@
 import React from "react";
 import { Line, Pie } from "react-chartjs-2";
-import { Card, CardHeader, CardBody, CardFooter, CardTitle, Row, Col, Table } from "reactstrap";
+import { Card, CardHeader, CardBody, CardFooter, CardTitle, Row, Col, Table, Input, Button } from "reactstrap";
 import { dashboard24HoursPerformanceChart, dashboardEmailStatisticsChart, dashboardNASDAQChart } from "variables/charts.js";
 
 class Evaluaciones extends React.Component {
@@ -14,9 +14,22 @@ class Evaluaciones extends React.Component {
                                 <CardTitle tag="h4">Evaluaciones</CardTitle>
                             </CardHeader>
                             <CardBody>
+                                <form>
+                                    <Row>
+                                        <Col md="2">
+                                            <small>Fecha de inicio</small>
+                                            <Input type="date" />
+                                        </Col>
+                                        <Col md="2">
+                                            <small>Fecha de termino</small>
+                                            <Input type="date" />
+                                        </Col>
+                                    </Row>
+                                </form>
                                 <Table responsive>
                                     <thead className="text-primary">
                                         <tr>
+                                            <th></th>
                                             <th>Ramo</th>
                                             <th>Puntaje obtenido</th>
                                             <th>Nota</th>
@@ -24,11 +37,27 @@ class Evaluaciones extends React.Component {
                                     </thead>
                                     <tbody>
                                         <tr>
+                                            <td>
+                                                <Button color="info" fab="true" round="true" style={{ marginRight: "5px" }}>
+                                                    <i className="fa fa-comments"></i>
+                                                </Button>
+                                                <Button color="success" fab="true" round="true">
+                                                    <i className="fas fa-file-alt"></i>
+                                                </Button>
+                                            </td>
                                             <td>Programación</td>
                                             <td>40 / 60</td>
                                             <td>5.0</td>
                                         </tr>
                                         <tr>
+                                            <td>
+                                                <Button color="info" fab="true" round="true" style={{ marginRight: "5px" }}>
+                                                    <i className="fa fa-comments"></i>
+                                                </Button>
+                                                <Button color="success" fab="true" round="true">
+                                                    <i className="fas fa-file-alt"></i>
+                                                </Button>
+                                            </td>
                                             <td>Programación Avanzada</td>
                                             <td>55 / 60</td>
                                             <td>5.5</td>
