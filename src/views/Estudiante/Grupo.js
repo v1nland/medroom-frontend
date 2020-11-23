@@ -6,27 +6,38 @@ class Grupo extends React.Component {
         return (
             <div className="content">
                 <Row>
-                    <Col md="6">
+                    <Col md="3">
                         <Card className="card-user">
                             <CardHeader>
-                                <CardTitle tag="h5">Curso</CardTitle>
+                                <CardTitle tag="h5">Nombre Curso</CardTitle>
                             </CardHeader>
                             <CardBody>
                                 <hr />
+                                <br />
+                                <br />
                                 <div className="button-container">
                                     <Row>
-                                        <Col className="ml-auto" lg="6" md="6" xs="6">
-                                            <h5>
-                                                Programación <br />
-                                                <small>Nombre</small>
-                                            </h5>
+                                        <Col className="ml-auto" lg="12" md="12" xs="12">
+                                            <h2>Programación</h2>
                                         </Col>
-                                        <Col className="ml-auto" lg="6" md="6" xs="6">
-                                            <h5>
-                                                CIT1000
-                                                <br />
-                                                <small>Sigla</small>
-                                            </h5>
+                                    </Row>
+                                </div>
+                            </CardBody>
+                        </Card>
+                    </Col>
+                    <Col md="3">
+                        <Card className="card-user">
+                            <CardHeader>
+                                <CardTitle tag="h5">Siglas</CardTitle>
+                            </CardHeader>
+                            <CardBody>
+                                <hr />
+                                <br />
+                                <br />
+                                <div className="button-container">
+                                    <Row>
+                                        <Col className="ml-auto" lg="12" md="12" xs="12">
+                                            <h2>CIT1000</h2>
                                         </Col>
                                     </Row>
                                 </div>

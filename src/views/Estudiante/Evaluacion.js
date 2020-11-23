@@ -1,12 +1,44 @@
 import React from "react";
 import { Line, Pie } from "react-chartjs-2";
-import { Card, CardHeader, CardBody, CardFooter, CardTitle, Row, Col } from "reactstrap";
+import { Card, CardHeader, CardBody, CardFooter, CardTitle, Row, Col, Table } from "reactstrap";
 import { dashboard24HoursPerformanceChart, dashboardEmailStatisticsChart, dashboardNASDAQChart } from "variables/charts.js";
 
 class Evaluaciones extends React.Component {
     render() {
         return (
             <div className="content">
+                <Row>
+                    <Col md="12">
+                        <Card>
+                            <CardHeader>
+                                <CardTitle tag="h4">Evaluaciones</CardTitle>
+                            </CardHeader>
+                            <CardBody>
+                                <Table responsive>
+                                    <thead className="text-primary">
+                                        <tr>
+                                            <th>Ramo</th>
+                                            <th>Puntaje obtenido</th>
+                                            <th>Nota</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>Programación</td>
+                                            <td>40 / 60</td>
+                                            <td>5.0</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Programación Avanzada</td>
+                                            <td>55 / 60</td>
+                                            <td>5.5</td>
+                                        </tr>
+                                    </tbody>
+                                </Table>
+                            </CardBody>
+                        </Card>
+                    </Col>
+                </Row>
                 <Row>
                     <Col md="4">
                         <Card>
@@ -67,8 +99,9 @@ class Evaluaciones extends React.Component {
                             </CardBody>
                             <CardFooter>
                                 <div className="chart-legend">
-                                    <i className="fa fa-circle text-info" /> Programación <i className="fa fa-circle text-warning" /> Programación
-                                    Avanzada
+                                    <i className="fa fa-circle text-info" /> Programación
+                                    <br />
+                                    <i className="fa fa-circle text-warning" /> Programación Avanzada
                                 </div>
                                 <hr />
                                 <div className="card-stats">
