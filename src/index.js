@@ -13,11 +13,11 @@ import AdminLayout from "layouts/Admin.js";
 const hist = createBrowserHistory();
 
 ReactDOM.render(
-    <Router history={hist}>
-        <Switch>
-            <Route path="/portal" render={(props) => <AdminLayout {...props} />} />
-            <Redirect to="/portal/estudiante/perfil" />
-        </Switch>
-    </Router>,
-    document.getElementById("root")
+	<Router history={hist}>
+		<Switch>
+			<Route path="/portal" render={(props) => <AdminLayout {...props} />} />
+			<Redirect to="/portal/estudiante/perfil" />
+		</Switch>
+	</Router>,
+	document.getElementById("root")
 );
