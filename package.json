@@ -1,5 +1,5 @@
 {
-  "name": "MedRoom",
+  "name": "medroom",
   "version": "1.2.0",
   "private": true,
   "homepage": "http://localhost/estudiante/perfil",
@@ -21,7 +21,7 @@
   },
   "scripts": {
     "start": "react-scripts start",
-    "build": "react-scripts build && gulp licenses",
+    "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "install:clean": "rm -rf node_modules/ && rm -rf package-lock.json && npm install && npm start",
@@ -49,5 +49,9 @@
   "devDependencies": {
     "gulp": "4.0.2",
     "gulp-append-prepend": "1.0.8"
+  },
+  "engines": {
+    "node": ">=10",
+    "npm": ">=6"
   }
 }
