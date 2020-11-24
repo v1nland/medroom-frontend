@@ -1,5 +1,20 @@
 import React from "react";
-import { Button, Card, CardHeader, CardBody, CardFooter, CardTitle, FormGroup, Form, Input, Row, Col } from "reactstrap";
+import {
+    Button,
+    Card,
+    CardHeader,
+    CardBody,
+    CardFooter,
+    CardTitle,
+    FormGroup,
+    Form,
+    Input,
+    Row,
+    Col,
+    InputGroup,
+    InputGroupAddon,
+    InputGroupText,
+} from "reactstrap";
 
 class Perfil extends React.Component {
     render() {
@@ -74,7 +89,14 @@ class Perfil extends React.Component {
                                         <Col className="pr-1" md="4">
                                             <FormGroup>
                                                 <label>Celular</label>
-                                                <Input defaultValue="98123123" placeholder="Celular" type="numeric" />
+                                                <InputGroup>
+                                                    <InputGroupAddon addonType="prepend">
+                                                        <InputGroupText>
+                                                            <i className="nc-icon nc-single-02"></i>
+                                                        </InputGroupText>
+                                                    </InputGroupAddon>
+                                                    <Input defaultValue="98123123" placeholder="Celular" type="numeric" />
+                                                </InputGroup>
                                             </FormGroup>
                                         </Col>
                                     </Row>

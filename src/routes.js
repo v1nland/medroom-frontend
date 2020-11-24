@@ -9,7 +9,9 @@ import EstudiantePerfil from "views/Estudiante/Perfil.js";
 import EstudianteGrupo from "views/Estudiante/Grupo.js";
 import EstudianteEvaluacion from "views/Estudiante/Evaluacion.js";
 import EvaluadorPerfil from "views/Evaluador/Perfil.js";
+import EvaluadorGrupo from "views/Evaluador/Grupo.js";
 import EvaluadorEvaluacion from "views/Evaluador/Evaluacion.js";
+import EvaluadorReporte from "views/Evaluador/Reporte.js";
 
 var routes = [
     {
@@ -41,10 +43,24 @@ var routes = [
         layout: "/portal",
     },
     {
+        path: "/evaluador/grupo",
+        name: "Mi grupo",
+        icon: "nc-icon nc-badge",
+        component: EvaluadorGrupo,
+        layout: "/portal",
+    },
+    {
         path: "/evaluador/evaluacion",
         name: "Realizar Evaluacion",
-        icon: "nc-icon nc-single-copy-04",
+        icon: "nc-icon nc-ruler-pencil",
         component: EvaluadorEvaluacion,
+        layout: "/portal",
+    },
+    {
+        path: "/evaluador/reporte",
+        name: "Ver reportes",
+        icon: "nc-icon nc-single-copy-04",
+        component: EvaluadorReporte,
         layout: "/portal",
     },
     {

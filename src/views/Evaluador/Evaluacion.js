@@ -1,5 +1,7 @@
 import React from "react";
-import { Card, CardHeader, CardBody, CardTitle, Label, Form, Input, Row, Col } from "reactstrap";
+import Referencia from "../../components/Referencia/Referencia.js";
+import { Card, CardHeader, CardTitle, Form, Row, Col, FormGroup, Label, Input } from "reactstrap";
+import CardBody from "reactstrap/lib/CardBody";
 
 class Evaluacion extends React.Component {
     render() {
@@ -7,78 +9,97 @@ class Evaluacion extends React.Component {
             <div className="content">
                 <Row>
                     <Col md="12">
-                        <Card className="card-user">
+                        <Card>
                             <CardHeader>
                                 <CardTitle tag="h5">Evaluar Estudiante</CardTitle>
                             </CardHeader>
-                            <CardBody>
-                                <Form>
-                                    <Row>
-                                        <Col className="pr-1" md="9">
-                                            <h6>
-                                                <label> Habilidad de entrevista médica</label> <br />
-                                            </h6>
-                                            <div className="form-check-radio form-check-inline">
-                                                <Label className="form-check-label">
-                                                    <Input type="radio" name="habilidadmedica" id="habilidadmedica1" value={1} />1
-                                                    <span className="form-check-sign"></span>
-                                                </Label>
-                                            </div>
-                                            <div className="form-check-radio form-check-inline">
-                                                <Label className="form-check-label">
-                                                    <Input type="radio" name="habilidadmedica" id="habilidadmedica2" value={2} />2
-                                                    <span className="form-check-sign"></span>
-                                                </Label>
-                                            </div>
-                                            <div className="form-check-radio form-check-inline">
-                                                <Label className="form-check-label">
-                                                    <Input type="radio" name="habilidadmedica" id="habilidadmedica3" value={3} />3
-                                                    <span className="form-check-sign"></span>
-                                                </Label>
-                                            </div>
-                                            <div className="form-check-radio form-check-inline">
-                                                <Label className="form-check-label">
-                                                    <Input type="radio" name="habilidadmedica" id="habilidadmedica4" value={4} />4
-                                                    <span className="form-check-sign"></span>
-                                                </Label>
-                                            </div>
-                                            <div className="form-check-radio form-check-inline">
-                                                <Label className="form-check-label">
-                                                    <Input type="radio" name="habilidadmedica" id="habilidadmedica5" value={5} defaultChecked />5
-                                                    <span className="form-check-sign"></span>
-                                                </Label>
-                                            </div>
-                                            <div className="form-check-radio form-check-inline">
-                                                <Label className="form-check-label">
-                                                    <Input type="radio" name="habilidadmedica" id="habilidadmedica6" value={6} />6
-                                                    <span className="form-check-sign"></span>
-                                                </Label>
-                                            </div>
-                                            <div className="form-check-radio form-check-inline">
-                                                <Label className="form-check-label">
-                                                    <Input type="radio" name="habilidadmedica" id="habilidadmedica7" value={7} />7
-                                                    <span className="form-check-sign"></span>
-                                                </Label>
-                                            </div>
-                                            <div className="form-check-radio form-check-inline">
-                                                <Label className="form-check-label">
-                                                    <Input type="radio" name="habilidadmedica" id="habilidadmedica8" value={8} />8
-                                                    <span className="form-check-sign"></span>
-                                                </Label>
-                                            </div>
-                                            <div className="form-check-radio form-check-inline">
-                                                <Label className="form-check-label">
-                                                    <Input type="radio" name="habilidadmedica" id="habilidadmedica9" value={9} />9
-                                                    <span className="form-check-sign"></span>
-                                                </Label>
-                                            </div>
-                                        </Col>
-                                    </Row>
-                                </Form>
-                            </CardBody>
                         </Card>
                     </Col>
                 </Row>
+                <Form>
+                    <Row>
+                        <Col>
+                            <Card>
+                                <CardHeader>
+                                    <CardTitle tag="h6" style={{}}>
+                                        Datos estudiante
+                                    </CardTitle>
+                                </CardHeader>
+                                <CardBody>
+                                    <Row>
+                                        <Col>
+                                            <FormGroup>
+                                                <Label for="nombre">Nombre estudiante</Label>
+                                                <Input type="select" name="select" id="nombre">
+                                                    <option>Diego Martín Suárez Pinilla</option>
+                                                    <option>Juan Francisco López Pérez</option>
+                                                </Input>
+                                            </FormGroup>
+                                        </Col>
+                                        <Col>
+                                            <FormGroup>
+                                                <Label for="asignatura">Asignatura</Label>
+                                                <Input type="select" name="select" id="asignatura">
+                                                    <option>Programación</option>
+                                                    <option>Programación Avanzada</option>
+                                                </Input>
+                                            </FormGroup>
+                                        </Col>
+                                    </Row>
+                                    <Row>
+                                        <Col>
+                                            <FormGroup>
+                                                <Label for="rotacion">Rotación</Label>
+                                                <Input type="text" name="select" id="rotacion" placeholder="Hola"></Input>
+                                            </FormGroup>
+                                        </Col>
+                                        <Col>
+                                            <FormGroup>
+                                                <Label for="fecha">Fecha</Label>
+                                                <Input type="date" name="select" id="fecha"></Input>
+                                            </FormGroup>
+                                        </Col>
+                                        <Col>
+                                            <FormGroup>
+                                                <Label for="tutor">Rotación</Label>
+                                                <Input type="text" name="select" id="tutor" disabled value="Jose Pedro"></Input>
+                                            </FormGroup>
+                                        </Col>
+                                    </Row>
+                                </CardBody>
+                            </Card>
+                        </Col>
+                    </Row>
+                    <Row>
+                        <Col sm="12" md="12" lg="6">
+                            <Referencia label="Habilidad de entrevista médica" name="entrevistamedica" />
+                        </Col>
+                        <Col sm="12" md="12" lg="6">
+                            <Referencia label="Habilidad de examen físico" name="examenfisico" />
+                        </Col>
+                    </Row>
+                    <Row>
+                        <Col sm="12" md="12" lg="6">
+                            <Referencia label="Profesionalismo/ Cualidad humana" name="profesionalismo" />
+                        </Col>
+                        <Col sm="12" md="12" lg="6">
+                            <Referencia label="Razonamiento Clínico" name="razonamiento" />
+                        </Col>
+                    </Row>
+                    <Row>
+                        <Col sm="12" md="12" lg="6">
+                            <Referencia label="Habilidades de consejería" name="conserjeria" />
+                        </Col>
+                        <Col sm="12" md="12" lg="6">
+                            <Referencia label="Eficiencia y organización" name="eficiencia" />
+                        </Col>
+                    </Row>
+                    <Row>
+                        <Col sm="12" md="12" lg="6">
+                            <Referencia label="Competencia clínica general" name="competencia" />
+                        </Col>
+                    </Row>
+                </Form>
             </div>
         );
     }
