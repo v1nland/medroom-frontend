@@ -27,7 +27,7 @@ class Evaluacion extends React.Component {
                                 </CardHeader>
                                 <CardBody>
                                     <Row>
-                                        <Col>
+                                        <Col sm="12" md="6">
                                             <FormGroup>
                                                 <Label for="nombre">Nombre estudiante</Label>
                                                 <Input type="select" name="select" id="nombre">
@@ -36,7 +36,7 @@ class Evaluacion extends React.Component {
                                                 </Input>
                                             </FormGroup>
                                         </Col>
-                                        <Col>
+                                        <Col sm="12" md="6">
                                             <FormGroup>
                                                 <Label for="asignatura">Asignatura</Label>
                                                 <Input type="select" name="select" id="asignatura">
@@ -47,19 +47,19 @@ class Evaluacion extends React.Component {
                                         </Col>
                                     </Row>
                                     <Row>
-                                        <Col>
+                                        <Col sm="12" md="4">
                                             <FormGroup>
                                                 <Label for="rotacion">Rotación</Label>
-                                                <Input type="text" name="select" id="rotacion" placeholder="Hola"></Input>
+                                                <Input type="text" name="select" id="rotacion" placeholder="Horario A"></Input>
                                             </FormGroup>
                                         </Col>
-                                        <Col>
+                                        <Col sm="12" md="4">
                                             <FormGroup>
                                                 <Label for="fecha">Fecha</Label>
                                                 <Input type="date" name="select" id="fecha"></Input>
                                             </FormGroup>
                                         </Col>
-                                        <Col>
+                                        <Col sm="12" md="4">
                                             <FormGroup>
                                                 <Label for="tutor">Rotación</Label>
                                                 <Input type="text" name="select" id="tutor" disabled value="Jose Pedro"></Input>

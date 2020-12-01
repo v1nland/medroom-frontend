@@ -17,7 +17,7 @@ class Perfil extends React.Component {
                                     <h5 className="title">Jose Pedro</h5>
                                 </div>
                                 <p className="description text-center">
-                                    Estudiante de medicina
+                                    Evaluador de medicina
                                     <br />
                                     Universidad Diego Portales
                                     <br />
@@ -58,20 +58,19 @@ class Perfil extends React.Component {
                             <CardBody>
                                 <Form>
                                     <Row>
-                                        <Col className="pr-1" md="4">
+                                        <Col sm="12" md="4">
                                             <FormGroup>
                                                 <label>Nombre Completo</label>
                                                 <Input defaultValue="Jose Perez" disabled placeholder="Nombre Completo" type="text" />
                                             </FormGroup>
                                         </Col>
-                                        <Col className="pr-1" md="4">
+                                        <Col sm="12" md="4">
                                             <FormGroup>
                                                 <label>Correo</label>
                                                 <Input defaultValue="jose.perez@mail.udp.cl" disabled placeholder="Correo" type="text" />
                                             </FormGroup>
                                         </Col>
-
-                                        <Col className="pr-1" md="4">
+                                        <Col sm="12" md="4">
                                             <FormGroup>
                                                 <label>Celular</label>
                                                 <Input defaultValue="98123123" placeholder="Celular" type="numeric" />
@@ -79,13 +78,13 @@ class Perfil extends React.Component {
                                         </Col>
                                     </Row>
                                     <Row>
-                                        <Col className="pr-1" md="6">
+                                        <Col sm="12" md="6">
                                             <FormGroup>
                                                 <label>Recinto</label>
                                                 <Input placeholder="TEC-100" disabled type="text" />
                                             </FormGroup>
                                         </Col>
-                                        <Col className="pr-1" md="6">
+                                        <Col sm="12" md="6">
                                             <FormGroup>
                                                 <label>Cargo</label>
                                                 <Input placeholder="Profesor" type="password" />
@@ -93,13 +92,13 @@ class Perfil extends React.Component {
                                         </Col>
                                     </Row>
                                     <Row>
-                                        <Col className="pr-1" md="6">
+                                        <Col sm="12" md="6">
                                             <FormGroup>
                                                 <label>Nueva Contraseña</label>
                                                 <Input placeholder="******" type="password" />
                                             </FormGroup>
                                         </Col>
-                                        <Col className="pr-1" md="6">
+                                        <Col sm="12" md="6">
                                             <FormGroup>
                                                 <label>Repetir Nueva Contraseña</label>
                                                 <Input placeholder="******" type="password" />

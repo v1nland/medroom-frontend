@@ -32,7 +32,7 @@ class Perfil extends React.Component {
                                     <h5 className="title">Jose Pedro</h5>
                                 </div>
                                 <p className="description text-center">
-                                    Estudiante de medicina
+                                    Administrador plataforma Medroom
                                     <br />
                                     Universidad Diego Portales
                                     <br />
@@ -45,19 +45,19 @@ class Perfil extends React.Component {
                                         <Col className="ml-auto" lg="3" md="6" xs="6">
                                             <h5>
                                                 12 <br />
-                                                <small>Notas Calificadas</small>
+                                                <small>Cursos inscritos</small>
                                             </h5>
                                         </Col>
                                         <Col className="ml-auto mr-auto" lg="4" md="6" xs="6">
                                             <h5>
                                                 2 <br />
-                                                <small>Pruebas pendientes</small>
+                                                <small>Grupos activos</small>
                                             </h5>
                                         </Col>
                                         <Col className="mr-auto" lg="3">
                                             <h5>
                                                 4 <br />
-                                                <small>Ramos inscritos</small>
+                                                <small>Reportes</small>
                                             </h5>
                                         </Col>
                                     </Row>
@@ -65,7 +65,7 @@ class Perfil extends React.Component {
                             </CardFooter>
                         </Card>
                     </Col>
-                    <Col sm="12" md="8">
+                    <Col md="8">
                         <Card className="card-user">
                             <CardHeader>
                                 <CardTitle tag="h5">Editar Perfil</CardTitle>

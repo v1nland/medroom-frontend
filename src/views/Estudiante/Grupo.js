@@ -6,45 +6,7 @@ class Grupo extends React.Component {
         return (
             <div className="content">
                 <Row>
-                    <Col md="3">
-                        <Card className="card-user">
-                            <CardHeader>
-                                <CardTitle tag="h5">Nombre Curso</CardTitle>
-                            </CardHeader>
-                            <CardBody>
-                                <hr />
-                                <br />
-                                <br />
-                                <div className="button-container">
-                                    <Row>
-                                        <Col className="ml-auto" lg="12" md="12" xs="12">
-                                            <h2>Programación</h2>
-                                        </Col>
-                                    </Row>
-                                </div>
-                            </CardBody>
-                        </Card>
-                    </Col>
-                    <Col md="3">
-                        <Card className="card-user">
-                            <CardHeader>
-                                <CardTitle tag="h5">Siglas</CardTitle>
-                            </CardHeader>
-                            <CardBody>
-                                <hr />
-                                <br />
-                                <br />
-                                <div className="button-container">
-                                    <Row>
-                                        <Col className="ml-auto" lg="12" md="12" xs="12">
-                                            <h2>CIT1000</h2>
-                                        </Col>
-                                    </Row>
-                                </div>
-                            </CardBody>
-                        </Card>
-                    </Col>
-                    <Col md="6">
+                    <Col sm="12" md="6">
                         <Card className="card-user">
                             <CardHeader>
                                 <CardTitle tag="h5">Evaluador</CardTitle>
@@ -64,6 +26,44 @@ class Grupo extends React.Component {
                                     Universidad Diego Portales
                                     <br />
                                 </p>
+                            </CardBody>
+                        </Card>
+                    </Col>
+                    <Col sm="12" md="3">
+                        <Card className="card-user">
+                            <CardHeader>
+                                <CardTitle tag="h5">Nombre Curso</CardTitle>
+                            </CardHeader>
+                            <CardBody>
+                                <hr />
+                                <br />
+                                <br />
+                                <div className="button-container">
+                                    <Row>
+                                        <Col className="ml-auto" lg="12" md="12" xs="12">
+                                            <h2>Programación</h2>
+                                        </Col>
+                                    </Row>
+                                </div>
+                            </CardBody>
+                        </Card>
+                    </Col>
+                    <Col sm="12" md="3">
+                        <Card className="card-user">
+                            <CardHeader>
+                                <CardTitle tag="h5">Siglas</CardTitle>
+                            </CardHeader>
+                            <CardBody>
+                                <hr />
+                                <br />
+                                <br />
+                                <div className="button-container">
+                                    <Row>
+                                        <Col className="ml-auto" lg="12" md="12" xs="12">
+                                            <h2>CIT1000</h2>
+                                        </Col>
+                                    </Row>
+                                </div>
                             </CardBody>
                         </Card>
                     </Col>

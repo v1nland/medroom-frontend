@@ -12,8 +12,17 @@ import EvaluadorPerfil from "views/Evaluador/Perfil.js";
 import EvaluadorGrupo from "views/Evaluador/Grupo.js";
 import EvaluadorEvaluacion from "views/Evaluador/Evaluacion.js";
 import EvaluadorReporte from "views/Evaluador/Reporte.js";
+import AdministradorPerfil from "views/Administrador/Perfil.js";
+import AdministradorCursos from "views/Administrador/Cursos.js";
 
 var routes = [
+    // {
+    //     path: "/login/",
+    //     name: "Login",
+    //     icon: "nc-icon nc-single-02",
+    //     component: Login,
+    //     layout: "/portal",
+    // },
     {
         path: "/estudiante/perfil",
         name: "Mi perfil",
@@ -61,6 +70,20 @@ var routes = [
         name: "Ver reportes",
         icon: "nc-icon nc-single-copy-04",
         component: EvaluadorReporte,
+        layout: "/portal",
+    },
+    {
+        path: "/administrador/perfil",
+        name: "Mi perfil",
+        icon: "nc-icon nc-single-02",
+        component: AdministradorPerfil,
+        layout: "/portal",
+    },
+    {
+        path: "/administrador/cursos",
+        name: "Curso",
+        icon: "nc-icon nc-vector",
+        component: AdministradorCursos,
         layout: "/portal",
     },
     {
