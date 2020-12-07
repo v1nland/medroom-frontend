@@ -1,10 +1,3 @@
-import Dashboard from "views/Dashboard.js";
-import Notifications from "views/Notifications.js";
-import Icons from "views/Icons.js";
-import Typography from "views/Typography.js";
-import TableList from "views/Tables.js";
-import Maps from "views/Map.js";
-import UserPage from "views/User.js";
 import EstudiantePerfil from "views/Estudiante/Perfil.js";
 import EstudianteGrupo from "views/Estudiante/Grupo.js";
 import EstudianteEvaluacion from "views/Estudiante/Evaluacion.js";
@@ -12,17 +5,14 @@ import EvaluadorPerfil from "views/Evaluador/Perfil.js";
 import EvaluadorGrupo from "views/Evaluador/Grupo.js";
 import EvaluadorEvaluacion from "views/Evaluador/Evaluacion.js";
 import EvaluadorReporte from "views/Evaluador/Reporte.js";
-import AdministradorPerfil from "views/Administrador/Perfil.js";
-import AdministradorCursos from "views/Administrador/Cursos.js";
+import AdministradorUDPPerfil from "views/AdministradorUDP/Perfil.js";
+import AdministradorUDPCursos from "views/AdministradorUDP/Cursos.js";
+import AdministradorTIPerfil from "views/AdministradorTI/Perfil.js";
+import AdministradorTICursos from "views/AdministradorTI/CrearCursos.js";
+import AdministradorTiCrearUsuarios from "views/AdministradorTI/CrearUsuarios.js";
+import AdministradorTiAdministrarUsuarios from "views/AdministradorTI/AdministrarUsuarios.js";
 
 var routes = [
-    // {
-    //     path: "/login/",
-    //     name: "Login",
-    //     icon: "nc-icon nc-single-02",
-    //     component: Login,
-    //     layout: "/portal",
-    // },
     {
         path: "/estudiante/perfil",
         name: "Mi perfil",
@@ -73,66 +63,45 @@ var routes = [
         layout: "/portal",
     },
     {
-        path: "/administrador/perfil",
+        path: "/administradorUDP/perfil",
         name: "Mi perfil",
         icon: "nc-icon nc-single-02",
-        component: AdministradorPerfil,
+        component: AdministradorUDPPerfil,
         layout: "/portal",
     },
     {
-        path: "/administrador/cursos",
+        path: "/administradorUDP/cursos",
         name: "Curso",
         icon: "nc-icon nc-vector",
-        component: AdministradorCursos,
+        component: AdministradorUDPCursos,
         layout: "/portal",
     },
     {
-        path: "/dashboard",
-        name: "Dashboard",
-        icon: "nc-icon nc-bank",
-        component: Dashboard,
-        layout: "/portal",
-    },
-    {
-        path: "/icons",
-        name: "Icons",
-        icon: "nc-icon nc-diamond",
-        component: Icons,
-        layout: "/portal",
-    },
-    {
-        path: "/maps",
-        name: "Maps",
-        icon: "nc-icon nc-pin-3",
-        component: Maps,
-        layout: "/portal",
-    },
-    {
-        path: "/notifications",
-        name: "Notifications",
-        icon: "nc-icon nc-bell-55",
-        component: Notifications,
-        layout: "/portal",
-    },
-    {
-        path: "/user-page",
-        name: "User Profile",
+        path: "/administradorTI/perfil",
+        name: "Mi perfil",
         icon: "nc-icon nc-single-02",
-        component: UserPage,
+        component: AdministradorTIPerfil,
         layout: "/portal",
     },
     {
-        path: "/tables",
-        name: "Table List",
-        icon: "nc-icon nc-tile-56",
-        component: TableList,
+        path: "/administradorTI/crearUsuarios",
+        name: "Crear Usuarios",
+        icon: "nc-icon nc-tap-01",
+        component: AdministradorTiCrearUsuarios,
         layout: "/portal",
     },
     {
-        path: "/typography",
-        name: "Typography",
-        icon: "nc-icon nc-caps-small",
-        component: Typography,
+        path: "/administradorTI/crearCursos",
+        name: "Crear Cursos",
+        icon: "nc-icon nc-hat-3",
+        component: AdministradorTICursos,
+        layout: "/portal",
+    },
+    {
+        path: "/administradorTI/administrarUsuarios",
+        name: "Administrar Usuarios",
+        icon: "nc-icon nc-book-bookmark",
+        component: AdministradorTiAdministrarUsuarios,
         layout: "/portal",
     },
 ];
