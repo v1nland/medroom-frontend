@@ -4,6 +4,25 @@ import { Card, CardHeader, CardBody, CardFooter, CardTitle, Row, Col, Table, Inp
 import { dashboard24HoursPerformanceChart, dashboardEmailStatisticsChart, dashboardNASDAQChart } from "variables/charts.js";
 
 class Evaluaciones extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            fechaInicio: "",
+            fechaTermino: "",
+            evaluaciones: [],
+        };
+        this.handleChange = this.handleChange.bind(this);
+    }
+    componentDidMount() {
+        Promise.all([])
+            .then((values) => {})
+            .catch((err) => console.log(err));
+    }
+    handleChange(event) {
+        this.setState({
+            [event.target.name]: event.target.value,
+        });
+    }
     render() {
         return (
             <div className="content">
@@ -18,11 +37,11 @@ class Evaluaciones extends React.Component {
                                     <Row>
                                         <Col md="2">
                                             <small>Fecha de inicio</small>
-                                            <Input type="date" />
+                                            <Input name="fechaInicio" value={this.state.fechaInicio} onChange={this.handleChange} type="date" />
                                         </Col>
                                         <Col md="2">
                                             <small>Fecha de termino</small>
-                                            <Input type="date" />
+                                            <Input name="fechaTermino" value={this.state.fechaInicio} onChange={this.handleChange} type="date" />
                                         </Col>
                                     </Row>
                                 </form>

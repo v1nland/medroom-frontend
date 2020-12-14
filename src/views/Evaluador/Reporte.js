@@ -1,9 +1,30 @@
 import React from "react";
 import { Line, Pie } from "react-chartjs-2";
-import { Card, CardHeader, CardBody, CardFooter, CardTitle, Row, Col, Table, Input, Button } from "reactstrap";
+import { Card, CardHeader, CardBody, CardFooter, CardTitle, Row, Col, Table, Input, Button, FormGroup } from "reactstrap";
 import { dashboard24HoursPerformanceChart, dashboardEmailStatisticsChart, dashboardNASDAQChart } from "variables/charts.js";
 
 class Reporte extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            fechaInicio: "",
+            fechaTermino: "",
+            evaluaciones: "",
+            nombreEstudiante: "",
+            asignatura: "",
+        };
+        this.handleChange = this.handleChange.bind(this);
+    }
+    componentDidMount() {
+        Promise.all([])
+            .then((values) => {})
+            .catch((err) => console.log(err));
+    }
+    handleChange(event) {
+        this.setState({
+            [event.target.name]: event.target.value,
+        });
+    }
     render() {
         return (
             <div className="content">
@@ -16,13 +37,43 @@ class Reporte extends React.Component {
                             <CardBody>
                                 <form>
                                     <Row>
+                                        <Col sm="12" md="2">
+                                            <FormGroup>
+                                                <small>Nombre estudiante</small>
+                                                <Input
+                                                    type="select"
+                                                    name="nombreEstudiante"
+                                                    id="nombreEstudiante"
+                                                    value={this.state.nombreEstudiante}
+                                                    onChange={this.handleChange}
+                                                >
+                                                    <option>Diego Suárez</option>
+                                                    <option>Juan López</option>
+                                                </Input>
+                                            </FormGroup>
+                                        </Col>
+                                        <Col sm="12" md="2">
+                                            <FormGroup>
+                                                <small>Asignatura</small>
+                                                <Input
+                                                    type="select"
+                                                    name="asignatura"
+                                                    id="asignatura"
+                                                    value={this.state.asignatura}
+                                                    onChange={this.handleChange}
+                                                >
+                                                    <option>Programación</option>
+                                                    <option>Programación Avanzada</option>
+                                                </Input>
+                                            </FormGroup>
+                                        </Col>
                                         <Col md="2">
                                             <small>Fecha de inicio</small>
-                                            <Input type="date" />
+                                            <Input value={this.state.fechaInicio} onChange={this.handleChange} type="date" />
                                         </Col>
                                         <Col md="2">
                                             <small>Fecha de termino</small>
-                                            <Input type="date" />
+                                            <Input value={this.state.fechaTermino} onChange={this.handleChange} type="date" />
                                         </Col>
                                     </Row>
                                 </form>

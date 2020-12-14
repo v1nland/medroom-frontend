@@ -17,6 +17,32 @@ import {
 } from "reactstrap";
 
 class Perfil extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            nombreAlumno: "Jose Pedro",
+            carreraAlumno: "Estudiante de medicina",
+            universidadAlumno: "Universidad Diego Portales",
+            correoAlumno: "jose.perez@mail.udp.cl",
+            contactoAlumno: 98712313,
+            passwordAlumno: "",
+            passwordConfAlumno: "",
+        };
+        this.handleChange = this.handleChange.bind(this);
+    }
+    componentDidMount() {
+        Promise.all([])
+            .then((values) => {})
+            .catch((err) => console.log(err));
+    }
+    handleChange(event) {
+        this.setState(
+            {
+                [event.target.name]: event.target.value,
+            },
+            console.log(event.target.value)
+        );
+    }
     render() {
         return (
             <div className="content">
@@ -29,12 +55,12 @@ class Perfil extends React.Component {
                             <CardBody>
                                 <div className="author">
                                     <img alt="..." className="avatar border-gray" src={require("assets/img/mike.jpg")} />
-                                    <h5 className="title">Jose Pedro</h5>
+                                    <h5 className="title">{this.state.nombreAlumno}</h5>
                                 </div>
                                 <p className="description text-center">
-                                    Estudiante de medicina
+                                    {this.state.carreraAlumno}
                                     <br />
-                                    Universidad Diego Portales
+                                    {this.state.universidadAlumno}
                                     <br />
                                 </p>
                             </CardBody>
@@ -76,13 +102,13 @@ class Perfil extends React.Component {
                                         <Col sm="12" md="4">
                                             <FormGroup>
                                                 <label>Nombre Completo</label>
-                                                <Input defaultValue="Jose Perez" disabled placeholder="Nombre Completo" type="text" />
+                                                <Input value={this.state.nombreAlumno} disabled type="text" />
                                             </FormGroup>
                                         </Col>
                                         <Col sm="12" md="4">
                                             <FormGroup>
                                                 <label>Correo</label>
-                                                <Input defaultValue="jose.perez@mail.udp.cl" disabled placeholder="Correo" type="text" />
+                                                <Input value={this.state.correoAlumno} disabled type="text" />
                                             </FormGroup>
                                         </Col>
                                         <Col sm="12" md="4">
@@ -94,7 +120,12 @@ class Perfil extends React.Component {
                                                             <i className="nc-icon nc-single-02"></i>
                                                         </InputGroupText>
                                                     </InputGroupAddon>
-                                                    <Input defaultValue="98123123" placeholder="Celular" type="numeric" />
+                                                    <Input
+                                                        name="contactoAlumno"
+                                                        value={this.state.contactoAlumno}
+                                                        onChange={this.handleChange}
+                                                        type="numeric"
+                                                    />
                                                 </InputGroup>
                                             </FormGroup>
                                         </Col>
@@ -103,13 +134,25 @@ class Perfil extends React.Component {
                                         <Col sm="12" md="6">
                                             <FormGroup>
                                                 <label>Nueva Contraseña</label>
-                                                <Input placeholder="******" type="password" />
+                                                <Input
+                                                    name="contactoAlumno"
+                                                    value={this.state.passwordAlumno}
+                                                    onChange={this.handleChange}
+                                                    placeholder="******"
+                                                    type="password"
+                                                />
                                             </FormGroup>
                                         </Col>
                                         <Col sm="12" md="6">
                                             <FormGroup>
                                                 <label>Repetir Nueva Contraseña</label>
-                                                <Input placeholder="******" type="password" />
+                                                <Input
+                                                    name="contactoAlumno"
+                                                    value={this.state.passwordConfAlumno}
+                                                    onChange={this.handleChange}
+                                                    placeholder="******"
+                                                    type="password"
+                                                />
                                             </FormGroup>
                                         </Col>
                                     </Row>

@@ -17,6 +17,29 @@ import {
 } from "reactstrap";
 
 class Perfil extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            nombreAdministrador: "Jose Pedro",
+            cargoAdministrador: "Administrador UDP/ Medroom",
+            universidadAdministrador: "Universidad Diego Portales",
+            correoAdministrador: "jose.perez@mail.udp.cl",
+            contactoAdministrador: 98712312,
+            passwordAdministrador: "",
+            passwordConfAdminitrador: "",
+        };
+        this.handleChange = this.handleChange.bind(this);
+    }
+    componentDidMount() {
+        Promise.all([])
+            .then((values) => {})
+            .catch((err) => console.log(err));
+    }
+    handleChange(event) {
+        this.setState({
+            [event.target.name]: event.target.value,
+        });
+    }
     render() {
         return (
             <div className="content">
@@ -29,12 +52,12 @@ class Perfil extends React.Component {
                             <CardBody>
                                 <div className="author">
                                     <img alt="..." className="avatar border-gray" src={require("assets/img/mike.jpg")} />
-                                    <h5 className="title">Jose Pedro</h5>
+                                    <h5 className="title">{this.state.nombreAdministrador}</h5>
                                 </div>
                                 <p className="description text-center">
-                                    Administrador plataforma Medroom
+                                    {this.state.cargoAdministrador}
                                     <br />
-                                    Universidad Diego Portales
+                                    {this.state.universidadAdministrador}
                                     <br />
                                 </p>
                             </CardBody>
@@ -76,13 +99,13 @@ class Perfil extends React.Component {
                                         <Col sm="12" md="4">
                                             <FormGroup>
                                                 <label>Nombre Completo</label>
-                                                <Input defaultValue="Jose Perez" disabled placeholder="Nombre Completo" type="text" />
+                                                <Input value={this.state.nombreAdministrador} disabled type="text" />
                                             </FormGroup>
                                         </Col>
                                         <Col sm="12" md="4">
                                             <FormGroup>
                                                 <label>Correo</label>
-                                                <Input defaultValue="jose.perez@mail.udp.cl" disabled placeholder="Correo" type="text" />
+                                                <Input value={this.state.correoAdministrador} disabled type="text" />
                                             </FormGroup>
                                         </Col>
                                         <Col sm="12" md="4">
@@ -94,7 +117,12 @@ class Perfil extends React.Component {
                                                             <i className="nc-icon nc-single-02"></i>
                                                         </InputGroupText>
                                                     </InputGroupAddon>
-                                                    <Input defaultValue="98123123" placeholder="Celular" type="numeric" />
+                                                    <Input
+                                                        name="contactoAdministrador"
+                                                        value={this.state.contactoAdministrador}
+                                                        onChange={this.handleChange}
+                                                        type="numeric"
+                                                    />
                                                 </InputGroup>
                                             </FormGroup>
                                         </Col>
@@ -103,13 +131,25 @@ class Perfil extends React.Component {
                                         <Col sm="12" md="6">
                                             <FormGroup>
                                                 <label>Nueva Contraseña</label>
-                                                <Input placeholder="******" type="password" />
+                                                <Input
+                                                    name="passwordAdministrador"
+                                                    value={this.state.passwordAdministrador}
+                                                    onChange={this.handleChange}
+                                                    placeholder="******"
+                                                    type="password"
+                                                />
                                             </FormGroup>
                                         </Col>
                                         <Col sm="12" md="6">
                                             <FormGroup>
                                                 <label>Repetir Nueva Contraseña</label>
-                                                <Input placeholder="******" type="password" />
+                                                <Input
+                                                    name="passwordConfAdministrador"
+                                                    value={this.state.passwordConfAdministrador}
+                                                    onChange={this.handleChange}
+                                                    placeholder="******"
+                                                    type="password"
+                                                />
                                             </FormGroup>
                                         </Col>
                                     </Row>

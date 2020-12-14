@@ -2,6 +2,21 @@ import React from "react";
 import { Card, CardHeader, CardBody, CardTitle, Row, Col, Input, Button, Table } from "reactstrap";
 
 class AdministrarUsuarios extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = {};
+        this.handleChange = this.handleChange.bind(this);
+    }
+    componentDidMount() {
+        Promise.all([])
+            .then((values) => {})
+            .catch((err) => console.log(err));
+    }
+    handleChange(event) {
+        this.setState({
+            [event.target.name]: event.target.value,
+        });
+    }
     render() {
         return (
             <div className="content">

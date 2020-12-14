@@ -2,6 +2,31 @@ import React from "react";
 import { Button, Card, CardHeader, CardBody, CardFooter, CardTitle, FormGroup, Form, Input, Row, Col } from "reactstrap";
 
 class Perfil extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            nombreEvaluador: "Jose Pedro",
+            cargoEvaluador: "Evaluador de medicina",
+            universidadEvaluador: "Universidad Diego Portales",
+            correoEvaluador: "jose.perez@mail.udp.cl",
+            contactoEvaluador: "98123123",
+            recintoEvaluador: "TEC-100",
+            passwordEvaluador: "",
+            passwordConfEvaluador: "",
+            grupo: "",
+        };
+        this.handleChange = this.handleChange.bind(this);
+    }
+    componentDidMount() {
+        Promise.all([])
+            .then((values) => {})
+            .catch((err) => console.log(err));
+    }
+    handleChange(event) {
+        this.setState({
+            [event.target.name]: event.target.value,
+        });
+    }
     render() {
         return (
             <div className="content">
@@ -14,12 +39,12 @@ class Perfil extends React.Component {
                             <CardBody>
                                 <div className="author">
                                     <img alt="..." className="avatar border-gray" src={require("assets/img/mike.jpg")} />
-                                    <h5 className="title">Jose Pedro</h5>
+                                    <h5 className="title">{this.state.nombreEvaluador}</h5>
                                 </div>
                                 <p className="description text-center">
-                                    Evaluador de medicina
+                                    {this.state.cargoEvaluador}
                                     <br />
-                                    Universidad Diego Portales
+                                    {this.state.universidadEvaluador}
                                     <br />
                                 </p>
                             </CardBody>
@@ -61,19 +86,25 @@ class Perfil extends React.Component {
                                         <Col sm="12" md="4">
                                             <FormGroup>
                                                 <label>Nombre Completo</label>
-                                                <Input defaultValue="Jose Perez" disabled placeholder="Nombre Completo" type="text" />
+                                                <Input value={this.state.nombreEvaluador} disabled type="text" />
                                             </FormGroup>
                                         </Col>
                                         <Col sm="12" md="4">
                                             <FormGroup>
                                                 <label>Correo</label>
-                                                <Input defaultValue="jose.perez@mail.udp.cl" disabled placeholder="Correo" type="text" />
+                                                <Input value={this.state.correoEvaluador} disabled type="text" />
                                             </FormGroup>
                                         </Col>
                                         <Col sm="12" md="4">
                                             <FormGroup>
                                                 <label>Celular</label>
-                                                <Input defaultValue="98123123" placeholder="Celular" type="numeric" />
+                                                <Input
+                                                    name="contactoEvaluador"
+                                                    value={this.state.contactoEvaluador}
+                                                    onChange={this.handleChange}
+                                                    placeholder="98732121"
+                                                    type="numeric"
+                                                />
                                             </FormGroup>
                                         </Col>
                                     </Row>
@@ -81,13 +112,18 @@ class Perfil extends React.Component {
                                         <Col sm="12" md="6">
                                             <FormGroup>
                                                 <label>Recinto</label>
-                                                <Input placeholder="TEC-100" disabled type="text" />
+                                                <Input value={this.state.recintoEvaluador} disabled type="text" />
                                             </FormGroup>
                                         </Col>
                                         <Col sm="12" md="6">
                                             <FormGroup>
                                                 <label>Cargo</label>
-                                                <Input placeholder="Profesor" type="password" />
+                                                <Input
+                                                    name="cargoEvaluador"
+                                                    value={this.state.cargoEvaluador}
+                                                    onChange={this.handleChange}
+                                                    type="text"
+                                                />
                                             </FormGroup>
                                         </Col>
                                     </Row>
@@ -95,13 +131,25 @@ class Perfil extends React.Component {
                                         <Col sm="12" md="6">
                                             <FormGroup>
                                                 <label>Nueva Contraseña</label>
-                                                <Input placeholder="******" type="password" />
+                                                <Input
+                                                    name="passwordEvaluador"
+                                                    value={this.state.passwordEvaluador}
+                                                    onChange={this.handleChange}
+                                                    placeholder="******"
+                                                    type="password"
+                                                />
                                             </FormGroup>
                                         </Col>
                                         <Col sm="12" md="6">
                                             <FormGroup>
                                                 <label>Repetir Nueva Contraseña</label>
-                                                <Input placeholder="******" type="password" />
+                                                <Input
+                                                    name="passwordConfEvaluador"
+                                                    value={this.state.passwordConfEvaluador}
+                                                    onChange={this.handleChange}
+                                                    placeholder="******"
+                                                    type="password"
+                                                />
                                             </FormGroup>
                                         </Col>
                                     </Row>

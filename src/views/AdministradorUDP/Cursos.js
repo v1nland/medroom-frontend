@@ -2,6 +2,38 @@ import React from "react";
 import { Card, CardHeader, CardBody, CardTitle, Row, Col, Input, Button, Table } from "reactstrap";
 
 class Cursos extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            crearNombreGrupo: "",
+            crearSiglaGrupo: "",
+            actualizarNombreGrupo: "",
+            actualizarSiglaGrupo: "",
+            nuevoNombreGrupo: "",
+            nuevaSiglaGrupo: "",
+            eliminarNombreGrupo: "",
+            eliminarSiglaGrupo: "",
+            asociarNombreGrupo: "",
+            asociarSiglaGrupo: "",
+            nombreAlumno: "",
+            nombreEvaluador: "",
+            grupos: [],
+            alumnos: [],
+            evaluadores: [],
+            nuevosAlumnos: [],
+        };
+        this.handleChange = this.handleChange.bind(this);
+    }
+    componentDidMount() {
+        Promise.all([])
+            .then((values) => {})
+            .catch((err) => console.log(err));
+    }
+    handleChange(event) {
+        this.setState({
+            [event.target.name]: event.target.value,
+        });
+    }
     render() {
         return (
             <div className="content">
@@ -16,11 +48,23 @@ class Cursos extends React.Component {
                                     <Row>
                                         <Col sm="12" md="6">
                                             <small>Nombre Grupo</small>
-                                            <Input placeholder="Programación" />
+                                            <Input
+                                                placeholder="Programación"
+                                                name="crearNombreGrupo"
+                                                value={this.state.crearNombreGrupo}
+                                                onChange={this.handleChange}
+                                                required
+                                            />
                                         </Col>
                                         <Col sm="12" md="6">
                                             <small>Sigla Grupo</small>
-                                            <Input placeholder="CIT1000" />
+                                            <Input
+                                                placeholder="CIT1000"
+                                                name="crearSiglaGrupo"
+                                                value={this.state.crearSiglaGrupo}
+                                                onChange={this.handleChange}
+                                                required
+                                            />
                                         </Col>
                                     </Row>
                                     <Row>
@@ -46,7 +90,13 @@ class Cursos extends React.Component {
                                     <Row>
                                         <Col sm="12" md="6">
                                             <small>Nombre Grupo</small>
-                                            <Input type="select" name="grupo" id="idGrupo">
+                                            <Input
+                                                type="select"
+                                                name="actualizarNombreGrupo"
+                                                value={this.state.actualizarNombreGrupo}
+                                                onChange={this.handleChange}
+                                                required
+                                            >
                                                 <option>Grupo 1</option>
                                                 <option>Grupo 2</option>
                                                 <option>Grupo 3</option>
@@ -54,17 +104,35 @@ class Cursos extends React.Component {
                                         </Col>
                                         <Col sm="12" md="6">
                                             <small>Sigla Grupo</small>
-                                            <Input value="GRUP10" disabled />
+                                            <Input
+                                                name="actualizarSiglaGrupo"
+                                                value={this.state.actualizarSiglaGrupo}
+                                                onChange={this.handleChange}
+                                                type="text"
+                                                disabled
+                                            />
                                         </Col>
                                     </Row>
                                     <Row>
                                         <Col sm="12" md="6">
                                             <small>Nuevo Nombre Grupo</small>
-                                            <Input placeholder="Grupo 1" />
+                                            <Input
+                                                placeholder="Grupo 1"
+                                                name="nuevoNombreGrupo"
+                                                value={this.state.nuevoNombreGrupo}
+                                                onChange={this.handleChange}
+                                                required
+                                            />
                                         </Col>
                                         <Col sm="12" md="6">
                                             <small>Nueva Sigla Grupo</small>
-                                            <Input placeholder="GRUP01" />
+                                            <Input
+                                                placeholder="GRUP01"
+                                                name="nuevaSiglaGrupo"
+                                                value={this.state.nuevaSiglaGrupo}
+                                                onChange={this.handleChange}
+                                                required
+                                            />
                                         </Col>
                                     </Row>
                                     <Row>
@@ -90,7 +158,13 @@ class Cursos extends React.Component {
                                     <Row>
                                         <Col sm="12" md="6">
                                             <small>Nombre Grupo</small>
-                                            <Input type="select" name="grupo" id="idGrupo">
+                                            <Input
+                                                type="select"
+                                                name="eliminarNombreGrupo"
+                                                value={this.state.eliminarNombreGrupo}
+                                                onChange={this.handleChange}
+                                                required
+                                            >
                                                 <option>Grupo 1</option>
                                                 <option>Grupo 2</option>
                                                 <option>Grupo 3</option>
@@ -98,7 +172,12 @@ class Cursos extends React.Component {
                                         </Col>
                                         <Col sm="12" md="6">
                                             <small>Sigla Grupo</small>
-                                            <Input value="GRUP10" disabled />
+                                            <Input
+                                                name="eliminarSiglaGrupo"
+                                                value={this.state.eliminarSiglaGrupo}
+                                                onChange={this.handleChange}
+                                                disabled
+                                            />
                                         </Col>
                                     </Row>
                                     <Row>
@@ -124,7 +203,13 @@ class Cursos extends React.Component {
                                     <Row>
                                         <Col sm="12" md="6">
                                             <small>Nombre Grupo</small>
-                                            <Input type="select" name="grupo" id="idGrupo">
+                                            <Input
+                                                type="select"
+                                                name="asociarNombreGrupo"
+                                                value={this.state.asociarNombreGrupo}
+                                                onChange={this.handleChange}
+                                                required
+                                            >
                                                 <option>Grupo 1</option>
                                                 <option>Grupo 2</option>
                                                 <option>Grupo 3</option>
@@ -132,13 +217,25 @@ class Cursos extends React.Component {
                                         </Col>
                                         <Col sm="12" md="6">
                                             <small>Sigla Grupo</small>
-                                            <Input value="GRUP10" disabled />
+                                            <Input
+                                                type="text"
+                                                name="asociarSiglaGrupo"
+                                                value={this.state.asociarSiglaGrupo}
+                                                onChange={this.handleChange}
+                                                disabled
+                                            />
                                         </Col>
                                     </Row>
                                     <Row>
                                         <Col sm="12" md="4">
                                             <small>Nombre alumno</small>
-                                            <Input type="select" name="grupo" id="idGrupo">
+                                            <Input
+                                                type="select"
+                                                name="nombreAlumno"
+                                                value={this.state.nombreAlumno}
+                                                onChange={this.handleChange}
+                                                required
+                                            >
                                                 <option>Juan Francisco Lopez Perez</option>
                                                 <option>Diego Martín Pinilla Suarez</option>
                                             </Input>
@@ -154,7 +251,13 @@ class Cursos extends React.Component {
                                         </Col>
                                         <Col sm="12" md="6">
                                             <small>Nombre evaluador</small>
-                                            <Input type="select" name="grupo" id="idGrupo">
+                                            <Input
+                                                type="select"
+                                                name="nombreEvaluador"
+                                                value={this.state.nombreEvaluador}
+                                                onChange={this.handleChange}
+                                                required
+                                            >
                                                 <option>José Lopez</option>
                                             </Input>
                                         </Col>
