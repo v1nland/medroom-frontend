@@ -10,9 +10,7 @@ class Footer extends React.Component {
                 <Container fluid={this.props.fluid ? true : false}>
                     <Row>
                         <div className="credits ml-auto">
-                            <div className="copyright">
-                                Hecho por EIT <i className="fa fa-heart heart" />
-                            </div>
+                            <div className="copyright">{/* Hecho por EIT <i className="fa fa-heart heart" /> */}</div>
                         </div>
                     </Row>
                 </Container>

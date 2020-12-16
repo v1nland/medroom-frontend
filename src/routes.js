@@ -19,6 +19,7 @@ var routes = [
         icon: "nc-icon nc-single-02",
         component: EstudiantePerfil,
         layout: "/portal",
+        perfil: "estudiante",
     },
     {
         path: "/estudiante/grupo",
@@ -26,6 +27,7 @@ var routes = [
         icon: "nc-icon nc-badge",
         component: EstudianteGrupo,
         layout: "/portal",
+        perfil: "estudiante",
     },
     {
         path: "/estudiante/evaluacion",
@@ -33,6 +35,7 @@ var routes = [
         icon: "nc-icon nc-paper",
         component: EstudianteEvaluacion,
         layout: "/portal",
+        perfil: "estudiante",
     },
     {
         path: "/evaluador/perfil",
@@ -40,6 +43,7 @@ var routes = [
         icon: "nc-icon nc-single-02",
         component: EvaluadorPerfil,
         layout: "/portal",
+        perfil: "evaluador",
     },
     {
         path: "/evaluador/grupo",
@@ -47,6 +51,7 @@ var routes = [
         icon: "nc-icon nc-badge",
         component: EvaluadorGrupo,
         layout: "/portal",
+        perfil: "evaluador",
     },
     {
         path: "/evaluador/evaluacion",
@@ -54,6 +59,7 @@ var routes = [
         icon: "nc-icon nc-ruler-pencil",
         component: EvaluadorEvaluacion,
         layout: "/portal",
+        perfil: "evaluador",
     },
     {
         path: "/evaluador/reporte",
@@ -61,6 +67,7 @@ var routes = [
         icon: "nc-icon nc-single-copy-04",
         component: EvaluadorReporte,
         layout: "/portal",
+        perfil: "evaluador",
     },
     {
         path: "/administradorUDP/perfil",
@@ -68,6 +75,7 @@ var routes = [
         icon: "nc-icon nc-single-02",
         component: AdministradorUDPPerfil,
         layout: "/portal",
+        perfil: "administrador_academico",
     },
     {
         path: "/administradorUDP/cursos",
@@ -75,6 +83,7 @@ var routes = [
         icon: "nc-icon nc-vector",
         component: AdministradorUDPCursos,
         layout: "/portal",
+        perfil: "administrador_academico",
     },
     {
         path: "/administradorTI/perfil",
@@ -82,6 +91,7 @@ var routes = [
         icon: "nc-icon nc-single-02",
         component: AdministradorTIPerfil,
         layout: "/portal",
+        perfil: "administrador_ti",
     },
     {
         path: "/administradorTI/crearUsuarios",
@@ -89,6 +99,7 @@ var routes = [
         icon: "nc-icon nc-tap-01",
         component: AdministradorTiCrearUsuarios,
         layout: "/portal",
+        perfil: "administrado_ti",
     },
     {
         path: "/administradorTI/crearCursos",
@@ -96,6 +107,7 @@ var routes = [
         icon: "nc-icon nc-hat-3",
         component: AdministradorTICursos,
         layout: "/portal",
+        perfil: "administrado_ti",
     },
     {
         path: "/administradorTI/administrarUsuarios",
@@ -103,6 +115,7 @@ var routes = [
         icon: "nc-icon nc-book-bookmark",
         component: AdministradorTiAdministrarUsuarios,
         layout: "/portal",
+        perfil: "administrado_ti",
     },
 ];
 export default routes;

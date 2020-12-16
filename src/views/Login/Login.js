@@ -3,6 +3,7 @@ import BackgroundImage from "./background-login.jpg";
 import { loginMedRoom } from "../../database/login/loginMedRoom";
 import { loginEvaluador } from "../../database/login/loginEvaluador";
 import Cookies from "universal-cookie";
+import { sha256 } from "js-sha256";
 import AlertsHandler from "../../components/AlertsHandler/AlertsHandler";
 import { Card, CardBody, Row, Col, Input, Button, Form, Container, CardGroup, Label, FormGroup, ButtonGroup } from "reactstrap";
 
@@ -61,22 +62,22 @@ class Login extends React.Component {
         event.preventDefault();
         this.setState({ buttonDisabled: true });
         if (parseInt(this.state.perfil) === 1) {
-            loginMedRoom(this.state.user, this.state.password).then((resp) => {
+            loginMedRoom(this.state.user, sha256(this.state.password)).then((resp) => {
                 if (resp.meta === "OK") {
                     this.AlertsHandler.generate("success", "Ingresado 💙", "Credenciales correctas");
                     cookies.set("token", resp.data.token, { path: "/" });
-                    window.location.href = "/portal";
+                    window.location.href = "/portal/estudiante/perfil";
                 } else {
                     this.AlertsHandler.generate("danger", "Oh no 😥", "Credenciales incorrectas");
                     this.setState({ buttonClicked: false, buttonDisabled: false });
                 }
             });
         } else if (parseInt(this.state.perfil) === 2) {
-            loginEvaluador(this.state.user, this.state.password).then((resp) => {
+            loginEvaluador(this.state.user, sha256(this.state.password)).then((resp) => {
                 if (resp.meta === "OK") {
                     this.AlertsHandler.generate("success", "Ingresado 💙", "Credenciales correctas");
                     cookies.set("token", resp.data.token, { path: "/" });
-                    window.location.href = "/portal";
+                    window.location.href = "/portal/evaluador/perfil";
                 } else {
                     this.AlertsHandler.generate("danger", "Oh no 😥", "Credenciales incorrectas");
                     this.setState({ buttonClicked: false, buttonDisabled: false });

@@ -18,7 +18,7 @@ ReactDOM.render(
         <Switch>
             <Route path="/portal/login" component={Login} />
             <Route path="/portal" render={(props) => <AdminLayout {...props} />} />
-            <Redirect to="/portal/estudiante/perfil" />
+            <Redirect to="/portal/login" />
         </Switch>
     </Router>,
     document.getElementById("root")

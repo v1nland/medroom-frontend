@@ -4,6 +4,13 @@ import { Nav } from "reactstrap";
 import PerfectScrollbar from "perfect-scrollbar";
 
 import logo from "logo.svg";
+import Cookies from "universal-cookie";
+import jwt_decode from "jwt-decode";
+
+const cookies = new Cookies();
+
+var token = cookies.get("token");
+var decoded = token ? jwt_decode(token) : "";
 
 var ps;
 
@@ -46,6 +53,7 @@ class Sidebar extends React.Component {
                 <div className="sidebar-wrapper" ref={this.sidebar}>
                     <Nav>
                         {this.props.routes.map((prop, key) => {
+                            // if (prop.perfil === decoded.perfil)
                             return (
                                 <li className={this.activeRoute(prop.path) + (prop.pro ? " active-pro" : "")} key={key}>
                                     <NavLink to={prop.layout + prop.path} className="nav-link" activeClassName="active">
