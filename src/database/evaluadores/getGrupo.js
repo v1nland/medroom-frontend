@@ -1,19 +1,14 @@
-export function loginMedRoom(user, password) {
-    var FetchURL = `${process.env.REACT_APP_APIURL}/login`;
-
-    var data = {
-        correo_electronico_estudiante: user,
-        hash_contrasena_estudiante: password,
-    };
+export function getGrupo(token) {
+    var FetchURL = `${process.env.REACT_APP_APIURL}/evaluadores/me/group`;
 
     return fetch(FetchURL, {
-        method: "POST",
+        method: "GET",
         mode: "cors",
         cache: "no-cache",
         headers: {
             "Content-Type": "application/json; charset=utf-8",
+            Authorization: token,
         },
-        body: JSON.stringify(data),
     })
         .then((response) => response.json())
         .then((resp) => {

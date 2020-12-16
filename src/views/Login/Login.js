@@ -1,7 +1,7 @@
 import React from "react";
 import BackgroundImage from "./background-login.jpg";
-import { loginMedRoom } from "../../database/login/loginMedRoom";
-import { loginEvaluador } from "../../database/login/loginEvaluador";
+import { loginMedRoom } from "../../database/estudiantes/loginMedRoom";
+import { loginEvaluador } from "../../database/evaluadores/loginEvaluador";
 import Cookies from "universal-cookie";
 import { sha256 } from "js-sha256";
 import AlertsHandler from "../../components/AlertsHandler/AlertsHandler";
