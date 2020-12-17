@@ -149,6 +149,7 @@ class Perfil extends React.Component {
                                                         onChange={this.handleChange}
                                                         placeholder="******"
                                                         type="password"
+                                                        required
                                                     />
                                                 </FormGroup>
                                             </Col>
@@ -161,6 +162,7 @@ class Perfil extends React.Component {
                                                         onChange={this.handleChange}
                                                         placeholder="******"
                                                         type="password"
+                                                        required
                                                     />
                                                 </FormGroup>
                                             </Col>

@@ -1,22 +1,6 @@
 import React from "react";
-import { Link } from "react-router-dom";
-import {
-    Collapse,
-    Navbar,
-    NavbarToggler,
-    NavbarBrand,
-    Nav,
-    NavItem,
-    Dropdown,
-    DropdownToggle,
-    DropdownMenu,
-    DropdownItem,
-    Container,
-    InputGroup,
-    InputGroupText,
-    InputGroupAddon,
-    Input,
-} from "reactstrap";
+// import { Link } from "react-router-dom";
+import { Collapse, Navbar, NavbarToggler, NavbarBrand, Nav, Dropdown, DropdownToggle, DropdownMenu, DropdownItem, Container } from "reactstrap";
 
 import routes from "routes.js";
 import Cookies from "universal-cookie";
@@ -125,7 +109,7 @@ class Header extends React.Component {
                         <span className="navbar-toggler-bar navbar-kebab" />
                     </NavbarToggler>
                     <Collapse isOpen={this.state.isOpen} navbar className="justify-content-end">
-                        <form>
+                        {/* <form>
                             <InputGroup className="no-border">
                                 <Input placeholder="Search..." />
                                 <InputGroupAddon addonType="append">
@@ -134,16 +118,16 @@ class Header extends React.Component {
                                     </InputGroupText>
                                 </InputGroupAddon>
                             </InputGroup>
-                        </form>
+                        </form> */}
                         <Nav navbar>
-                            <NavItem>
+                            {/* <NavItem>
                                 <Link to="#pablo" className="nav-link btn-magnify">
                                     <i className="nc-icon nc-layout-11" />
                                     <p>
                                         <span className="d-lg-none d-md-block">Stats</span>
                                     </p>
                                 </Link>
-                            </NavItem>
+                            </NavItem> */}
                             <Dropdown nav isOpen={this.state.dropdownOpen} toggle={(e) => this.dropdownToggle(e)}>
                                 <DropdownToggle caret nav>
                                     <i className="nc-icon nc-settings-gear-65" />

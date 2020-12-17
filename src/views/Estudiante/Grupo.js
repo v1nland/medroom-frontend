@@ -130,7 +130,7 @@ class Grupo extends React.Component {
                                         <tbody>
                                             {this.state.estudiantesGrupo.map((estudiante) => {
                                                 return (
-                                                    <tr key={estudiante["id_grupo"]}>
+                                                    <tr key={estudiante["key"]}>
                                                         <td>{estudiante["apellidos_estudiante"]}</td>
                                                         <td>{estudiante["nombres_estudiante"]}</td>
                                                         <td>{estudiante["correo_electronico_estudiante"]}</td>

@@ -1,5 +1,5 @@
 import React from "react";
-import { Button, Card, CardHeader, CardBody, CardFooter, CardTitle, FormGroup, Form, Input, Row, Col } from "reactstrap";
+import { Button, Card, CardHeader, CardBody, CardTitle, FormGroup, Form, Input, Row, Col } from "reactstrap";
 import { getPerfil } from "../../database/evaluadores/getPerfil";
 import { putPerfil } from "../../database/evaluadores/putPerfil";
 import AlertsHandler from "../../components/AlertsHandler/AlertsHandler";
@@ -87,31 +87,6 @@ class Perfil extends React.Component {
                                         <br />
                                     </p>
                                 </CardBody>
-                                <CardFooter>
-                                    <hr />
-                                    <div className="button-container">
-                                        <Row>
-                                            <Col className="ml-auto" lg="3" md="6" xs="6">
-                                                <h5>
-                                                    12 <br />
-                                                    <small>Notas Calificadas</small>
-                                                </h5>
-                                            </Col>
-                                            <Col className="ml-auto mr-auto" lg="4" md="6" xs="6">
-                                                <h5>
-                                                    2 <br />
-                                                    <small>Pruebas pendientes</small>
-                                                </h5>
-                                            </Col>
-                                            <Col className="mr-auto" lg="3">
-                                                <h5>
-                                                    4 <br />
-                                                    <small>Ramos inscritos</small>
-                                                </h5>
-                                            </Col>
-                                        </Row>
-                                    </div>
-                                </CardFooter>
                             </Card>
                         </Col>
                         <Col md="8">
