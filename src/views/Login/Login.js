@@ -83,6 +83,17 @@ class Login extends React.Component {
                     this.setState({ buttonClicked: false, buttonDisabled: false });
                 }
             });
+        } else if (parseInt(this.state.perfil) === 3) {
+            loginEvaluador(this.state.user, sha256(this.state.password)).then((resp) => {
+                if (resp.meta === "OK") {
+                    this.AlertsHandler.generate("success", "Ingresado 💙", "Credenciales correctas");
+                    cookies.set("token", resp.data.token, { path: "/" });
+                    window.location.href = "/portal/evaluador/perfil";
+                } else {
+                    this.AlertsHandler.generate("danger", "Oh no 😥", "Credenciales incorrectas");
+                    this.setState({ buttonClicked: false, buttonDisabled: false });
+                }
+            });
         }
     };
     render() {
@@ -132,6 +143,9 @@ class Login extends React.Component {
                                                 </Button>
                                                 <Button color="default" name="perfil" value={2} onClick={this.handleChange}>
                                                     EVALUADOR
+                                                </Button>
+                                                <Button color="default" name="perfil" value={3} onClick={this.handleChange}>
+                                                    ADMINISTRADOR
                                                 </Button>
                                             </ButtonGroup>
                                             <Row>

@@ -1,5 +1,5 @@
-export function getGrupo(token) {
-    var FetchURL = `${process.env.REACT_APP_APIURL}/evaluadores/me/grupo`;
+export function getEvolucionCompetencia(token, codigoCompentencia) {
+    var FetchURL = `${process.env.REACT_APP_APIURL}/estudiantes/me/estadisticas/evolucion/competencia/${codigoCompentencia}`;
 
     return fetch(FetchURL, {
         method: "GET",

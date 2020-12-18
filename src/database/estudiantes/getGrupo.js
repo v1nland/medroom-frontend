@@ -1,5 +1,5 @@
 export function getGrupo(token) {
-    var FetchURL = `${process.env.REACT_APP_APIURL}/estudiantes/me/group`;
+    var FetchURL = `${process.env.REACT_APP_APIURL}/estudiantes/me/grupo`;
 
     return fetch(FetchURL, {
         method: "GET",

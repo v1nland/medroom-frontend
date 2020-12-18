@@ -1,5 +1,5 @@
 import React from "react";
-import { Line, Pie } from "react-chartjs-2";
+// import { Line } from "react-chartjs-2";
 import {
     Card,
     CardHeader,
@@ -17,9 +17,10 @@ import {
     ModalFooter,
 } from "reactstrap";
 import LoadingPage from "../../components/LoadingPage/LoadingPage";
-import { dashboard24HoursPerformanceChart, dashboardEmailStatisticsChart, dashboardNASDAQChart } from "variables/charts.js";
+// import { dashboardNASDAQChart } from "variables/charts.js";
 import { getEvaluaciones } from "../../database/estudiantes/getEvaluaciones";
 import { getPeriodos } from "../../database/periodos/getPeriodos";
+import { getEvolucionCompetencia } from "../../database/estudiantes/getEvolucionCompetencia";
 import { formatEvaluaciones } from "../../functions/formats/estudiantes/formatEvaluaciones";
 import { formatPeriodos } from "../../functions/formats/periodos/formatPeriodos";
 import Cookies from "universal-cookie";
@@ -36,12 +37,20 @@ class Evaluaciones extends React.Component {
             periodo: "",
             evaluaciones: [],
             periodos: [],
+            nombreEvaluacion: "",
+            competencias: [],
+            codigoCompetencia: "entrevistaMedica",
         };
         this.handleChange = this.handleChange.bind(this);
         this.handleDetalle = this.handleDetalle.bind(this);
+        this.openDetalle = this.openDetalle.bind(this);
     }
     componentDidMount() {
-        Promise.all([getEvaluaciones(cookies.get("token")), getPeriodos(cookies.get("token"))])
+        Promise.all([
+            getEvaluaciones(cookies.get("token")),
+            getPeriodos(cookies.get("token")),
+            getEvolucionCompetencia(cookies.get("token"), this.state.codigoCompetencia),
+        ])
             .then((values) => {
                 this.setState({
                     evaluaciones: formatEvaluaciones(values[0].data),
@@ -61,17 +70,47 @@ class Evaluaciones extends React.Component {
             detalle: !this.state.detalle,
         });
     }
+    openDetalle(evaluacion) {
+        this.setState({
+            detalle: !this.state.detalle,
+            nombreEvaluacion: evaluacion["nombre_evaluacion"],
+            competencias: evaluacion["puntajes_evaluacion"],
+        });
+    }
+    handleCompetencia(codigoCompetencia) {
+        getEvolucionCompetencia(cookies.get("token"), codigoCompetencia)
+            .then((data) => {
+                this.setState({});
+            })
+            .catch((err) => console.log(err));
+    }
     render() {
         if (this.state.queriesReady)
             return (
                 <div className="content">
-                    <Modal isOpen={this.state.detalle}>
-                        <ModalHeader>Evaluación</ModalHeader>
+                    <Modal isOpen={this.state.detalle} handle>
+                        <ModalHeader>{this.state.nombreEvaluacion}</ModalHeader>
                         <ModalBody>
-                            Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna
-                            aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis
-                            aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat
-                            cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+                            <Table responsive striped bordered>
+                                <thead className="text-primary text-center">
+                                    <tr style={{ textAlign: "true" }}>
+                                        <th>Nombre Competencia</th>
+                                        <th>Puntaje obtenido</th>
+                                        <th>Comentario</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {this.state.competencias.map((competencia) => {
+                                        return (
+                                            <tr key={competencia["id_evaluacion"]}>
+                                                <td>{competencia["nombre_competencia_puntaje"]}</td>
+                                                <td className="text-center">{competencia["calificacion_puntaje"]}</td>
+                                                <td>{competencia["feedback_puntaje"]}</td>
+                                            </tr>
+                                        );
+                                    })}
+                                </tbody>
+                            </Table>
                         </ModalBody>
                         <ModalFooter>
                             <Button color="primary" onClick={this.handleDetalle}>
@@ -94,17 +133,24 @@ class Evaluaciones extends React.Component {
                                                     type="select"
                                                     name="periodo"
                                                     id="periodo"
-                                                    value={this.state.periodo}
                                                     onChange={this.handleChange}
+                                                    defaultValue={"DEFAULT"}
                                                 >
+                                                    <option disabled value="DEFAULT">
+                                                        -- Filtrar por periodo --
+                                                    </option>
                                                     {this.state.periodos.map((periodo) => {
-                                                        return <option key={periodo["id"]}>{periodo["nombre_periodo"]}</option>;
+                                                        return (
+                                                            <option key={periodo["id"]} value={periodo["nombre_periodo"]}>
+                                                                {periodo["nombre_periodo"]}
+                                                            </option>
+                                                        );
                                                     })}
                                                 </Input>
                                             </Col>
                                         </Row>
                                     </form>
-                                    <Table responsive>
+                                    <Table responsive striped hover>
                                         <thead className="text-primary">
                                             <tr>
                                                 <th></th>
@@ -115,10 +161,16 @@ class Evaluaciones extends React.Component {
                                         </thead>
                                         <tbody>
                                             {this.state.evaluaciones.map((evaluacion) => {
+                                                // if (evaluacion["nombre_periodo"] === this.state.periodo)
                                                 return (
                                                     <tr key={evaluacion["id_evaluacion"]}>
                                                         <td>
-                                                            <Button color="success" fab="true" round="true" onClick={this.handleDetalle}>
+                                                            <Button
+                                                                color="success"
+                                                                fab="true"
+                                                                round="true"
+                                                                onClick={() => this.openDetalle(evaluacion)}
+                                                            >
                                                                 <i className="fas fa-file-alt"></i>
                                                             </Button>
                                                         </td>
@@ -135,7 +187,22 @@ class Evaluaciones extends React.Component {
                         </Col>
                     </Row>
                     <Row>
-                        <Col md="4">
+                        <Col md="12">
+                            <Card className="card-chart">
+                                <CardHeader>
+                                    <CardTitle tag="h5">Evolución por competencia</CardTitle>
+                                </CardHeader>
+                                <CardBody>
+                                    {/* <Line data={dashboardNASDAQChart.data} options={dashboardNASDAQChart.options} width={400} height={100} /> */}
+                                </CardBody>
+                                <CardFooter>
+                                    <div className="chart-legend">
+                                        <i className="fa fa-circle text-info" /> Entrevista Medica
+                                    </div>
+                                </CardFooter>
+                            </Card>
+                        </Col>
+                        {/* <Col md="4">
                             <Card>
                                 <CardHeader>
                                     <CardTitle tag="h5">Promedio General</CardTitle>
@@ -182,29 +249,7 @@ class Evaluaciones extends React.Component {
                                     </div>
                                 </CardFooter>
                             </Card>
-                        </Col>
-                        <Col md="4">
-                            <Card className="card-chart">
-                                <CardHeader>
-                                    <CardTitle tag="h5">Notas del semestre</CardTitle>
-                                    <p className="card-category">Separado por cursos</p>
-                                </CardHeader>
-                                <CardBody>
-                                    <Line data={dashboardNASDAQChart.data} options={dashboardNASDAQChart.options} width={400} height={100} />
-                                </CardBody>
-                                <CardFooter>
-                                    <div className="chart-legend">
-                                        <i className="fa fa-circle text-info" /> Programación
-                                        <br />
-                                        <i className="fa fa-circle text-warning" /> Programación Avanzada
-                                    </div>
-                                    <hr />
-                                    <div className="card-stats">
-                                        <i className="fa fa-check" /> Data information certified
-                                    </div>
-                                </CardFooter>
-                            </Card>
-                        </Col>
+                        </Col> */}
                     </Row>
                 </div>
             );

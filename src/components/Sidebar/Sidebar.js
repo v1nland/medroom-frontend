@@ -6,6 +6,7 @@ import PerfectScrollbar from "perfect-scrollbar";
 import logo from "logo.svg";
 import Cookies from "universal-cookie";
 import jwt_decode from "jwt-decode";
+// import { preProcessFile } from "typescript";
 
 const cookies = new Cookies();
 
@@ -53,15 +54,15 @@ class Sidebar extends React.Component {
                 <div className="sidebar-wrapper" ref={this.sidebar}>
                     <Nav>
                         {this.props.routes.map((prop, key) => {
-                            // if (prop.perfil === decoded.perfil)
-                            return (
-                                <li className={this.activeRoute(prop.path) + (prop.pro ? " active-pro" : "")} key={key}>
-                                    <NavLink to={prop.layout + prop.path} className="nav-link" activeClassName="active">
-                                        <i className={prop.icon} />
-                                        <p>{prop.name}</p>
-                                    </NavLink>
-                                </li>
-                            );
+                            if (prop.perfil === decoded.perfil)
+                                return (
+                                    <li className={this.activeRoute(prop.path) + (prop.pro ? " active-pro" : "")} key={prop.name}>
+                                        <NavLink to={prop.layout + prop.path} className="nav-link" activeClassName="active">
+                                            <i className={prop.icon} />
+                                            <p>{prop.name}</p>
+                                        </NavLink>
+                                    </li>
+                                );
                         })}
                     </Nav>
                 </div>

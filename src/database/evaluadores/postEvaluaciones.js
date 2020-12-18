@@ -1,5 +1,5 @@
 export function postEvaluaciones(token, newEvaluacion) {
-    var FetchURL = `${process.env.REACT_APP_APIURL}/evaluadores/evaluaciones`;
+    var FetchURL = `${process.env.REACT_APP_APIURL}/evaluadores/me/evaluaciones`;
 
     return fetch(FetchURL, {
         method: "POST",

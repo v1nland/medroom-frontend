@@ -14,6 +14,7 @@ class Perfil extends React.Component {
         super(props);
         this.state = {
             queriesReady: false,
+            passwordsReady: false,
             nombreEvaluador: "",
             cargoEvaluador: "",
             universidadEvaluador: "Universidad Diego Portales",
@@ -26,6 +27,7 @@ class Perfil extends React.Component {
         };
         this.handleChange = this.handleChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
+        this.renderAlertPassword = this.renderAlertPassword.bind(this);
     }
     componentDidMount() {
         Promise.all([getPerfil(cookies.get("token"))])
@@ -41,10 +43,40 @@ class Perfil extends React.Component {
             })
             .catch((err) => console.log(err));
     }
+    validatePassword() {
+        if (
+            this.state.passwordEvaluador === "" ||
+            this.state.passwordConfEvaluador === "" ||
+            this.state.passwordEvaluador !== this.state.passwordConfEvaluador
+        ) {
+            this.setState({
+                passwordsReady: false,
+            });
+        } else if (this.state.passwordEvaluador !== "" && this.state.passwordConfEvaluador !== "") {
+            this.setState({
+                passwordsReady: true,
+            });
+        }
+    }
     handleChange(event) {
-        this.setState({
-            [event.target.name]: event.target.value,
-        });
+        this.setState(
+            {
+                [event.target.name]: event.target.value,
+            },
+            this.validatePassword
+        );
+    }
+
+    renderAlertPassword() {
+        if (this.state.passwordEvaluador !== this.state.passwordConfEvaluador) {
+            return (
+                <div>
+                    <small style={{ color: "red" }}>Contraseñas no coinciden</small>
+                </div>
+            );
+        } else {
+            return <div></div>;
+        }
     }
     handleSubmit(event) {
         event.preventDefault();
@@ -164,6 +196,7 @@ class Perfil extends React.Component {
                                                         placeholder="******"
                                                         type="password"
                                                     />
+                                                    {this.renderAlertPassword()}
                                                 </FormGroup>
                                             </Col>
                                         </Row>

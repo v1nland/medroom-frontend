@@ -4,7 +4,6 @@ import {
     Card,
     CardHeader,
     CardBody,
-    CardFooter,
     CardTitle,
     FormGroup,
     Form,
@@ -15,24 +14,41 @@ import {
     InputGroupAddon,
     InputGroupText,
 } from "reactstrap";
+import { getPerfil } from "../../database/estudiantes/getPerfil";
+import { putPerfil } from "../../database/estudiantes/putPerfil";
+import AlertsHandler from "../../components/AlertsHandler/AlertsHandler";
+import Cookies from "universal-cookie";
+import { sha256 } from "js-sha256";
+import LoadingPage from "../../components/LoadingPage/LoadingPage";
+
+const cookies = new Cookies();
 
 class Perfil extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            nombreAdministrador: "Jose Pedro",
-            cargoAdministrador: "Administrador UDP/ Medroom",
-            universidadAdministrador: "Universidad Diego Portales",
-            correoAdministrador: "jose.perez@mail.udp.cl",
-            contactoAdministrador: 98712312,
-            passwordAdministrador: "",
-            passwordConfAdminitrador: "",
+            queriesReady: false,
+            nombreAlumno: "",
+            carreraAlumno: "Estudiante de Medicina UDP",
+            universidadAlumno: "Universidad Diego Portales",
+            correoAlumno: "",
+            contactoAlumno: 0,
+            passwordAlumno: "",
+            passwordConfAlumno: "",
         };
         this.handleChange = this.handleChange.bind(this);
+        this.handleSubmit = this.handleSubmit.bind(this);
     }
     componentDidMount() {
-        Promise.all([])
-            .then((values) => {})
+        Promise.all([getPerfil(cookies.get("token"))])
+            .then((values) => {
+                this.setState({
+                    nombreAlumno: values[0].data["nombres_estudiante"] + " " + values[0].data["apellidos_estudiante"],
+                    correoAlumno: values[0].data["correo_electronico_estudiante"],
+                    contactoAlumno: values[0].data["telefono_celular_estudiante"],
+                    queriesReady: true,
+                });
+            })
             .catch((err) => console.log(err));
     }
     handleChange(event) {
@@ -40,133 +56,133 @@ class Perfil extends React.Component {
             [event.target.name]: event.target.value,
         });
     }
+
+    handleSubmit(event) {
+        event.preventDefault();
+        var newDatos = {
+            hash_contrasena_estudiante: sha256(this.state.passwordAlumno),
+            telefono_celular_estudiante: this.state.contactoAlumno,
+        };
+        putPerfil(cookies.get("token"), newDatos).then((resp) => {
+            console.log(resp);
+            if (resp.meta === "OK") {
+                this.AlertsHandler.generate("success", "Perfil actualizado", "");
+                this.setState({
+                    passwordAlumno: "",
+                    passwordConfAlumno: "",
+                });
+            } else {
+                this.AlertsHandler.generate("danger", "Oops!", "Parece que hubo un problema");
+            }
+        });
+    }
     render() {
-        return (
-            <div className="content">
-                <Row>
-                    <Col md="4">
-                        <Card className="card-user">
-                            <div className="image">
-                                <img alt="..." src={require("assets/img/damir-bosnjak.jpg")} />
-                            </div>
-                            <CardBody>
-                                <div className="author">
-                                    <img alt="..." className="avatar border-gray" src={require("assets/img/mike.jpg")} />
-                                    <h5 className="title">{this.state.nombreAdministrador}</h5>
+        if (this.state.queriesReady)
+            return (
+                <div className="content">
+                    <Row>
+                        <Col md="4">
+                            <Card className="card-user">
+                                <div className="image">
+                                    <img alt="..." src={require("assets/img/damir-bosnjak.jpg")} />
                                 </div>
-                                <p className="description text-center">
-                                    {this.state.cargoAdministrador}
-                                    <br />
-                                    {this.state.universidadAdministrador}
-                                    <br />
-                                </p>
-                            </CardBody>
-                            <CardFooter>
-                                <hr />
-                                <div className="button-container">
-                                    <Row>
-                                        <Col className="ml-auto" lg="3" md="6" xs="6">
-                                            <h5>
-                                                12 <br />
-                                                <small>Cursos inscritos</small>
-                                            </h5>
-                                        </Col>
-                                        <Col className="ml-auto mr-auto" lg="4" md="6" xs="6">
-                                            <h5>
-                                                2 <br />
-                                                <small>Grupos activos</small>
-                                            </h5>
-                                        </Col>
-                                        <Col className="mr-auto" lg="3">
-                                            <h5>
-                                                4 <br />
-                                                <small>Reportes</small>
-                                            </h5>
-                                        </Col>
-                                    </Row>
-                                </div>
-                            </CardFooter>
-                        </Card>
-                    </Col>
-                    <Col md="8">
-                        <Card className="card-user">
-                            <CardHeader>
-                                <CardTitle tag="h5">Editar Perfil</CardTitle>
-                            </CardHeader>
-                            <CardBody>
-                                <Form>
-                                    <Row>
-                                        <Col sm="12" md="4">
-                                            <FormGroup>
-                                                <label>Nombre Completo</label>
-                                                <Input value={this.state.nombreAdministrador} disabled type="text" />
-                                            </FormGroup>
-                                        </Col>
-                                        <Col sm="12" md="4">
-                                            <FormGroup>
-                                                <label>Correo</label>
-                                                <Input value={this.state.correoAdministrador} disabled type="text" />
-                                            </FormGroup>
-                                        </Col>
-                                        <Col sm="12" md="4">
-                                            <FormGroup>
-                                                <label>Celular</label>
-                                                <InputGroup>
-                                                    <InputGroupAddon addonType="prepend">
-                                                        <InputGroupText>
-                                                            <i className="nc-icon nc-single-02"></i>
-                                                        </InputGroupText>
-                                                    </InputGroupAddon>
+                                <CardBody>
+                                    <div className="author">
+                                        <img alt="..." className="avatar border-gray" src={require("assets/img/mike.jpg")} />
+                                        <h5 className="title">{this.state.nombreAlumno}</h5>
+                                    </div>
+                                    <p className="description text-center">
+                                        {this.state.carreraAlumno}
+                                        <br />
+                                        {this.state.universidadAlumno}
+                                        <br />
+                                    </p>
+                                </CardBody>
+                            </Card>
+                        </Col>
+                        <Col sm="12" md="8">
+                            <Card className="card-user">
+                                <CardHeader>
+                                    <CardTitle tag="h5">Editar Perfil</CardTitle>
+                                </CardHeader>
+                                <CardBody>
+                                    <Form onSubmit={this.handleSubmit}>
+                                        <Row>
+                                            <Col sm="12" md="4">
+                                                <FormGroup>
+                                                    <label>Nombre Completo</label>
+                                                    <Input value={this.state.nombreAlumno} disabled type="text" />
+                                                </FormGroup>
+                                            </Col>
+                                            <Col sm="12" md="4">
+                                                <FormGroup>
+                                                    <label>Correo</label>
+                                                    <Input value={this.state.correoAlumno} disabled type="text" />
+                                                </FormGroup>
+                                            </Col>
+                                            <Col sm="12" md="4">
+                                                <FormGroup>
+                                                    <label>Celular</label>
+                                                    <InputGroup>
+                                                        <InputGroupAddon addonType="prepend">
+                                                            <InputGroupText>
+                                                                <i className="nc-icon nc-single-02"></i>
+                                                            </InputGroupText>
+                                                        </InputGroupAddon>
+                                                        <Input
+                                                            name="contactoAlumno"
+                                                            value={this.state.contactoAlumno}
+                                                            onChange={this.handleChange}
+                                                            type="numeric"
+                                                        />
+                                                    </InputGroup>
+                                                </FormGroup>
+                                            </Col>
+                                        </Row>
+                                        <Row>
+                                            <Col sm="12" md="6">
+                                                <FormGroup>
+                                                    <label>Nueva Contraseña</label>
                                                     <Input
-                                                        name="contactoAdministrador"
-                                                        value={this.state.contactoAdministrador}
+                                                        name="passwordAlumno"
+                                                        value={this.state.passwordAlumno}
                                                         onChange={this.handleChange}
-                                                        type="numeric"
+                                                        placeholder="******"
+                                                        type="password"
+                                                        required
                                                     />
-                                                </InputGroup>
-                                            </FormGroup>
-                                        </Col>
-                                    </Row>
-                                    <Row>
-                                        <Col sm="12" md="6">
-                                            <FormGroup>
-                                                <label>Nueva Contraseña</label>
-                                                <Input
-                                                    name="passwordAdministrador"
-                                                    value={this.state.passwordAdministrador}
-                                                    onChange={this.handleChange}
-                                                    placeholder="******"
-                                                    type="password"
-                                                />
-                                            </FormGroup>
-                                        </Col>
-                                        <Col sm="12" md="6">
-                                            <FormGroup>
-                                                <label>Repetir Nueva Contraseña</label>
-                                                <Input
-                                                    name="passwordConfAdministrador"
-                                                    value={this.state.passwordConfAdministrador}
-                                                    onChange={this.handleChange}
-                                                    placeholder="******"
-                                                    type="password"
-                                                />
-                                            </FormGroup>
-                                        </Col>
-                                    </Row>
-                                    <Row>
-                                        <div className="update ml-auto mr-auto">
-                                            <Button className="btn-round" color="primary" type="submit">
-                                                Actualizar datos
-                                            </Button>
-                                        </div>
-                                    </Row>
-                                </Form>
-                            </CardBody>
-                        </Card>
-                    </Col>
-                </Row>
-            </div>
-        );
+                                                </FormGroup>
+                                            </Col>
+                                            <Col sm="12" md="6">
+                                                <FormGroup>
+                                                    <label>Repetir Nueva Contraseña</label>
+                                                    <Input
+                                                        name="passwordConfAlumno"
+                                                        value={this.state.passwordConfAlumno}
+                                                        onChange={this.handleChange}
+                                                        placeholder="******"
+                                                        type="password"
+                                                        required
+                                                    />
+                                                </FormGroup>
+                                            </Col>
+                                        </Row>
+                                        <Row>
+                                            <div className="update ml-auto mr-auto">
+                                                <Button className="btn-round" color="primary" type="submit">
+                                                    Actualizar datos
+                                                </Button>
+                                            </div>
+                                        </Row>
+                                    </Form>
+                                </CardBody>
+                            </Card>
+                        </Col>
+                    </Row>
+                    <AlertsHandler onRef={(ref) => (this.AlertsHandler = ref)} />
+                </div>
+            );
+        else return <LoadingPage />;
     }
 }
 

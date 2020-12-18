@@ -5,6 +5,7 @@ import { Card, CardBody, CardHeader, CardTitle, Form, Row, Col, FormGroup, Label
 import LoadingPage from "../../components/LoadingPage/LoadingPage";
 import { getPerfil } from "../../database/evaluadores/getPerfil";
 import { getGrupo } from "../../database/evaluadores/getGrupo";
+import { getCurso } from "../../database/evaluadores/getCurso";
 import { postEvaluaciones } from "../../database/evaluadores/postEvaluaciones";
 import { getPeriodos } from "../../database/periodos/getPeriodos";
 import { formatGrupo } from "../../functions/formats/estudiantes/formatGrupo";
@@ -47,12 +48,16 @@ class Evaluacion extends React.Component {
         this.handleSubmit = this.handleSubmit.bind(this);
     }
     componentDidMount() {
-        Promise.all([getPerfil(cookies.get("token")), getGrupo(cookies.get("token")), getPeriodos(cookies.get("token"))])
+        Promise.all([
+            getPerfil(cookies.get("token")),
+            getGrupo(cookies.get("token")),
+            getPeriodos(cookies.get("token")),
+            getCurso(cookies.get("token")),
+        ])
             .then((values) => {
-                console.log(values[1].data);
                 this.setState({
                     nombreEvaluador: values[0].data["nombres_evaluador"] + " " + values[0].data["apellidos_evaluador"],
-                    cursoEvaluador: values[1].data["curso_grupo"]["nombre_curso"],
+                    cursoEvaluador: values[3].data["nombre_curso"],
                     grupoEvaluador: values[1].data["nombre_grupo"],
                     estudiantes: formatGrupo(values[1].data["estudiantes_grupo"]),
                     periodos: formatPeriodos(values[2].data),
@@ -83,36 +88,43 @@ class Evaluacion extends React.Component {
                 {
                     feedback_competencia: this.state.comentarioEntrevistaMedica,
                     nombre_competencia: "HABILIDAD DE ENTREVISTA MÉDICA",
+                    codigo_competencia: "entrevistaMedica",
                     puntaje_competencia: parseInt(this.state.entrevistaMedica),
                 },
                 {
                     feedback_competencia: this.state.comentarioExamenFisico,
                     nombre_competencia: "HABILIDAD DE EXAMEN FÍSICO",
+                    codigo_competencia: "examenFisico",
                     puntaje_competencia: parseInt(this.state.examenFisico),
                 },
                 {
                     feedback_competencia: this.state.comentarioProfesionalismo,
                     nombre_competencia: "PROFESIONALISMO/ CUALIDAD HUMANA",
+                    codigo_competencia: "profesionalismo",
                     puntaje_competencia: parseInt(this.state.profesionalismo),
                 },
                 {
                     feedback_competencia: this.state.comentarioRazonamientoClinico,
                     nombre_competencia: "RAZONAMIENTO CLÍNICO",
+                    codigo_competencia: "razonamientoClinico",
                     puntaje_competencia: parseInt(this.state.razonamientoClinico),
                 },
                 {
                     feedback_competencia: this.state.comentarioConsejeria,
                     nombre_competencia: "HABILIDADES DE CONSEJERÍA",
+                    codigo_competencia: "consejeria",
                     puntaje_competencia: parseInt(this.state.consejeria),
                 },
                 {
                     feedback_competencia: this.state.comentarioEficiencia,
                     nombre_competencia: "EFICIENCIA Y ORGANIZACIÓN",
+                    codigo_competencia: "eficiencia",
                     puntaje_competencia: parseInt(this.state.eficiencia),
                 },
                 {
                     feedback_competencia: this.state.comentarioCompetenciaClinica,
                     nombre_competencia: "COMPETENCIA CLÍNICA GENERAL",
+                    codigo_competencia: "competenciaClinica",
                     puntaje_competencia: parseInt(this.state.competenciaClinica),
                 },
             ],
@@ -180,6 +192,7 @@ class Evaluacion extends React.Component {
                                                         id="idEstudiante"
                                                         onChange={this.handleChange}
                                                         defaultValue={"DEFAULT"}
+                                                        required
                                                     >
                                                         <option disabled value="DEFAULT">
                                                             -- Elija un estudiante --
@@ -203,6 +216,7 @@ class Evaluacion extends React.Component {
                                                         disabled
                                                         value={this.state.cursoEvaluador}
                                                         onChange={this.handleChange}
+                                                        required
                                                     ></Input>
                                                 </FormGroup>
                                             </Col>
@@ -215,6 +229,7 @@ class Evaluacion extends React.Component {
                                                         disabled
                                                         value={this.state.grupoEvaluador}
                                                         onChange={this.handleChange}
+                                                        required
                                                     ></Input>
                                                 </FormGroup>
                                             </Col>
@@ -225,11 +240,17 @@ class Evaluacion extends React.Component {
                                                     <Label for="fecha">Nombre evaluación</Label>
                                                     <Input
                                                         value={this.state.nombreEvaluacion}
-                                                        type="text"
+                                                        type="select"
                                                         name="nombreEvaluacion"
-                                                        placeholder="Rúbrica Comunicación Clínica I"
                                                         onChange={this.handleChange}
-                                                    ></Input>
+                                                        required
+                                                    >
+                                                        <option value={"Control 1"}>Control 1</option>
+                                                        <option value={"Control 2"}>Control 2</option>
+                                                        <option value={"Control 3"}>Control 3</option>
+                                                        <option value={"Control 4"}>Control 4</option>
+                                                        <option value={"Control 5"}>Control 5</option>
+                                                    </Input>
                                                 </FormGroup>
                                             </Col>
                                             <Col sm="12" md="4">

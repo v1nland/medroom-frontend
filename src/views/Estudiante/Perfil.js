@@ -28,6 +28,7 @@ class Perfil extends React.Component {
         super(props);
         this.state = {
             queriesReady: false,
+            passwordsReady: false,
             nombreAlumno: "",
             carreraAlumno: "Estudiante de Medicina UDP",
             universidadAlumno: "Universidad Diego Portales",
@@ -38,6 +39,7 @@ class Perfil extends React.Component {
         };
         this.handleChange = this.handleChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
+        this.renderAlertPassword = this.renderAlertPassword.bind(this);
     }
     componentDidMount() {
         Promise.all([getPerfil(cookies.get("token"))])
@@ -51,10 +53,38 @@ class Perfil extends React.Component {
             })
             .catch((err) => console.log(err));
     }
+
+    validatePassword() {
+        if (this.state.passwordAlumno === "" || this.state.passwordConfAlumno === "" || this.state.passwordAlumno !== this.state.passwordConfAlumno) {
+            this.setState({
+                passwordsReady: false,
+            });
+        } else if (this.state.passwordAlumno !== "" && this.state.passwordConfAlumno !== "") {
+            this.setState({
+                passwordsReady: true,
+            });
+        }
+    }
+
     handleChange(event) {
-        this.setState({
-            [event.target.name]: event.target.value,
-        });
+        this.setState(
+            {
+                [event.target.name]: event.target.value,
+            },
+            this.validatePassword
+        );
+    }
+
+    renderAlertPassword() {
+        if (this.state.passwordAlumno !== this.state.passwordConfAlumno) {
+            return (
+                <div>
+                    <small style={{ color: "red" }}>Contraseñas no coinciden</small>
+                </div>
+            );
+        } else {
+            return <div></div>;
+        }
     }
 
     handleSubmit(event) {
@@ -64,7 +94,6 @@ class Perfil extends React.Component {
             telefono_celular_estudiante: this.state.contactoAlumno,
         };
         putPerfil(cookies.get("token"), newDatos).then((resp) => {
-            console.log(resp);
             if (resp.meta === "OK") {
                 this.AlertsHandler.generate("success", "Perfil actualizado", "");
                 this.setState({
@@ -164,12 +193,13 @@ class Perfil extends React.Component {
                                                         type="password"
                                                         required
                                                     />
+                                                    {this.renderAlertPassword()}
                                                 </FormGroup>
                                             </Col>
                                         </Row>
                                         <Row>
                                             <div className="update ml-auto mr-auto">
-                                                <Button className="btn-round" color="primary" type="submit">
+                                                <Button className="btn-round" color="primary" type="submit" disabled={!this.state.passwordsReady}>
                                                     Actualizar datos
                                                 </Button>
                                             </div>

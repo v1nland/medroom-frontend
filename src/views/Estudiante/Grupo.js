@@ -3,6 +3,7 @@ import { Card, CardHeader, CardBody, CardTitle, Row, Col, Table } from "reactstr
 import LoadingPage from "../../components/LoadingPage/LoadingPage";
 import { getPerfil } from "../../database/estudiantes/getPerfil";
 import { getGrupo } from "../../database/estudiantes/getGrupo";
+import { getCurso } from "../../database/estudiantes/getCurso";
 import { formatGrupo } from "../../functions/formats/estudiantes/formatGrupo";
 import Cookies from "universal-cookie";
 const cookies = new Cookies();
@@ -23,15 +24,15 @@ class Grupo extends React.Component {
         this.handleChange = this.handleChange.bind(this);
     }
     componentDidMount() {
-        Promise.all([getPerfil(cookies.get("token")), getGrupo(cookies.get("token"))])
+        Promise.all([getPerfil(cookies.get("token")), getGrupo(cookies.get("token")), getCurso(cookies.get("token"))])
             .then((values) => {
                 this.setState({
                     nombreEvaluador:
                         values[1].data["evaluador_grupo"]["nombres_evaluador"] + " " + values[1].data["evaluador_grupo"]["apellidos_evaluador"],
                     cargoEvaluador: values[1].data["evaluador_grupo"]["cargo_evaluador"],
                     correoEvaluador: values[1].data["evaluador_grupo"]["correo_electronico_evaluador"],
-                    nombreCurso: values[1].data["curso_grupo"]["nombre_curso"],
-                    siglaCurso: values[1].data["curso_grupo"]["sigla_curso"],
+                    nombreCurso: values[2].data["nombre_curso"],
+                    siglaCurso: values[2].data["sigla_curso"],
                     estudiantesGrupo: formatGrupo(values[1].data["estudiantes_grupo"]),
                     queriesReady: true,
                 });
