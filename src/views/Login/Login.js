@@ -46,12 +46,9 @@ class Login extends React.Component {
             .catch((err) => console.log(err));
     }
     handleChange(event) {
-        this.setState(
-            {
-                [event.target.name]: event.target.value,
-            },
-            console.log(event.target.value)
-        );
+        this.setState({
+            [event.target.name]: event.target.value,
+        });
     }
     handleButton() {
         if (this.state.user !== "" && this.state.password !== "") {
@@ -109,7 +106,7 @@ class Login extends React.Component {
             >
                 <Container>
                     <Row className="justify-content-center">
-                        <Col md="8" xl="8" style={{ marginTop: "100px" }}>
+                        <Col md="12" xl="8" style={{ marginTop: "100px" }}>
                             <CardGroup>
                                 <Card className="p-4">
                                     <CardBody>
@@ -137,7 +134,7 @@ class Login extends React.Component {
                                                     required
                                                 />
                                             </FormGroup>
-                                            <ButtonGroup>
+                                            <ButtonGroup className="flex-wrap">
                                                 <Button color="default" name="perfil" value={1} onClick={this.handleChange}>
                                                     ALUMNO
                                                 </Button>
