@@ -136,7 +136,7 @@ class Login extends React.Component {
                                             </FormGroup>
                                             <ButtonGroup className="flex-wrap">
                                                 <Button color="default" name="perfil" value={1} onClick={this.handleChange}>
-                                                    ALUMNO
+                                                    ESTUDIANTE
                                                 </Button>
                                                 <Button color="default" name="perfil" value={2} onClick={this.handleChange}>
                                                     EVALUADOR

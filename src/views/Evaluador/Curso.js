@@ -162,7 +162,7 @@ class Curso extends React.Component {
                                             <Nav tabs>
                                                 {this.state.grupos.map((grupo) => {
                                                     return (
-                                                        <NavItem>
+                                                        <NavItem key={grupo["id"]}>
                                                             <NavLink
                                                                 className={this.state.activeTab === grupo["id"] ? "active" : ""}
                                                                 onClick={() => {
@@ -180,7 +180,7 @@ class Curso extends React.Component {
                                             <TabContent activeTab={this.state.activeTab} className="text-center">
                                                 {this.state.grupos.map((grupo) => {
                                                     return (
-                                                        <TabPane tabId={grupo["id"]}>
+                                                        <TabPane tabId={grupo["id"]} key={grupo["id"]}>
                                                             <Table bordered>
                                                                 <thead className="text-primary">
                                                                     <tr>
@@ -220,6 +220,32 @@ class Curso extends React.Component {
                                                                                 <td>{evaluacion["nombre_evaluacion"]}</td>
                                                                                 <td>{evaluacion["created_at"]}</td>
                                                                                 <td>{evaluacion["updated_at"]}</td>
+                                                                            </tr>
+                                                                        );
+                                                                    })}
+                                                                </tbody>
+                                                            </Table>
+                                                            <hr />
+                                                            <h4 style={{ textAlign: "left" }}>Evaluadores del grupo</h4>
+                                                            <Table striped hover bordered>
+                                                                <thead className="text-primary">
+                                                                    <tr>
+                                                                        <th>Apellidos Evaluador</th>
+                                                                        <th>Nombres Evaluador</th>
+                                                                        <th>Cargo Evaluador</th>
+                                                                        <th>Recinto Evaluador</th>
+                                                                        <th>Correo Evaluador</th>
+                                                                    </tr>
+                                                                </thead>
+                                                                <tbody key={grupo["id"]}>
+                                                                    {grupo["evaluadores_grupo"].map((evaluador) => {
+                                                                        return (
+                                                                            <tr key={evaluador["id"]}>
+                                                                                <td>{evaluador["apellidos_evaluador"]}</td>
+                                                                                <td>{evaluador["nombres_evaluador"]}</td>
+                                                                                <td>{evaluador["cargo_evaluador"]}</td>
+                                                                                <td>{evaluador["recinto_evaluador"]}</td>
+                                                                                <td>{evaluador["correo_electronico_evaluador"]}</td>
                                                                             </tr>
                                                                         );
                                                                     })}

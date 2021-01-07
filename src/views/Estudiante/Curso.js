@@ -20,6 +20,7 @@ class Curso extends React.Component {
             competencias: [],
             nombreEvaluacion: "",
             comentarioEvaluacion: "",
+            nombreEvaluador: "",
             idCurso: 0,
             idGrupo: 0,
         };
@@ -60,6 +61,10 @@ class Curso extends React.Component {
                     competencias: values[0].data["puntajes_calificacion_estudiante"],
                     comentarioEvaluacion: values[0].data["observacion_calificacion_calificacion_estudiante"],
                     nombreEvaluacion: nombreEvaluacion,
+                    nombreEvaluador:
+                        values[0].data["evaluador_calificacion_estudiante"]["nombres_evaluador"] +
+                        " " +
+                        values[0].data["evaluador_calificacion_estudiante"]["apellidos_evaluador"],
                     detalle: true,
                 });
             })
@@ -72,7 +77,11 @@ class Curso extends React.Component {
                     <Modal isOpen={this.state.detalle}>
                         <ModalHeader>{this.state.nombreEvaluacion}</ModalHeader>
                         <ModalBody>
-                            <Table responsive striped bordered>
+                            <div className="info">
+                                <h4 className="info-title">Evaluador</h4>
+                                <p>{this.state.nombreEvaluador}</p>
+                            </div>
+                            <Table striped bordered>
                                 <thead className="text-primary text-center">
                                     <tr style={{ textAlign: "true" }}>
                                         <th>Nombre Competencia</th>
@@ -111,7 +120,7 @@ class Curso extends React.Component {
                                     <Table responsive striped hover>
                                         <thead className="text-primary">
                                             <tr>
-                                                <th></th>
+                                                <th>Detalle</th>
                                                 <th>Nombre Evaluacion</th>
                                                 <th>Puntaje obtenido</th>
                                                 <th>Fecha</th>
