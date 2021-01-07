@@ -21,6 +21,7 @@ class Perfil extends React.Component {
             correoEvaluador: "",
             contactoEvaluador: "",
             recintoEvaluador: "",
+            passwordOldEvaluador: "",
             passwordEvaluador: "",
             passwordConfEvaluador: "",
             grupo: "",
@@ -174,7 +175,20 @@ class Perfil extends React.Component {
                                             </Col>
                                         </Row>
                                         <Row>
-                                            <Col sm="12" md="6">
+                                            <Col sm="12" md="4">
+                                                <FormGroup>
+                                                    <label>Antigua Contraseña</label>
+                                                    <Input
+                                                        name="passwordOldEvaluador"
+                                                        value={this.state.passwordOldEvaluador}
+                                                        onChange={this.handleChange}
+                                                        placeholder="******"
+                                                        type="password"
+                                                    />
+                                                    {this.renderAlertPassword()}
+                                                </FormGroup>
+                                            </Col>
+                                            <Col sm="12" md="4">
                                                 <FormGroup>
                                                     <label>Nueva Contraseña</label>
                                                     <Input
@@ -186,7 +200,7 @@ class Perfil extends React.Component {
                                                     />
                                                 </FormGroup>
                                             </Col>
-                                            <Col sm="12" md="6">
+                                            <Col sm="12" md="4">
                                                 <FormGroup>
                                                     <label>Repetir Nueva Contraseña</label>
                                                     <Input

@@ -1,10 +1,12 @@
 import EstudiantePerfil from "views/Estudiante/Perfil.js";
-import EstudianteGrupo from "views/Estudiante/Grupo.js";
+import EstudianteCursos from "views/Estudiante/Cursos.js";
 import EstudianteEvaluacion from "views/Estudiante/Evaluacion.js";
+import EstudianteCurso from "views/Estudiante/Curso.js";
 import EvaluadorPerfil from "views/Evaluador/Perfil.js";
-import EvaluadorGrupo from "views/Evaluador/Grupo.js";
 import EvaluadorEvaluacion from "views/Evaluador/Evaluacion.js";
 import EvaluadorReporte from "views/Evaluador/Reporte.js";
+import EvaluadorCurso from "views/Evaluador/Curso.js";
+import EvaluadorCursos from "views/Evaluador/Cursos.js";
 import AdministradorUDPPerfil from "views/AdministradorUDP/Perfil.js";
 import AdministradorUDPCursos from "views/AdministradorUDP/Cursos.js";
 import AdministradorTIPerfil from "views/AdministradorTI/Perfil.js";
@@ -22,10 +24,10 @@ var routes = [
         perfil: "estudiante",
     },
     {
-        path: "/estudiante/grupo",
-        name: "Mi grupo",
+        path: "/estudiante/cursos",
+        name: "Mis cursos",
         icon: "nc-icon nc-badge",
-        component: EstudianteGrupo,
+        component: EstudianteCursos,
         layout: "/portal",
         perfil: "estudiante",
     },
@@ -38,6 +40,14 @@ var routes = [
         perfil: "estudiante",
     },
     {
+        path: "/estudiante/curso/:idCurso",
+        name: "Mi Curso1",
+        icon: "nc-icon nc-paper",
+        component: EstudianteCurso,
+        layout: "/portal",
+        perfil: "estudiante",
+    },
+    {
         path: "/evaluador/perfil",
         name: "Mi perfil",
         icon: "nc-icon nc-single-02",
@@ -46,10 +56,18 @@ var routes = [
         perfil: "evaluador",
     },
     {
-        path: "/evaluador/grupo",
-        name: "Mi grupo",
+        path: "/evaluador/curso/:idCurso",
+        name: "Mi Curso2",
+        icon: "nc-icon nc-single-copy-04",
+        component: EvaluadorCurso,
+        layout: "/portal",
+        perfil: "evaluador",
+    },
+    {
+        path: "/evaluador/cursos",
+        name: "Mis cursos",
         icon: "nc-icon nc-badge",
-        component: EvaluadorGrupo,
+        component: EvaluadorCursos,
         layout: "/portal",
         perfil: "evaluador",
     },

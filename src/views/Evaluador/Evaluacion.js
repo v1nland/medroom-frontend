@@ -1,15 +1,14 @@
 import React from "react";
 import Referencia from "../../components/Referencia/Referencia.js";
-import ComentarioReferencia from "../../components/Referencia/ComentarioReferencia.js";
 import { Card, CardBody, CardHeader, CardTitle, Form, Row, Col, FormGroup, Label, Input, Button } from "reactstrap";
 import LoadingPage from "../../components/LoadingPage/LoadingPage";
 import { getPerfil } from "../../database/evaluadores/getPerfil";
 import { getGrupo } from "../../database/evaluadores/getGrupo";
-import { getCurso } from "../../database/evaluadores/getCurso";
+import { getCursos } from "../../database/evaluadores/getCursos";
 import { postEvaluaciones } from "../../database/evaluadores/postEvaluaciones";
-import { getPeriodos } from "../../database/periodos/getPeriodos";
-import { formatGrupo } from "../../functions/formats/estudiantes/formatGrupo";
-import { formatPeriodos } from "../../functions/formats/periodos/formatPeriodos";
+// import { getPeriodos } from "../../database/periodos/getPeriodos";
+// import { formatGrupo } from "../../functions/formats/estudiantes/formatGrupo";
+// import { formatPeriodos } from "../../functions/formats/periodos/formatPeriodos";
 import AlertsHandler from "../../components/AlertsHandler/AlertsHandler";
 import Cookies from "universal-cookie";
 const cookies = new Cookies();
@@ -18,14 +17,21 @@ class Evaluacion extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            queriesReady: false,
-            idEstudiante: "",
+            queriesReady: true,
+            cursoReady: false,
+            grupoReady: false,
+            idEstudiante: 0,
             nombreEvaluador: "",
+            nombreEstudiante: "",
+            idPeriodo: 0,
+            periodoEvaluador: "--- Elija un curso ---",
             estudiantes: [],
-            periodos: [],
-            cursoEvaluador: "",
-            grupoEvaluador: "",
-            nombreEvaluacion: "",
+            cursos: [],
+            grupos: [],
+            evaluaciones: [],
+            cursoEvaluador: 0,
+            grupoEvaluador: 0,
+            idEvaluacion: "0",
             periodo: "",
             rotacion: "",
             fechaRotacion: "",
@@ -35,32 +41,28 @@ class Evaluacion extends React.Component {
             razonamientoClinico: 5,
             consejeria: 5,
             eficiencia: 5,
+            comentarioEvaluacion: "",
             competenciaClinica: 5,
-            comentarioEntrevistaMedica: "",
-            comentarioExamenFisico: "",
-            comentarioProfesionalismo: "",
-            comentarioRazonamientoClinico: "",
-            comentarioConsejeria: "",
-            comentarioEficiencia: "",
-            comentarioCompetenciaClinica: "",
         };
         this.handleChange = this.handleChange.bind(this);
+        this.handleGrupos = this.handleGrupos.bind(this);
+        this.handleEstudiantes = this.handleEstudiantes.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
     }
     componentDidMount() {
         Promise.all([
             getPerfil(cookies.get("token")),
-            getGrupo(cookies.get("token")),
-            getPeriodos(cookies.get("token")),
-            getCurso(cookies.get("token")),
+            getCursos(cookies.get("token")),
+            // getGrupos(cookies.get("token")),
+            // getPeriodos(cookies.get("token")),
         ])
             .then((values) => {
                 this.setState({
                     nombreEvaluador: values[0].data["nombres_evaluador"] + " " + values[0].data["apellidos_evaluador"],
-                    cursoEvaluador: values[3].data["nombre_curso"],
-                    grupoEvaluador: values[1].data["nombre_grupo"],
-                    estudiantes: formatGrupo(values[1].data["estudiantes_grupo"]),
-                    periodos: formatPeriodos(values[2].data),
+                    cursos: values[1].data,
+                    // grupoEvaluador: values[1].data["nombre_grupo"],
+                    // estudiantes: formatGrupo(values[1].data["estudiantes_grupo"]),
+                    // periodos: formatPeriodos(values[2].data),
                     queriesReady: true,
                 });
             })
@@ -71,71 +73,115 @@ class Evaluacion extends React.Component {
             [event.target.name]: event.target.value,
         });
     }
+    handleGrupos(event) {
+        this.setState(
+            {
+                [event.target.name]: event.target.value,
+            },
+            () =>
+                Promise.all([getGrupo(cookies.get("token"), this.state.cursoEvaluador)])
+                    .then((values) => {
+                        this.setState({
+                            grupos: values[0].data,
+                            periodo: values[0].data[""],
+                            cursoReady: true,
+                        });
+                        for (let i = 0; i < this.state.cursos.length; i++) {
+                            if (this.state.cursos[i]["id"] === parseInt(this.state.cursoEvaluador)) {
+                                this.setState({
+                                    periodoEvaluador: this.state.cursos[i]["periodo_curso"]["nombre_periodo"],
+                                    periodoId: this.state.cursos[i]["periodo_curso"]["id"],
+                                });
+                            }
+                        }
+                    })
+                    .catch((err) => console.log(err))
+        );
+    }
+    handleEstudiantes(event) {
+        this.setState(
+            {
+                [event.target.name]: event.target.value,
+            },
+            () => {
+                for (let i = 0; i < this.state.grupos.length; i++) {
+                    if (this.state.grupos[i]["id"] === parseInt(this.state.grupoEvaluador)) {
+                        // console.log(this.state.grupos[i]);
+                        this.setState({
+                            estudiantes: this.state.grupos[i]["estudiantes_grupo"],
+                            evaluaciones: this.state.grupos[i]["evaluaciones_grupo"],
+                            grupoReady: true,
+                        });
+                    }
+                }
+            }
+        );
+    }
     handleSubmit(event) {
         event.preventDefault();
         var newEvaluacion = {
-            asunto_principal_consulta_evaluacion: "string",
-            categoria_observador_evaluacion: "string",
-            complejidad_caso_evaluacion: "string",
-            entorno_clinico_evaluacion: "string",
-            id_estudiante: this.state.idEstudiante,
-            id_periodo: parseInt(this.state.periodo),
-            nombre_evaluacion: this.state.nombreEvaluacion,
-            numero_observaciones_previas_evaluacion: "string",
-            observacion_calificacion_evaluacion: "string",
-            paciente_evaluacion: "string",
-            puntajes_evaluacion: [
+            asunto_principal_consulta_calificacion_estudiante: "string",
+            categoria_observador_calificacion_estudiante: "string",
+            complejidad_caso_calificacion_estudiante: "string",
+            entorno_clinico_calificacion_estudiante: "string",
+            id_periodo: parseInt(this.state.periodoId),
+            // id_estudiante: this.state.idEstudiante,
+            nombre_calificacion_estudiante: "string",
+            numero_observaciones_previas_calificacion_estudiante: "string",
+            observacion_calificacion_calificacion_estudiante: this.state.comentarioEvaluacion,
+            paciente_calificacion_estudiante: "string",
+            puntajes_calificacion_estudiante: [
                 {
-                    feedback_competencia: this.state.comentarioEntrevistaMedica,
-                    nombre_competencia: "HABILIDAD DE ENTREVISTA MÉDICA",
-                    codigo_competencia: "entrevistaMedica",
-                    puntaje_competencia: parseInt(this.state.entrevistaMedica),
+                    feedback_puntaje: "string",
+                    id_competencia: "ANAM",
+                    calificacion_puntaje: parseInt(this.state.entrevistaMedica),
                 },
                 {
-                    feedback_competencia: this.state.comentarioExamenFisico,
-                    nombre_competencia: "HABILIDAD DE EXAMEN FÍSICO",
-                    codigo_competencia: "examenFisico",
-                    puntaje_competencia: parseInt(this.state.examenFisico),
+                    feedback_puntaje: "string",
+                    id_competencia: "EXFI",
+                    calificacion_puntaje: parseInt(this.state.examenFisico),
                 },
                 {
-                    feedback_competencia: this.state.comentarioProfesionalismo,
-                    nombre_competencia: "PROFESIONALISMO/ CUALIDAD HUMANA",
-                    codigo_competencia: "profesionalismo",
-                    puntaje_competencia: parseInt(this.state.profesionalismo),
+                    feedback_puntaje: "string",
+                    id_competencia: "PROF",
+                    calificacion_puntaje: parseInt(this.state.profesionalismo),
                 },
                 {
-                    feedback_competencia: this.state.comentarioRazonamientoClinico,
-                    nombre_competencia: "RAZONAMIENTO CLÍNICO",
-                    codigo_competencia: "razonamientoClinico",
-                    puntaje_competencia: parseInt(this.state.razonamientoClinico),
+                    feedback_puntaje: "string",
+                    id_competencia: "JUCL",
+                    calificacion_puntaje: parseInt(this.state.razonamientoClinico),
                 },
                 {
-                    feedback_competencia: this.state.comentarioConsejeria,
-                    nombre_competencia: "HABILIDADES DE CONSEJERÍA",
-                    codigo_competencia: "consejeria",
-                    puntaje_competencia: parseInt(this.state.consejeria),
+                    feedback_puntaje: "string",
+                    id_competencia: "HACO",
+                    calificacion_puntaje: parseInt(this.state.consejeria),
                 },
                 {
-                    feedback_competencia: this.state.comentarioEficiencia,
-                    nombre_competencia: "EFICIENCIA Y ORGANIZACIÓN",
-                    codigo_competencia: "eficiencia",
-                    puntaje_competencia: parseInt(this.state.eficiencia),
+                    feedback_puntaje: "string",
+                    id_competencia: "OREF",
+                    calificacion_puntaje: parseInt(this.state.eficiencia),
                 },
                 {
-                    feedback_competencia: this.state.comentarioCompetenciaClinica,
-                    nombre_competencia: "COMPETENCIA CLÍNICA GENERAL",
-                    codigo_competencia: "competenciaClinica",
-                    puntaje_competencia: parseInt(this.state.competenciaClinica),
+                    feedback_puntaje: "string",
+                    id_competencia: "VAGL",
+                    calificacion_puntaje: parseInt(this.state.competenciaClinica),
                 },
             ],
-            tiempo_utilizado_evaluacion: 0,
+            tiempo_utilizado_calificacion_estudiante: 0,
         };
-        postEvaluaciones(cookies.get("token"), newEvaluacion).then((resp) => {
+        postEvaluaciones(
+            cookies.get("token"),
+            newEvaluacion,
+            parseInt(this.state.cursoEvaluador),
+            parseInt(this.state.grupoEvaluador),
+            this.state.idEstudiante,
+            parseInt(this.state.idEvaluacion)
+        ).then((resp) => {
             if (resp.meta === "OK") {
                 this.AlertsHandler.generate("success", "Evaluado", "Evaluación realizada con éxito");
                 this.setState({
-                    idEstudiante: "DEFAULT",
-                    nombreEvaluacion: "",
+                    idEstudiante: 0,
+                    idEvaluacion: "",
                     periodo: "DEFAULT",
                     rotacion: "",
                     fechaRotacion: "",
@@ -146,13 +192,7 @@ class Evaluacion extends React.Component {
                     consejeria: 5,
                     eficiencia: 5,
                     competenciaClinica: 5,
-                    comentarioEntrevistaMedica: "",
-                    comentarioExamenFisico: "",
-                    comentarioProfesionalismo: "",
-                    comentarioRazonamientoClinico: "",
-                    comentarioConsejeria: "",
-                    comentarioEficiencia: "",
-                    comentarioCompetenciaClinica: "",
+                    comentarioEvaluacion: "",
                 });
             } else {
                 this.AlertsHandler.generate("danger", "Oops!", "Parece que hubo un problema");
@@ -185,22 +225,21 @@ class Evaluacion extends React.Component {
                                         <Row>
                                             <Col sm="12" md="4">
                                                 <FormGroup>
-                                                    <Label for="nombre">Nombre estudiante</Label>
+                                                    <Label for="tutor">Curso</Label>
                                                     <Input
                                                         type="select"
-                                                        name="idEstudiante"
-                                                        id="idEstudiante"
-                                                        onChange={this.handleChange}
-                                                        defaultValue={"DEFAULT"}
+                                                        name="cursoEvaluador"
+                                                        value={this.state.cursoEvaluador}
+                                                        onChange={this.handleGrupos}
                                                         required
                                                     >
-                                                        <option disabled value="DEFAULT">
-                                                            -- Elija un estudiante --
+                                                        <option disabled key={0} value={0}>
+                                                            -- Elija un curso --
                                                         </option>
-                                                        {this.state.estudiantes.map((estudiante) => {
+                                                        {this.state.cursos.map((curso) => {
                                                             return (
-                                                                <option key={estudiante["key"]} value={estudiante["id"]}>
-                                                                    {estudiante["nombres_estudiante"] + " " + estudiante["apellidos_estudiante"]}{" "}
+                                                                <option key={curso["id"]} value={curso["id"]}>
+                                                                    {curso["nombre_curso"]}
                                                                 </option>
                                                             );
                                                         })}
@@ -209,28 +248,51 @@ class Evaluacion extends React.Component {
                                             </Col>
                                             <Col sm="12" md="4">
                                                 <FormGroup>
-                                                    <Label for="tutor">Curso</Label>
+                                                    <Label for="grupoEvaluador">Grupo</Label>
                                                     <Input
-                                                        type="text"
-                                                        name="cursoEvaluador"
-                                                        disabled
-                                                        value={this.state.cursoEvaluador}
-                                                        onChange={this.handleChange}
+                                                        type="select"
+                                                        name="grupoEvaluador"
+                                                        disabled={!this.state.cursoReady}
+                                                        value={this.state.grupoEvaluador}
+                                                        onChange={this.handleEstudiantes}
                                                         required
-                                                    ></Input>
+                                                    >
+                                                        <option disabled value={0}>
+                                                            -- Elija un grupo --
+                                                        </option>
+                                                        {this.state.grupos.map((grupo) => {
+                                                            return (
+                                                                <option key={grupo["id"]} value={grupo["id"]}>
+                                                                    {grupo["nombre_grupo"]}
+                                                                </option>
+                                                            );
+                                                        })}
+                                                    </Input>
                                                 </FormGroup>
                                             </Col>
                                             <Col sm="12" md="4">
                                                 <FormGroup>
-                                                    <Label for="tutor">Grupo</Label>
+                                                    <Label for="nombre">Nombre estudiante</Label>
                                                     <Input
-                                                        type="text"
-                                                        name="grupoEvaluador"
-                                                        disabled
-                                                        value={this.state.grupoEvaluador}
+                                                        type="select"
+                                                        name="idEstudiante"
+                                                        id="idEstudiante"
+                                                        value={this.state.idEstudiante}
                                                         onChange={this.handleChange}
+                                                        disabled={!this.state.grupoReady}
                                                         required
-                                                    ></Input>
+                                                    >
+                                                        <option disabled value={0}>
+                                                            -- Elija un estudiante --
+                                                        </option>
+                                                        {this.state.estudiantes.map((estudiante) => {
+                                                            return (
+                                                                <option key={estudiante["id"]} value={estudiante["id"]}>
+                                                                    {estudiante["nombres_estudiante"] + " " + estudiante["apellidos_estudiante"]}
+                                                                </option>
+                                                            );
+                                                        })}
+                                                    </Input>
                                                 </FormGroup>
                                             </Col>
                                         </Row>
@@ -239,37 +301,20 @@ class Evaluacion extends React.Component {
                                                 <FormGroup>
                                                     <Label for="fecha">Nombre evaluación</Label>
                                                     <Input
-                                                        value={this.state.nombreEvaluacion}
                                                         type="select"
-                                                        name="nombreEvaluacion"
+                                                        name="idEvaluacion"
+                                                        value={this.state.idEvaluacion}
                                                         onChange={this.handleChange}
+                                                        disabled={!this.state.grupoReady}
                                                         required
                                                     >
-                                                        <option value={"Control 1"}>Control 1</option>
-                                                        <option value={"Control 2"}>Control 2</option>
-                                                        <option value={"Control 3"}>Control 3</option>
-                                                        <option value={"Control 4"}>Control 4</option>
-                                                        <option value={"Control 5"}>Control 5</option>
-                                                    </Input>
-                                                </FormGroup>
-                                            </Col>
-                                            <Col sm="12" md="4">
-                                                <FormGroup>
-                                                    <Label for="rotacion">Periodo</Label>
-                                                    <Input
-                                                        type="select"
-                                                        name="periodo"
-                                                        id="periodo"
-                                                        onChange={this.handleChange}
-                                                        defaultValue={"DEFAULT"}
-                                                    >
-                                                        <option disabled value="DEFAULT">
-                                                            -- Elija un periodo --
+                                                        <option disabled value={"0"}>
+                                                            -- Elija una evaluación --
                                                         </option>
-                                                        {this.state.periodos.map((periodo) => {
+                                                        {this.state.evaluaciones.map((evaluacion) => {
                                                             return (
-                                                                <option key={periodo["key"]} value={periodo["id"]}>
-                                                                    {periodo["nombre_periodo"]}
+                                                                <option key={evaluacion["id"]} value={evaluacion["id"]}>
+                                                                    {evaluacion["nombre_evaluacion"]}
                                                                 </option>
                                                             );
                                                         })}
@@ -278,14 +323,21 @@ class Evaluacion extends React.Component {
                                             </Col>
                                             <Col sm="12" md="4">
                                                 <FormGroup>
-                                                    <Label for="tutor">Evaluador</Label>
+                                                    <Label for="rotacion">Periodo</Label>
                                                     <Input
                                                         type="text"
-                                                        name="nombreEvaluador"
-                                                        disabled
-                                                        value={this.state.nombreEvaluador}
+                                                        name="periodoEvaluador"
+                                                        id="periodoEvaluador"
+                                                        value={this.state.periodoEvaluador}
                                                         onChange={this.handleChange}
+                                                        disabled={true}
                                                     ></Input>
+                                                </FormGroup>
+                                            </Col>
+                                            <Col sm="12" md="4">
+                                                <FormGroup>
+                                                    <Label for="tutor">Evaluador</Label>
+                                                    <Input type="text" name="nombreEvaluador" disabled value={this.state.nombreEvaluador}></Input>
                                                 </FormGroup>
                                             </Col>
                                         </Row>
@@ -294,7 +346,7 @@ class Evaluacion extends React.Component {
                             </Col>
                         </Row>
                         <Row>
-                            <Col sm="12" md="12" lg="6">
+                            <Col sm="12" md="12" lg="12">
                                 <Referencia
                                     label="Habilidad de entrevista médica"
                                     name="entrevistaMedica"
@@ -302,17 +354,9 @@ class Evaluacion extends React.Component {
                                     onChange={this.handleChange}
                                 />
                             </Col>
-                            <Col sm="12" md="12" lg="6">
-                                <ComentarioReferencia
-                                    title="Comentario habilidad de entrevista médica"
-                                    name="comentarioEntrevistaMedica"
-                                    value={this.state.comentarioEntrevistaMedica}
-                                    onChange={this.handleChange}
-                                />
-                            </Col>
                         </Row>
                         <Row>
-                            <Col sm="12" md="12" lg="6">
+                            <Col sm="12" md="12" lg="12">
                                 <Referencia
                                     label="Habilidad de examen físico"
                                     name="examenFisico"
@@ -320,17 +364,9 @@ class Evaluacion extends React.Component {
                                     onChange={this.handleChange}
                                 />
                             </Col>
-                            <Col sm="12" md="12" lg="6">
-                                <ComentarioReferencia
-                                    title="Comentario habilidad de examen físico"
-                                    name="comentarioExamenFisico"
-                                    value={this.state.comentarioExamenFisico}
-                                    onChange={this.handleChange}
-                                />
-                            </Col>
                         </Row>
                         <Row>
-                            <Col sm="12" md="12" lg="6">
+                            <Col sm="12" md="12" lg="12">
                                 <Referencia
                                     label="Profesionalismo/ Cualidad humana"
                                     name="profesionalismo"
@@ -338,17 +374,9 @@ class Evaluacion extends React.Component {
                                     onChange={this.handleChange}
                                 />
                             </Col>
-                            <Col sm="12" md="12" lg="6">
-                                <ComentarioReferencia
-                                    title="Comentario Profesionalismo/ Cualidad humana"
-                                    name="comentarioProfesionalismo"
-                                    value={this.state.comentarioProfesionalismo}
-                                    onChange={this.handleChange}
-                                />
-                            </Col>
                         </Row>
                         <Row>
-                            <Col sm="12" md="12" lg="6">
+                            <Col sm="12" md="12" lg="12">
                                 <Referencia
                                     label="Razonamiento Clínico"
                                     name="razonamientoClinico"
@@ -356,17 +384,9 @@ class Evaluacion extends React.Component {
                                     onChange={this.handleChange}
                                 />
                             </Col>
-                            <Col sm="12" md="12" lg="6">
-                                <ComentarioReferencia
-                                    title="Comentario Razonamiento Clínico"
-                                    name="comentarioRazonamientoClinico"
-                                    value={this.state.comentarioRazonamientoClinico}
-                                    onChange={this.handleChange}
-                                />
-                            </Col>
                         </Row>
                         <Row>
-                            <Col sm="12" md="12" lg="6">
+                            <Col sm="12" md="12" lg="12">
                                 <Referencia
                                     label="Habilidades de consejería"
                                     name="consejeria"
@@ -374,17 +394,9 @@ class Evaluacion extends React.Component {
                                     onChange={this.handleChange}
                                 />
                             </Col>
-                            <Col sm="12" md="12" lg="6">
-                                <ComentarioReferencia
-                                    title="Comentario Habilidades de consejería"
-                                    name="comentarioConsejeria"
-                                    value={this.state.comentarioConsejeria}
-                                    onChange={this.handleChange}
-                                />
-                            </Col>
                         </Row>
                         <Row>
-                            <Col sm="12" md="12" lg="6">
+                            <Col sm="12" md="12" lg="12">
                                 <Referencia
                                     label="Eficiencia y organización"
                                     name="eficiencia"
@@ -392,17 +404,9 @@ class Evaluacion extends React.Component {
                                     onChange={this.handleChange}
                                 />
                             </Col>
-                            <Col sm="12" md="12" lg="6">
-                                <ComentarioReferencia
-                                    title="Comentario Eficiencia y organización"
-                                    name="comentarioEficiencia"
-                                    value={this.state.comentarioEficiencia}
-                                    onChange={this.handleChange}
-                                />
-                            </Col>
                         </Row>
                         <Row>
-                            <Col sm="12" md="12" lg="6">
+                            <Col sm="12" md="12" lg="12">
                                 <Referencia
                                     label="Competencia clínica general"
                                     name="competenciaClinica"
@@ -410,17 +414,28 @@ class Evaluacion extends React.Component {
                                     onChange={this.handleChange}
                                 />
                             </Col>
-                            <Col sm="12" md="12" lg="6">
-                                <ComentarioReferencia
-                                    title="Comentario Competencia clínica general"
-                                    name="comentarioCompetenciaClinica"
-                                    value={this.state.comentarioCompetenciaClinica}
-                                    onChange={this.handleChange}
-                                />
+                        </Row>
+                        <Row>
+                            <Col>
+                                <Card>
+                                    <CardHeader>
+                                        <CardTitle tag="h6" style={{}}>
+                                            Comentarios
+                                        </CardTitle>
+                                    </CardHeader>
+                                    <CardBody>
+                                        <Input
+                                            type="textarea"
+                                            name="comentarioEvaluacion"
+                                            value={this.state.comentarioEvaluacion}
+                                            onChange={this.handleChange}
+                                        />
+                                    </CardBody>
+                                </Card>
                             </Col>
                         </Row>
                         <Row>
-                            <Col sm="12" md="12" lg="6">
+                            <Col sm="12" md="12" lg="12">
                                 <Button className="btn-round" color="primary" type="submit">
                                     Ingresar Evaluación
                                 </Button>

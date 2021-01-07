@@ -39,7 +39,7 @@ class Header extends React.Component {
         });
     }
     getBrand() {
-        let brandName = "Default Brand";
+        let brandName = "Información Curso";
         routes.map((prop, key) => {
             if (window.location.href.indexOf(prop.layout + prop.path) !== -1) {
                 brandName = prop.name;
