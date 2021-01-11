@@ -1,24 +1,10 @@
 import React from "react";
-import { Link } from "react-router-dom";
-import {
-    Collapse,
-    Navbar,
-    NavbarToggler,
-    NavbarBrand,
-    Nav,
-    NavItem,
-    Dropdown,
-    DropdownToggle,
-    DropdownMenu,
-    DropdownItem,
-    Container,
-    InputGroup,
-    InputGroupText,
-    InputGroupAddon,
-    Input,
-} from "reactstrap";
+// import { Link } from "react-router-dom";
+import { Collapse, Navbar, NavbarToggler, NavbarBrand, Nav, Dropdown, DropdownToggle, DropdownMenu, DropdownItem, Container } from "reactstrap";
 
 import routes from "routes.js";
+import Cookies from "universal-cookie";
+const cookies = new Cookies();
 
 class Header extends React.Component {
     constructor(props) {
@@ -31,6 +17,7 @@ class Header extends React.Component {
         this.toggle = this.toggle.bind(this);
         this.dropdownToggle = this.dropdownToggle.bind(this);
         this.sidebarToggle = React.createRef();
+        this.handleLogout = this.handleLogout.bind(this);
     }
     toggle() {
         if (this.state.isOpen) {
@@ -52,7 +39,7 @@ class Header extends React.Component {
         });
     }
     getBrand() {
-        let brandName = "Default Brand";
+        let brandName = "Información Curso";
         routes.map((prop, key) => {
             if (window.location.href.indexOf(prop.layout + prop.path) !== -1) {
                 brandName = prop.name;
@@ -89,6 +76,11 @@ class Header extends React.Component {
             this.sidebarToggle.current.classList.toggle("toggled");
         }
     }
+    handleLogout(event) {
+        cookies.remove("token", { path: "/" });
+        window.scrollTo(0, 0);
+        window.location.href = "/portal/login";
+    }
     render() {
         return (
             <Navbar
@@ -117,7 +109,7 @@ class Header extends React.Component {
                         <span className="navbar-toggler-bar navbar-kebab" />
                     </NavbarToggler>
                     <Collapse isOpen={this.state.isOpen} navbar className="justify-content-end">
-                        <form>
+                        {/* <form>
                             <InputGroup className="no-border">
                                 <Input placeholder="Search..." />
                                 <InputGroupAddon addonType="append">
@@ -126,37 +118,29 @@ class Header extends React.Component {
                                     </InputGroupText>
                                 </InputGroupAddon>
                             </InputGroup>
-                        </form>
+                        </form> */}
                         <Nav navbar>
-                            <NavItem>
+                            {/* <NavItem>
                                 <Link to="#pablo" className="nav-link btn-magnify">
                                     <i className="nc-icon nc-layout-11" />
                                     <p>
                                         <span className="d-lg-none d-md-block">Stats</span>
                                     </p>
                                 </Link>
-                            </NavItem>
+                            </NavItem> */}
                             <Dropdown nav isOpen={this.state.dropdownOpen} toggle={(e) => this.dropdownToggle(e)}>
                                 <DropdownToggle caret nav>
-                                    <i className="nc-icon nc-bell-55" />
+                                    <i className="nc-icon nc-settings-gear-65" />
                                     <p>
-                                        <span className="d-lg-none d-md-block">Some Actions</span>
+                                        <span className="d-lg-none d-md-block">Acciones</span>
                                     </p>
                                 </DropdownToggle>
                                 <DropdownMenu right>
-                                    <DropdownItem tag="a">Action</DropdownItem>
-                                    <DropdownItem tag="a">Another Action</DropdownItem>
-                                    <DropdownItem tag="a">Something else here</DropdownItem>
+                                    <DropdownItem tag="a" onClick={this.handleLogout}>
+                                        Log out
+                                    </DropdownItem>
                                 </DropdownMenu>
                             </Dropdown>
-                            <NavItem>
-                                <Link to="#pablo" className="nav-link btn-rotate">
-                                    <i className="nc-icon nc-settings-gear-65" />
-                                    <p>
-                                        <span className="d-lg-none d-md-block">Account</span>
-                                    </p>
-                                </Link>
-                            </NavItem>
                         </Nav>
                     </Collapse>
                 </Container>
