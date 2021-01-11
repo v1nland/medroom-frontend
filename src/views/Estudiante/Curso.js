@@ -1,23 +1,26 @@
 import React from "react";
-// import { Line } from "react-chartjs-2";
-import { Card, CardHeader, CardBody, CardFooter, CardTitle, Row, Col, Table, Button, Modal, ModalHeader, ModalBody, ModalFooter } from "reactstrap";
+import { Line } from "react-chartjs-2";
+import { estudianteOptions } from "variables/charts.js";
+import { Card, CardHeader, CardBody, CardTitle, Row, Col, Table, Button, Modal, ModalHeader, ModalBody, ModalFooter } from "reactstrap";
 import LoadingPage from "../../components/LoadingPage/LoadingPage";
 import { getCurso } from "../../database/estudiantes/getCurso";
 import { getGrupo } from "../../database/estudiantes/getGrupo";
 import { getCalificacion } from "../../database/estudiantes/getCalificacion";
+import { getEvolucionCompetencia } from "../../database/estudiantes/getEvolucionCompetencia";
+import { formatEvaluaciones } from "../../functions/formats/estudiantes/formatEvaluaciones";
 import Cookies from "universal-cookie";
 const cookies = new Cookies();
 
 class Curso extends React.Component {
     constructor(props) {
         super(props);
-        // console.log(props.match.params.idCurso);
         this.state = {
             queriesReady: false,
             detalle: false,
             curso: {},
             grupo: {},
             competencias: [],
+            evolucionCompetencia: [],
             nombreEvaluacion: "",
             comentarioEvaluacion: "",
             nombreEvaluador: "",
@@ -32,6 +35,7 @@ class Curso extends React.Component {
         Promise.all([
             getCurso(cookies.get("token"), this.props.match.params.idCurso),
             getGrupo(cookies.get("token"), this.props.match.params.idCurso),
+            getEvolucionCompetencia(cookies.get("token"), this.props.match.params.idCurso, this.props.match.params.idGrupo),
         ])
             .then((values) => {
                 this.setState({
@@ -39,6 +43,7 @@ class Curso extends React.Component {
                     grupo: values[1].data[0],
                     idCurso: values[0].data["id"],
                     idGrupo: values[1].data[0]["id"],
+                    evolucionCompetencia: formatEvaluaciones(values[2].data),
                     queriesReady: true,
                 });
             })
@@ -57,16 +62,21 @@ class Curso extends React.Component {
     openDetalle(idEvaluacion, nombreEvaluacion) {
         Promise.all([getCalificacion(cookies.get("token"), this.state.idCurso, this.state.idGrupo, idEvaluacion)])
             .then((values) => {
-                this.setState({
-                    competencias: values[0].data["puntajes_calificacion_estudiante"],
-                    comentarioEvaluacion: values[0].data["observacion_calificacion_calificacion_estudiante"],
-                    nombreEvaluacion: nombreEvaluacion,
-                    nombreEvaluador:
-                        values[0].data["evaluador_calificacion_estudiante"]["nombres_evaluador"] +
-                        " " +
-                        values[0].data["evaluador_calificacion_estudiante"]["apellidos_evaluador"],
-                    detalle: true,
-                });
+                this.setState(
+                    {
+                        competencias: values[0].data["puntajes_calificacion_estudiante"],
+                        comentarioEvaluacion: values[0].data["observacion_calificacion_calificacion_estudiante"],
+                        nombreEvaluacion: nombreEvaluacion,
+                        nombreEvaluador:
+                            values[0].data["evaluador_calificacion_estudiante"]["nombres_evaluador"] +
+                            " " +
+                            values[0].data["evaluador_calificacion_estudiante"]["apellidos_evaluador"],
+                        detalle: true,
+                    },
+                    () => {
+                        console.log(this.state.competencias);
+                    }
+                );
             })
             .catch((err) => console.log(err));
     }
@@ -78,7 +88,7 @@ class Curso extends React.Component {
                         <ModalHeader>{this.state.nombreEvaluacion}</ModalHeader>
                         <ModalBody>
                             <div className="info">
-                                <h4 className="info-title">Evaluador</h4>
+                                <h4 className="info-title">Tutor clínico evaluador</h4>
                                 <p>{this.state.nombreEvaluador}</p>
                             </div>
                             <Table striped bordered>
@@ -122,7 +132,6 @@ class Curso extends React.Component {
                                             <tr>
                                                 <th>Detalle</th>
                                                 <th>Nombre Evaluacion</th>
-                                                <th>Puntaje obtenido</th>
                                                 <th>Fecha</th>
                                             </tr>
                                         </thead>
@@ -141,8 +150,7 @@ class Curso extends React.Component {
                                                             </Button>
                                                         </td>
                                                         <td>{evaluacion["nombre_evaluacion"]}</td>
-                                                        <td>7</td>
-                                                        <td>{evaluacion["created_at"]}</td>
+                                                        <td>{evaluacion["created_at"].substring(0, 10)}</td>
                                                     </tr>
                                                 );
                                             })}
@@ -159,63 +167,10 @@ class Curso extends React.Component {
                                     <CardTitle tag="h5">Evolución por competencia</CardTitle>
                                 </CardHeader>
                                 <CardBody>
-                                    {/* <Line data={dashboardNASDAQChart.data} options={dashboardNASDAQChart.options} width={400} height={100} /> */}
+                                    <Line data={this.state.evolucionCompetencia} options={estudianteOptions.options} width={400} height={100} />
                                 </CardBody>
-                                <CardFooter>
-                                    <div className="chart-legend">
-                                        <i className="fa fa-circle text-info" /> Entrevista Medica
-                                    </div>
-                                </CardFooter>
                             </Card>
                         </Col>
-                        {/* <Col md="4">
-                            <Card>
-                                <CardHeader>
-                                    <CardTitle tag="h5">Promedio General</CardTitle>
-                                    <p className="card-category">Última evaluación</p>
-                                </CardHeader>
-                                <CardBody>
-                                    <Line
-                                        data={dashboard24HoursPerformanceChart.data}
-                                        options={dashboard24HoursPerformanceChart.options}
-                                        width={400}
-                                        height={100}
-                                    />
-                                </CardBody>
-                                <CardFooter>
-                                    <hr />
-                                    <div className="stats">
-                                        <i className="fa fa-history" /> Updated 3 minutes ago
-                                    </div>
-                                </CardFooter>
-                            </Card>
-                        </Col>
-                        <Col md="4">
-                            <Card>
-                                <CardHeader>
-                                    <CardTitle tag="h5">Notas última evaluación</CardTitle>
-                                    <p className="card-category">Basado en rango de notas</p>
-                                </CardHeader>
-                                <CardBody>
-                                    <Pie data={dashboardEmailStatisticsChart.data} options={dashboardEmailStatisticsChart.options} />
-                                </CardBody>
-                                <CardFooter>
-                                    <div className="legend">
-                                        <i className="fa fa-circle text-primary" /> [1.0 - 2.0] <br />
-                                        <i className="fa fa-circle text-warning" /> ]2.0 - 3.0]
-                                        <br />
-                                        <i className="fa fa-circle text-danger" /> ]3.0 - 4.0]
-                                        <br />
-                                        <i className="fa fa-circle text-gray" /> ]4.0 - 4.0]
-                                        <br />
-                                    </div>
-                                    <hr />
-                                    <div className="stats">
-                                        <i className="fa fa-calendar" /> Number of emails sent
-                                    </div>
-                                </CardFooter>
-                            </Card>
-                        </Col> */}
                     </Row>
                     <Row>
                         <Col md="12">

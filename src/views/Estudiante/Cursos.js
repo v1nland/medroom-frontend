@@ -36,8 +36,8 @@ class Cursos extends React.Component {
             [event.target.name]: event.target.value,
         });
     }
-    handleClick(idCurso) {
-        window.location.href = "/portal/estudiante/curso/" + idCurso;
+    handleClick(idCurso, idGrupo) {
+        window.location.href = "/portal/estudiante/curso/" + idCurso + "/grupo/" + idGrupo;
     }
     render() {
         if (this.state.queriesReady)
@@ -47,7 +47,7 @@ class Cursos extends React.Component {
                         {this.state.cursos.map((curso) => {
                             return (
                                 <Col sm="12" md="4" key={curso["id"]}>
-                                    <Card className="card-user" onClick={() => this.handleClick(curso["id"])}>
+                                    <Card className="card-user" onClick={() => this.handleClick(curso["id"], curso["grupos_curso"][0]["id"])}>
                                         <div className="image">
                                             <img alt="..." src={require("assets/img/damir-bosnjak.jpg")} />
                                             <div className="centered">Centered</div>

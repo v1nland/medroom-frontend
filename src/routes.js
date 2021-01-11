@@ -1,6 +1,5 @@
 import EstudiantePerfil from "views/Estudiante/Perfil.js";
 import EstudianteCursos from "views/Estudiante/Cursos.js";
-import EstudianteEvaluacion from "views/Estudiante/Evaluacion.js";
 import EstudianteCurso from "views/Estudiante/Curso.js";
 import EvaluadorPerfil from "views/Evaluador/Perfil.js";
 import EvaluadorEvaluacion from "views/Evaluador/Evaluacion.js";
@@ -31,16 +30,16 @@ var routes = [
         layout: "/portal",
         perfil: "estudiante",
     },
+    // {
+    //     path: "/estudiante/evaluacion",
+    //     name: "Mis evaluaciones",
+    //     icon: "nc-icon nc-paper",
+    //     component: EstudianteEvaluacion,
+    //     layout: "/portal",
+    //     perfil: "estudiante",
+    // },
     {
-        path: "/estudiante/evaluacion",
-        name: "Mis evaluaciones",
-        icon: "nc-icon nc-paper",
-        component: EstudianteEvaluacion,
-        layout: "/portal",
-        perfil: "estudiante",
-    },
-    {
-        path: "/estudiante/curso/:idCurso",
+        path: "/estudiante/curso/:idCurso/grupo/:idGrupo",
         name: "Mi Curso1",
         icon: "nc-icon nc-paper",
         component: EstudianteCurso,

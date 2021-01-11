@@ -1,5 +1,6 @@
 import React from "react";
-// import { Line } from "react-chartjs-2";
+import { Line } from "react-chartjs-2";
+import { dashboardNASDAQChart } from "variables/charts.js";
 import {
     Card,
     CardHeader,
@@ -268,7 +269,7 @@ class Curso extends React.Component {
                                     <CardTitle tag="h5">Evolución por competencia</CardTitle>
                                 </CardHeader>
                                 <CardBody>
-                                    {/* <Line data={dashboardNASDAQChart.data} options={dashboardNASDAQChart.options} width={400} height={100} /> */}
+                                    <Line data={dashboardNASDAQChart.data} options={dashboardNASDAQChart.options} width={400} height={100} />
                                 </CardBody>
                                 <CardFooter>
                                     <div className="chart-legend">

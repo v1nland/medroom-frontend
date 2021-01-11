@@ -6,9 +6,6 @@ import { getPerfil } from "../../database/evaluadores/getPerfil";
 import { getGrupo } from "../../database/evaluadores/getGrupo";
 import { getCursos } from "../../database/evaluadores/getCursos";
 import { postEvaluaciones } from "../../database/evaluadores/postEvaluaciones";
-// import { getPeriodos } from "../../database/periodos/getPeriodos";
-// import { formatGrupo } from "../../functions/formats/estudiantes/formatGrupo";
-// import { formatPeriodos } from "../../functions/formats/periodos/formatPeriodos";
 import AlertsHandler from "../../components/AlertsHandler/AlertsHandler";
 import Cookies from "universal-cookie";
 const cookies = new Cookies();
@@ -50,19 +47,11 @@ class Evaluacion extends React.Component {
         this.handleSubmit = this.handleSubmit.bind(this);
     }
     componentDidMount() {
-        Promise.all([
-            getPerfil(cookies.get("token")),
-            getCursos(cookies.get("token")),
-            // getGrupos(cookies.get("token")),
-            // getPeriodos(cookies.get("token")),
-        ])
+        Promise.all([getPerfil(cookies.get("token")), getCursos(cookies.get("token"))])
             .then((values) => {
                 this.setState({
                     nombreEvaluador: values[0].data["nombres_evaluador"] + " " + values[0].data["apellidos_evaluador"],
                     cursos: values[1].data,
-                    // grupoEvaluador: values[1].data["nombre_grupo"],
-                    // estudiantes: formatGrupo(values[1].data["estudiantes_grupo"]),
-                    // periodos: formatPeriodos(values[2].data),
                     queriesReady: true,
                 });
             })
@@ -106,7 +95,6 @@ class Evaluacion extends React.Component {
             () => {
                 for (let i = 0; i < this.state.grupos.length; i++) {
                     if (this.state.grupos[i]["id"] === parseInt(this.state.grupoEvaluador)) {
-                        // console.log(this.state.grupos[i]);
                         this.setState({
                             estudiantes: this.state.grupos[i]["estudiantes_grupo"],
                             evaluaciones: this.state.grupos[i]["evaluaciones_grupo"],
@@ -181,10 +169,6 @@ class Evaluacion extends React.Component {
                 this.AlertsHandler.generate("success", "Evaluado", "Evaluación realizada con éxito");
                 this.setState({
                     idEstudiante: 0,
-                    idEvaluacion: "",
-                    periodo: "DEFAULT",
-                    rotacion: "",
-                    fechaRotacion: "",
                     entrevistaMedica: 5,
                     examenFisico: 5,
                     profesionalismo: 5,
