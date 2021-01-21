@@ -69,8 +69,8 @@ class Sidebar extends React.Component {
                 <div className="sidebar-wrapper" ref={this.sidebar}>
                     <Nav>
                         {this.props.routes.map((prop, key) => {
-                            // if (prop.perfil === decoded.perfil)
-                            if (prop.name.search("Mi Curso") === -1 && prop.perfil === decoded.perfil) {
+                            // if (prop.name.search("Mi Curso") === -1 && prop.perfil === decoded.perfil) {
+                            if (prop.name.search("Mi Curso") === -1) {
                                 return (
                                     <li className={this.activeRoute(prop.path) + (prop.pro ? " active-pro" : "")} key={prop.path}>
                                         <NavLink to={prop.layout + prop.path} className="nav-link" activeClassName="active">

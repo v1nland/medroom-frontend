@@ -3,6 +3,7 @@ import { Redirect } from "react-router-dom";
 import BackgroundImage from "./background-login.jpg";
 import { loginMedRoom } from "../../database/estudiantes/loginMedRoom";
 import { loginEvaluador } from "../../database/evaluadores/loginEvaluador";
+import { loginAdministradorTI } from "../../database/administradorTI/loginAdministradorTI";
 import Cookies from "universal-cookie";
 import jwt_decode from "jwt-decode";
 import { sha256 } from "js-sha256";
@@ -97,6 +98,8 @@ class Login extends React.Component {
             return <DropdownToggle caret>Evaluador</DropdownToggle>;
         } else if (this.state.perfil === 3) {
             return <DropdownToggle caret>Administrador</DropdownToggle>;
+        } else if (this.state.perfil === 4) {
+            return <DropdownToggle caret>Administrador TI</DropdownToggle>;
         } else {
             return <DropdownToggle caret>Seleccionar Perfil</DropdownToggle>;
         }
@@ -132,6 +135,17 @@ class Login extends React.Component {
                     this.AlertsHandler.generate("success", "Ingresado 💙", "Credenciales correctas");
                     cookies.set("token", resp.data.token, { path: "/" });
                     window.location.href = "/portal/evaluador/perfil";
+                } else {
+                    this.AlertsHandler.generate("danger", "Oh no 😥", "Credenciales incorrectas");
+                    this.setState({ buttonClicked: false, buttonDisabled: false });
+                }
+            });
+        } else if (parseInt(this.state.perfil) === 4) {
+            loginAdministradorTI(this.state.user, sha256(this.state.password)).then((resp) => {
+                if (resp.meta === "OK") {
+                    this.AlertsHandler.generate("success", "Ingresado 💙", "Credenciales correctas");
+                    cookies.set("token", resp.data.token, { path: "/" });
+                    window.location.href = "/portal/administradorTI/perfil";
                 } else {
                     this.AlertsHandler.generate("danger", "Oh no 😥", "Credenciales incorrectas");
                     this.setState({ buttonClicked: false, buttonDisabled: false });
@@ -225,6 +239,14 @@ class Login extends React.Component {
                                                         onClick={this.handleChange}
                                                     >
                                                         ADMINISTRADOR
+                                                    </Button>
+                                                    <Button
+                                                        color={this.state.perfil === 4 ? "info" : "default"}
+                                                        name="perfil"
+                                                        value={4}
+                                                        onClick={this.handleChange}
+                                                    >
+                                                        ADMINISTRADOR TI
                                                     </Button>
                                                 </ButtonGroup>
                                                 <Row>

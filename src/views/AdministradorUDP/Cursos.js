@@ -1,10 +1,18 @@
 import React from "react";
 import { Card, CardHeader, CardBody, CardTitle, Row, Col, Input, Button, Table } from "reactstrap";
+import MaterialTable from "material-table";
+import SearchIcon from "@material-ui/icons/Search";
+import { Paper } from "@material-ui/core/";
+import Localization from "../../helpers/Localization";
 
 class Cursos extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
+            columnas: [
+                { title: "NOMBRE GRUPO", field: "nombre_producto" },
+                { title: "SIGLA", field: "CURSO" },
+            ],
             crearNombreGrupo: "",
             crearSiglaGrupo: "",
             actualizarNombreGrupo: "",
@@ -37,6 +45,48 @@ class Cursos extends React.Component {
     render() {
         return (
             <div className="content">
+                <Row>
+                    <Col md="12">
+                        <Card>
+                            {/* <CardHeader>
+                                <CardTitle tag="h4">Administrar grupos</CardTitle>
+                            </CardHeader> */}
+                            <CardBody>
+                                <Button color="primary" onClick={this.handleNewEvaluacion} style={{ marginBottom: "30px" }}>
+                                    Agregar evaluación <i className="fas fa-plus"></i>
+                                </Button>
+                                <MaterialTable
+                                    columns={this.state.columnas}
+                                    title=""
+                                    localization={Localization}
+                                    components={{
+                                        Container: (props) => <Paper {...props} elevation={5} />,
+                                    }}
+                                    icons={{
+                                        Filter: React.forwardRef((props, ref) => {
+                                            return <SearchIcon ref={ref} />;
+                                        }),
+                                        Search: React.forwardRef((props, ref) => {
+                                            return <SearchIcon ref={ref} />;
+                                        }),
+                                    }}
+                                    options={{
+                                        exportButton: true,
+                                        filtering: true,
+                                        pageSize: 10,
+                                        sorting: true,
+                                        headerStyle: {
+                                            backgroundColor: "#8C1C13",
+                                            color: "#FFF",
+                                            textAlign: "center",
+                                            fontWeight: "normal",
+                                        },
+                                    }}
+                                />
+                            </CardBody>
+                        </Card>
+                    </Col>
+                </Row>
                 <Row>
                     <Col md="12">
                         <Card>
