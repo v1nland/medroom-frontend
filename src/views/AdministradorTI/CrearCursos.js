@@ -7,9 +7,10 @@ import Localization from "../../helpers/Localization";
 import { getCursos } from "../../database/administradorTI/getCursos";
 import { postCurso } from "../../database/administradorTI/postCurso";
 import { putCurso } from "../../database/administradorTI/putCurso";
-import { getPeriodos } from "../../database/periodos/getPeriodos";
+// import { getPeriodos } from "../../database/periodos/getPeriodos";
 import Cookies from "universal-cookie";
-import { formatCursos } from "../../helpers/formatCursos";
+import { formatCursos } from "../../helpers/AdministradorTI/formatCursos";
+import LoadingPage from "../../components/LoadingPage/LoadingPage";
 import AlertsHandler from "../../components/AlertsHandler/AlertsHandler";
 const cookies = new Cookies();
 
@@ -40,12 +41,11 @@ class Cursos extends React.Component {
         this.handleModalEditarCurso = this.handleModalEditarCurso.bind(this);
     }
     componentDidMount() {
-        Promise.all([getCursos(cookies.get("token")), getPeriodos()])
+        Promise.all([getCursos(cookies.get("token"))])
             .then((values) => {
                 this.setState({
                     queriesReady: true,
                     cursos: formatCursos(values[0].data),
-                    periodos: values[1].data,
                 });
             })
             .catch((err) => console.log(err));
@@ -117,132 +117,113 @@ class Cursos extends React.Component {
         });
     }
     render() {
-        return (
-            <div className="content">
-                <Row>
-                    <Col md="12">
-                        <Card>
-                            {/* <CardHeader>
-                                <CardTitle tag="h4">Administrar grupos</CardTitle>
-                            </CardHeader> */}
-                            <CardBody>
-                                <Button color="primary" onClick={this.handleModalAgregarCurso} style={{ marginBottom: "30px" }}>
-                                    Agregar curso <i className="fas fa-plus"></i>
-                                </Button>
-                                <MaterialTable
-                                    columns={this.state.columnas}
-                                    data={this.state.cursos}
-                                    title="Información Cursos"
-                                    localization={Localization}
-                                    components={{
-                                        Container: (props) => <Paper {...props} elevation={5} />,
-                                    }}
-                                    icons={{
-                                        Filter: React.forwardRef((props, ref) => {
-                                            return <SearchIcon ref={ref} />;
-                                        }),
-                                        Search: React.forwardRef((props, ref) => {
-                                            return <SearchIcon ref={ref} />;
-                                        }),
-                                    }}
-                                    actions={[
-                                        {
-                                            icon: "create",
-                                            tooltip: "Editar curso",
-                                            onClick: (event, rowData) => this.handleModalEditarCurso(rowData),
-                                        },
-                                        {
-                                            icon: "delete",
-                                            tooltip: "Borrar curso",
-                                            onClick: (event, rowData) => this.handleDeleteCurso(rowData),
-                                        },
-                                    ]}
-                                    options={{
-                                        exportButton: true,
-                                        filtering: true,
-                                        pageSize: 10,
-                                        sorting: true,
-                                        headerStyle: {
-                                            backgroundColor: "#8C1C13",
-                                            color: "#FFF",
-                                            textAlign: "center",
-                                            fontWeight: "normal",
-                                        },
-                                    }}
+        if (this.state.queriesReady)
+            return (
+                <div className="content">
+                    <Row>
+                        <Col md="12">
+                            <Card>
+                                <CardBody>
+                                    <Button color="primary" onClick={this.handleModalAgregarCurso} style={{ marginBottom: "30px" }}>
+                                        Agregar curso <i className="fas fa-plus"></i>
+                                    </Button>
+                                    <MaterialTable
+                                        columns={this.state.columnas}
+                                        data={this.state.cursos}
+                                        title="Información Cursos"
+                                        localization={Localization}
+                                        components={{
+                                            Container: (props) => <Paper {...props} elevation={5} />,
+                                        }}
+                                        icons={{
+                                            Filter: React.forwardRef((props, ref) => {
+                                                return <SearchIcon ref={ref} />;
+                                            }),
+                                            Search: React.forwardRef((props, ref) => {
+                                                return <SearchIcon ref={ref} />;
+                                            }),
+                                        }}
+                                        actions={[
+                                            {
+                                                icon: "create",
+                                                tooltip: "Editar curso",
+                                                onClick: (event, rowData) => this.handleModalEditarCurso(rowData),
+                                            },
+                                            {
+                                                icon: "delete",
+                                                tooltip: "Borrar curso",
+                                                onClick: (event, rowData) => this.handleDeleteCurso(rowData),
+                                            },
+                                        ]}
+                                        options={{
+                                            exportButton: true,
+                                            filtering: true,
+                                            pageSize: 10,
+                                            sorting: true,
+                                            headerStyle: {
+                                                backgroundColor: "#8C1C13",
+                                                color: "#FFF",
+                                                textAlign: "center",
+                                                fontWeight: "normal",
+                                            },
+                                        }}
+                                    />
+                                </CardBody>
+                            </Card>
+                        </Col>
+                    </Row>
+                    <Modal isOpen={this.state.modalAgregarCurso}>
+                        <ModalHeader>Agregar nuevo Curso</ModalHeader>
+                        <ModalBody>
+                            <FormGroup>
+                                <Label for="nombreCurso" style={{ marginTop: "10px" }}>
+                                    Nombre nuevo curso
+                                </Label>
+                                <Input
+                                    type="text"
+                                    name="nombreCurso"
+                                    id="nombreCurso"
+                                    placeholder="Habilidades Médicas I"
+                                    onChange={this.handleChange}
                                 />
-                            </CardBody>
-                        </Card>
-                    </Col>
-                </Row>
-                <Modal isOpen={this.state.modalAgregarCurso}>
-                    <ModalHeader>Agregar nuevo Curso</ModalHeader>
-                    <ModalBody>
-                        <FormGroup>
-                            <Label for="nombreCurso" style={{ marginTop: "10px" }}>
-                                Nombre nuevo curso
-                            </Label>
-                            <Input type="text" name="nombreCurso" id="nombreCurso" placeholder="Habilidades Médicas I" onChange={this.handleChange} />
-                            <Label for="siglaCurso" style={{ marginTop: "10px" }}>
-                                Nombre sigla curso
-                            </Label>
-                            <Input type="text" name="siglaCurso" id="siglaCurso" placeholder="HMED-1000" onChange={this.handleChange} />
-                        </FormGroup>
-                    </ModalBody>
-                    <ModalFooter>
-                        <Button color="success" type="submit" onClick={this.handleAgregarCurso}>
-                            Agregar
-                        </Button>
-                        <Button onClick={this.handleModalAgregarCurso}>Salir</Button>
-                    </ModalFooter>
-                </Modal>
-                <Modal isOpen={this.state.modalEditarCurso}>
-                    <ModalHeader>Editar Curso</ModalHeader>
-                    <ModalBody>
-                        <FormGroup>
-                            <Label for="nombreCurso" style={{ marginTop: "10px" }}>
-                                Nombre curso
-                            </Label>
-                            <Input type="text" name="nombreCurso" id="nombreCurso" value={this.state.nombreCurso} onChange={this.handleChange} />
-                            <Label for="siglaCurso" style={{ marginTop: "10px" }}>
-                                Nombre sigla
-                            </Label>
-                            <Input type="text" name="siglaCurso" id="siglaCurso" value={this.state.siglaCurso} onChange={this.handleChange} />
-                        </FormGroup>
-                    </ModalBody>
-                    <ModalFooter>
-                        <Button color="success" type="submit" onClick={this.handleEditarCurso}>
-                            Modificar
-                        </Button>
-                        <Button onClick={this.handleModalEditarCurso}>Salir</Button>
-                    </ModalFooter>
-                </Modal>
-                <Modal isOpen={this.state.modalEliminarCurso}>
-                    <ModalHeader>¿Esta seguro que desea eliminar el curso?</ModalHeader>
-                    {/* <ModalBody>
-                        <FormGroup>
-                            <Label for="idGrupo">Grupo</Label>
-                            <Input type="select" name="idGrupo" value={this.state.idGrupo} onChange={this.handleChange} required>
-                                <option disabled value={0}>
-                                    -- Elija un grupo --
-                                </option>
-                            </Input>
-                            <Label for="nombreEvaluacion" style={{ marginTop: "10px" }}>
-                                Nombre nueva evaluación
-                            </Label>
-                            <Input type="text" name="nombreEvaluacion" id="nombreEvaluacion" placeholder="CONTROL 1" onChange={this.handleChange} />
-                            <FormText color="muted">Se recomienda mantener consistencia en los nombres de las evaluaciones.</FormText>
-                        </FormGroup>
-                    </ModalBody> */}
-                    <ModalFooter>
-                        <Button color="success" type="submit" onClick={this.handleSubmitNewEvaluacion}>
-                            Eliminar
-                        </Button>
-                        <Button onClick={this.handleNewEvaluacion}>Cancelar</Button>
-                    </ModalFooter>
-                </Modal>
-                <AlertsHandler onRef={(ref) => (this.AlertsHandler = ref)} />
-            </div>
-        );
+                                <Label for="siglaCurso" style={{ marginTop: "10px" }}>
+                                    Nombre sigla curso
+                                </Label>
+                                <Input type="text" name="siglaCurso" id="siglaCurso" placeholder="HMED-1000" onChange={this.handleChange} />
+                            </FormGroup>
+                        </ModalBody>
+                        <ModalFooter>
+                            <Button color="success" type="submit" onClick={this.handleAgregarCurso}>
+                                Agregar
+                            </Button>
+                            <Button onClick={this.handleModalAgregarCurso}>Salir</Button>
+                        </ModalFooter>
+                    </Modal>
+                    <Modal isOpen={this.state.modalEditarCurso}>
+                        <ModalHeader>Editar Curso</ModalHeader>
+                        <ModalBody>
+                            <FormGroup>
+                                <Label for="nombreCurso" style={{ marginTop: "10px" }}>
+                                    Nombre curso
+                                </Label>
+                                <Input type="text" name="nombreCurso" id="nombreCurso" value={this.state.nombreCurso} onChange={this.handleChange} />
+                                <Label for="siglaCurso" style={{ marginTop: "10px" }}>
+                                    Nombre sigla
+                                </Label>
+                                <Input type="text" name="siglaCurso" id="siglaCurso" value={this.state.siglaCurso} onChange={this.handleChange} />
+                            </FormGroup>
+                        </ModalBody>
+                        <ModalFooter>
+                            <Button color="success" type="submit" onClick={this.handleEditarCurso}>
+                                Modificar
+                            </Button>
+                            <Button onClick={this.handleModalEditarCurso}>Salir</Button>
+                        </ModalFooter>
+                    </Modal>
+                    <AlertsHandler onRef={(ref) => (this.AlertsHandler = ref)} />
+                </div>
+            );
+        else return <LoadingPage />;
     }
 }
 

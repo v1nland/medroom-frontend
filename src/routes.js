@@ -7,11 +7,14 @@ import EvaluadorReporte from "views/Evaluador/Reporte.js";
 import EvaluadorCurso from "views/Evaluador/Curso.js";
 import EvaluadorCursos from "views/Evaluador/Cursos.js";
 import AdministradorUDPPerfil from "views/AdministradorUDP/Perfil.js";
-import AdministradorUDPCursos from "views/AdministradorUDP/Cursos.js";
+import AdministradorUDPGrupos from "views/AdministradorUDP/Grupos.js";
 import AdministradorTIPerfil from "views/AdministradorTI/Perfil.js";
 import AdministradorTICursos from "views/AdministradorTI/CrearCursos.js";
-import AdministradorTiCrearUsuarios from "views/AdministradorTI/CrearUsuarios.js";
-import AdministradorTiAdministrarUsuarios from "views/AdministradorTI/AdministrarUsuarios.js";
+// import AdministradorTiCrearUsuarios from "views/AdministradorTI/CrearUsuarios.js";
+// import AdministradorTiAdministrarUsuarios from "views/AdministradorTI/AdministrarUsuarios.js";
+import AdministradorTIEstudiantes from "views/AdministradorTI/Estudiantes.js";
+import AdministradorTIEvaluadores from "views/AdministradorTI/Evaluadores.js";
+import AdministradorTIAdministradores from "views/AdministradorTI/Administradores.js";
 
 var routes = [
     {
@@ -95,10 +98,10 @@ var routes = [
         perfil: "administrador_academico",
     },
     {
-        path: "/administradorUDP/cursos",
-        name: "Curso",
+        path: "/administradorUDP/grupos",
+        name: "Grupos",
         icon: "nc-icon nc-vector",
-        component: AdministradorUDPCursos,
+        component: AdministradorUDPGrupos,
         layout: "/portal",
         perfil: "administrador_academico",
     },
@@ -110,29 +113,53 @@ var routes = [
         layout: "/portal",
         perfil: "administrador_ti",
     },
-    {
-        path: "/administradorTI/crearUsuarios",
-        name: "Crear Usuarios",
-        icon: "nc-icon nc-tap-01",
-        component: AdministradorTiCrearUsuarios,
-        layout: "/portal",
-        perfil: "administrado_ti",
-    },
+    // {
+    //     path: "/administradorTI/crearUsuarios",
+    //     name: "Crear Usuarios",
+    //     icon: "nc-icon nc-tap-01",
+    //     component: AdministradorTiCrearUsuarios,
+    //     layout: "/portal",
+    //     perfil: "administrado_ti",
+    // },
     {
         path: "/administradorTI/crearCursos",
         name: "Crear Cursos",
-        icon: "nc-icon nc-hat-3",
+        icon: "nc-icon nc-book-bookmark",
         component: AdministradorTICursos,
         layout: "/portal",
-        perfil: "administrado_ti",
+        perfil: "administrador_ti",
+    },
+    // {
+    //     path: "/administradorTI/administrarUsuarios",
+    //     name: "Administrar Usuarios",
+    //     icon: "nc-icon nc-book-bookmark",
+    //     component: AdministradorTiAdministrarUsuarios,
+    //     layout: "/portal",
+    //     perfil: "administrador_ti",
+    // },
+    {
+        path: "/administradorTI/administrarEstudiantes",
+        name: "Estudiantes",
+        icon: "nc-icon nc-hat-3",
+        component: AdministradorTIEstudiantes,
+        layout: "/portal",
+        perfil: "administrador_ti",
     },
     {
-        path: "/administradorTI/administrarUsuarios",
-        name: "Administrar Usuarios",
-        icon: "nc-icon nc-book-bookmark",
-        component: AdministradorTiAdministrarUsuarios,
+        path: "/administradorTI/administrarEvaluadores",
+        name: "Evaluadores",
+        icon: "nc-icon nc-ruler-pencil",
+        component: AdministradorTIEvaluadores,
         layout: "/portal",
-        perfil: "administrado_ti",
+        perfil: "administrador_ti",
+    },
+    {
+        path: "/administradorTI/administrarAdministradores",
+        name: "Administradores",
+        icon: "nc-icon nc-key-25",
+        component: AdministradorTIAdministradores,
+        layout: "/portal",
+        perfil: "administrador_ti",
     },
 ];
 export default routes;

@@ -7,7 +7,7 @@ export function formatCursos(data) {
         table_data[i]["nombre_periodo"] = data[i]["periodo_curso"]["nombre_periodo"];
         table_data[i]["estado_curso"] = data[i]["estado_curso"];
         table_data[i]["sigla_curso"] = data[i]["sigla_curso"];
-        table_data[i]["grupos_curso"] = data[i]["grupos_curso"].length;
+        table_data[i]["grupos_curso"] = data[i]["grupos_curso"].length - 1;
     }
 
     return table_data;

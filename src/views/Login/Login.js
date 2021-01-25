@@ -4,28 +4,12 @@ import BackgroundImage from "./background-login.jpg";
 import { loginMedRoom } from "../../database/estudiantes/loginMedRoom";
 import { loginEvaluador } from "../../database/evaluadores/loginEvaluador";
 import { loginAdministradorTI } from "../../database/administradorTI/loginAdministradorTI";
+import { loginAdministradorUDP } from "../../database/administradorUDP/loginAdministradorUDP";
 import Cookies from "universal-cookie";
 import jwt_decode from "jwt-decode";
 import { sha256 } from "js-sha256";
 import AlertsHandler from "../../components/AlertsHandler/AlertsHandler";
-import {
-    Card,
-    CardBody,
-    Row,
-    Col,
-    Input,
-    Button,
-    Form,
-    Container,
-    CardGroup,
-    Label,
-    FormGroup,
-    ButtonGroup,
-    // Dropdown,
-    DropdownToggle,
-    // DropdownItem,
-    // DropdownMenu,
-} from "reactstrap";
+import { Card, CardBody, Row, Col, Input, Button, Form, Container, CardGroup, Label, FormGroup, ButtonGroup, DropdownToggle } from "reactstrap";
 
 const cookies = new Cookies();
 var token = cookies.get("token");
@@ -130,11 +114,11 @@ class Login extends React.Component {
                 }
             });
         } else if (parseInt(this.state.perfil) === 3) {
-            loginEvaluador(this.state.user, sha256(this.state.password)).then((resp) => {
+            loginAdministradorUDP(this.state.user, sha256(this.state.password)).then((resp) => {
                 if (resp.meta === "OK") {
                     this.AlertsHandler.generate("success", "Ingresado 💙", "Credenciales correctas");
                     cookies.set("token", resp.data.token, { path: "/" });
-                    window.location.href = "/portal/evaluador/perfil";
+                    window.location.href = "/portal/administradorUDP/perfil";
                 } else {
                     this.AlertsHandler.generate("danger", "Oh no 😥", "Credenciales incorrectas");
                     this.setState({ buttonClicked: false, buttonDisabled: false });

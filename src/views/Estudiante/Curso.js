@@ -206,6 +206,7 @@ class Curso extends React.Component {
                     </Row>
                 </div>
             );
+        else if (this.state.grupo["sigla_grupo"] === "SG") return <div>Sin grupo</div>;
         else return <LoadingPage />;
     }
 }

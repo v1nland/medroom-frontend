@@ -3,6 +3,9 @@ export function formatEvaluaciones(data) {
         labels: [],
         datasets: [],
     };
+
+    if (data["eje_x"].length === 0) return table_data;
+
     table_data["labels"] = data["eje_x"];
     if (data === null) {
         return table_data;

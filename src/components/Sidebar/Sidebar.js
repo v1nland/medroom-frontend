@@ -4,7 +4,7 @@ import { Nav } from "reactstrap";
 import PerfectScrollbar from "perfect-scrollbar";
 import { getCursos } from "../../database/estudiantes/getCursos";
 
-import logo from "logo.svg";
+import logo from "../../images/logo_udp.png";
 import Cookies from "universal-cookie";
 import jwt_decode from "jwt-decode";
 // import { preProcessFile } from "typescript";
@@ -63,14 +63,14 @@ class Sidebar extends React.Component {
                         </div>
                     </a>
                     <a href="/#/dashboard" className="simple-text logo-normal">
-                        MedRoom
+                        Med MiniCex
                     </a>
                 </div>
                 <div className="sidebar-wrapper" ref={this.sidebar}>
                     <Nav>
                         {this.props.routes.map((prop, key) => {
-                            // if (prop.name.search("Mi Curso") === -1 && prop.perfil === decoded.perfil) {
-                            if (prop.name.search("Mi Curso") === -1) {
+                            if (prop.name.search("Mi Curso") === -1 && prop.perfil === decoded.perfil) {
+                                // if (prop.name.search("Mi Curso") === -1) {
                                 return (
                                     <li className={this.activeRoute(prop.path) + (prop.pro ? " active-pro" : "")} key={prop.path}>
                                         <NavLink to={prop.layout + prop.path} className="nav-link" activeClassName="active">
