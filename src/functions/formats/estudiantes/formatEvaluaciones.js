@@ -3,6 +3,7 @@ export function formatEvaluaciones(data) {
         labels: [],
         datasets: [],
     };
+    console.log(data);
 
     if (data["eje_x"].length === 0) return table_data;
 

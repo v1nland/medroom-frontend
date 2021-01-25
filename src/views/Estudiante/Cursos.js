@@ -24,10 +24,13 @@ class Cursos extends React.Component {
     componentDidMount() {
         Promise.all([getCursos(cookies.get("token"))])
             .then((values) => {
-                this.setState({
-                    cursos: values[0].data,
-                    queriesReady: true,
-                });
+                this.setState(
+                    {
+                        cursos: values[0].data,
+                        queriesReady: true,
+                    },
+                    () => console.log(this.state.cursos)
+                );
             })
             .catch((err) => console.log(err));
     }
@@ -47,7 +50,17 @@ class Cursos extends React.Component {
                         {this.state.cursos.map((curso) => {
                             return (
                                 <Col sm="12" md="4" key={curso["id"]}>
-                                    <Card className="card-user" onClick={() => this.handleClick(curso["id"], curso["grupos_curso"][0]["id"])}>
+                                    <Card
+                                        className="card-user"
+                                        onClick={() =>
+                                            this.handleClick(
+                                                curso["id"],
+                                                curso["grupos_curso"][0]["sigla_grupo"] !== "SG"
+                                                    ? curso["grupos_curso"][0]["id"]
+                                                    : curso["grupos_curso"][1]["id"]
+                                            )
+                                        }
+                                    >
                                         <div className="image">
                                             <img alt="..." src={require("assets/img/damir-bosnjak.jpg")} />
                                             <div className="centered">Centered</div>
