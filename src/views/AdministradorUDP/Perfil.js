@@ -14,12 +14,13 @@ import {
     InputGroupAddon,
     InputGroupText,
 } from "reactstrap";
-import { getPerfil } from "../../database/estudiantes/getPerfil";
-import { putPerfil } from "../../database/estudiantes/putPerfil";
-import AlertsHandler from "../../components/AlertsHandler/AlertsHandler";
+import { getPerfil } from "../../database/administradorUDP/getPerfil";
 import Cookies from "universal-cookie";
-import { sha256 } from "js-sha256";
+import AlertsHandler from "../../components/AlertsHandler/AlertsHandler";
+// import { sha256 } from "js-sha256";
 import LoadingPage from "../../components/LoadingPage/LoadingPage";
+import { sha256 } from "js-sha256";
+import { putPerfil } from "../../database/administradorUDP/putPerfil";
 
 const cookies = new Cookies();
 
@@ -28,54 +29,90 @@ class Perfil extends React.Component {
         super(props);
         this.state = {
             queriesReady: false,
-            nombreAlumno: "",
-            carreraAlumno: "Estudiante de Medicina UDP",
-            universidadAlumno: "Universidad Diego Portales",
-            correoAlumno: "",
-            contactoAlumno: 0,
-            passwordAlumno: "",
-            passwordConfAlumno: "",
+            passwordsReady: false,
+            nombreAdministrador: "",
+            correoAdministrador: "",
+            contactoAdministrador: "",
+            rolAdministrador: "",
+            passwordOldAdministrador: "",
+            passwordAdministrador: "",
+            passwordConfAdministrador: "",
         };
         this.handleChange = this.handleChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
+        this.renderAlertPassword = this.renderAlertPassword.bind(this);
     }
     componentDidMount() {
         Promise.all([getPerfil(cookies.get("token"))])
             .then((values) => {
                 this.setState({
-                    nombreAlumno: values[0].data["nombres_estudiante"] + " " + values[0].data["apellidos_estudiante"],
-                    correoAlumno: values[0].data["correo_electronico_estudiante"],
-                    contactoAlumno: values[0].data["telefono_celular_estudiante"],
+                    nombreAdministrador:
+                        values[0].data["nombres_administrador_academico"] + " " + values[0].data["apellidos_administrador_academico"],
+                    correoAdministrador: values[0].data["correo_electronico_administrador_academico"],
+                    contactoAdministrador: values[0].data["telefono_celular_administrador_academico"],
+                    rolAdministrador: values[0].data["rol_administrador_academico"]["nombre_rol"],
                     queriesReady: true,
                 });
             })
             .catch((err) => console.log(err));
     }
+    validatePassword() {
+        if (
+            this.state.passwordAdministrador === "" ||
+            this.state.passwordConfAdministrador === "" ||
+            this.state.passwordAdministrador !== this.state.passwordConfAdministrador
+        ) {
+            this.setState({
+                passwordsReady: false,
+            });
+        } else if (this.state.passwordAdministrador !== "" && this.state.passwordConfAdministrador !== "") {
+            this.setState({
+                passwordsReady: true,
+            });
+        }
+    }
+
     handleChange(event) {
-        this.setState({
-            [event.target.name]: event.target.value,
-        });
+        this.setState(
+            {
+                [event.target.name]: event.target.value,
+            },
+            this.validatePassword
+        );
+    }
+
+    renderAlertPassword() {
+        if (this.state.passwordAdministrador !== this.state.passwordConfAdministrador) {
+            return (
+                <div>
+                    <small style={{ color: "red" }}>Contraseñas no coinciden</small>
+                </div>
+            );
+        } else {
+            return <div></div>;
+        }
     }
 
     handleSubmit(event) {
         event.preventDefault();
         var newDatos = {
-            hash_contrasena_estudiante: sha256(this.state.passwordAlumno),
-            telefono_celular_estudiante: this.state.contactoAlumno,
+            hash_contrasena_administrador_ti: sha256(this.state.passwordAdministrador),
+            telefono_celular_administrador_ti: this.state.contactoAdministrador,
         };
         putPerfil(cookies.get("token"), newDatos).then((resp) => {
-            console.log(resp);
             if (resp.meta === "OK") {
                 this.AlertsHandler.generate("success", "Perfil actualizado", "");
                 this.setState({
-                    passwordAlumno: "",
-                    passwordConfAlumno: "",
+                    passwordAdministrador: "",
+                    passwordConfAdministrador: "",
+                    passwordOldAdministrador: "",
                 });
             } else {
                 this.AlertsHandler.generate("danger", "Oops!", "Parece que hubo un problema");
             }
         });
     }
+
     render() {
         if (this.state.queriesReady)
             return (
@@ -89,12 +126,12 @@ class Perfil extends React.Component {
                                 <CardBody>
                                     <div className="author">
                                         <img alt="..." className="avatar border-gray" src={require("assets/img/mike.jpg")} />
-                                        <h5 className="title">{this.state.nombreAlumno}</h5>
+                                        <h5 className="title">{this.state.nombreAdministrador}</h5>
                                     </div>
                                     <p className="description text-center">
-                                        {this.state.carreraAlumno}
+                                        {this.state.rolAdministrador}
                                         <br />
-                                        {this.state.universidadAlumno}
+                                        Universidad Diego Portales
                                         <br />
                                     </p>
                                 </CardBody>
@@ -111,13 +148,13 @@ class Perfil extends React.Component {
                                             <Col sm="12" md="4">
                                                 <FormGroup>
                                                     <label>Nombre Completo</label>
-                                                    <Input value={this.state.nombreAlumno} disabled type="text" />
+                                                    <Input value={this.state.nombreAdministrador} disabled type="text" />
                                                 </FormGroup>
                                             </Col>
                                             <Col sm="12" md="4">
                                                 <FormGroup>
                                                     <label>Correo</label>
-                                                    <Input value={this.state.correoAlumno} disabled type="text" />
+                                                    <Input value={this.state.correoAdministrador} disabled type="text" />
                                                 </FormGroup>
                                             </Col>
                                             <Col sm="12" md="4">
@@ -130,8 +167,8 @@ class Perfil extends React.Component {
                                                             </InputGroupText>
                                                         </InputGroupAddon>
                                                         <Input
-                                                            name="contactoAlumno"
-                                                            value={this.state.contactoAlumno}
+                                                            name="contactoAdministrador"
+                                                            value={this.state.contactoAdministrador}
                                                             onChange={this.handleChange}
                                                             type="numeric"
                                                         />
@@ -140,12 +177,12 @@ class Perfil extends React.Component {
                                             </Col>
                                         </Row>
                                         <Row>
-                                            <Col sm="12" md="6">
+                                            <Col sm="12" md="4">
                                                 <FormGroup>
-                                                    <label>Nueva Contraseña</label>
+                                                    <label>Contraseña Antigua</label>
                                                     <Input
-                                                        name="passwordAlumno"
-                                                        value={this.state.passwordAlumno}
+                                                        name="passwordOldAdministrador"
+                                                        value={this.state.passwordOldAdministrador}
                                                         onChange={this.handleChange}
                                                         placeholder="******"
                                                         type="password"
@@ -153,23 +190,37 @@ class Perfil extends React.Component {
                                                     />
                                                 </FormGroup>
                                             </Col>
-                                            <Col sm="12" md="6">
+                                            <Col sm="12" md="4">
                                                 <FormGroup>
-                                                    <label>Repetir Nueva Contraseña</label>
+                                                    <label>Nueva Contraseña</label>
                                                     <Input
-                                                        name="passwordConfAlumno"
-                                                        value={this.state.passwordConfAlumno}
+                                                        name="passwordAdministrador"
+                                                        value={this.state.passwordAdministrador}
                                                         onChange={this.handleChange}
                                                         placeholder="******"
                                                         type="password"
                                                         required
                                                     />
+                                                </FormGroup>
+                                            </Col>
+                                            <Col sm="12" md="4">
+                                                <FormGroup>
+                                                    <label>Repetir Nueva Contraseña</label>
+                                                    <Input
+                                                        name="passwordConfAdministrador"
+                                                        value={this.state.passwordConfAdministrador}
+                                                        onChange={this.handleChange}
+                                                        placeholder="******"
+                                                        type="password"
+                                                        required
+                                                    />
+                                                    {this.renderAlertPassword()}
                                                 </FormGroup>
                                             </Col>
                                         </Row>
                                         <Row>
                                             <div className="update ml-auto mr-auto">
-                                                <Button className="btn-round" color="primary" type="submit">
+                                                <Button className="btn-round" color="primary" type="submit" disabled={!this.state.passwordsReady}>
                                                     Actualizar datos
                                                 </Button>
                                             </div>

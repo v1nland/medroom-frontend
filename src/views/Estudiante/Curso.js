@@ -38,14 +38,17 @@ class Curso extends React.Component {
             getEvolucionCompetencia(cookies.get("token"), this.props.match.params.idCurso, this.props.match.params.idGrupo),
         ])
             .then((values) => {
-                this.setState({
-                    curso: values[0].data,
-                    grupo: values[1].data[0],
-                    idCurso: values[0].data["id"],
-                    idGrupo: values[1].data[0]["id"],
-                    evolucionCompetencia: formatEvaluaciones(values[2].data),
-                    queriesReady: true,
-                });
+                this.setState(
+                    {
+                        curso: values[0].data,
+                        grupo: values[1].data[0],
+                        idCurso: values[0].data["id"],
+                        idGrupo: values[1].data[0]["id"],
+                        evolucionCompetencia: formatEvaluaciones(values[2].data),
+                        queriesReady: true,
+                    },
+                    () => console.log(this.state.evolucionCompetencia)
+                );
             })
             .catch((err) => console.log(err));
     }
@@ -206,6 +209,7 @@ class Curso extends React.Component {
                     </Row>
                 </div>
             );
+        else if (this.state.grupo["sigla_grupo"] === "SG") return <div>Sin grupo</div>;
         else return <LoadingPage />;
     }
 }
