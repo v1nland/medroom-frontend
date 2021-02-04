@@ -8,6 +8,7 @@ import { getGrupo } from "../../database/estudiantes/getGrupo";
 import { getCalificacion } from "../../database/estudiantes/getCalificacion";
 import { getEvolucionCompetencia } from "../../database/estudiantes/getEvolucionCompetencia";
 import { formatEvaluaciones } from "../../functions/formats/estudiantes/formatEvaluaciones";
+import { format } from "date-fns";
 import Cookies from "universal-cookie";
 const cookies = new Cookies();
 
@@ -84,7 +85,7 @@ class Curso extends React.Component {
             .catch((err) => console.log(err));
     }
     render() {
-        if (this.state.queriesReady)
+        if (this.state.queriesReady && this.state.grupo["sigla_grupo"] !== "SG")
             return (
                 <div className="content">
                     <Modal isOpen={this.state.detalle}>
@@ -135,11 +136,14 @@ class Curso extends React.Component {
                                             <tr>
                                                 <th>Detalle</th>
                                                 <th>Nombre Evaluacion</th>
-                                                <th>Fecha</th>
+                                                <th>Fecha Evaluacion</th>
+                                                <th>Hora Evaluacion</th>
                                             </tr>
                                         </thead>
                                         <tbody>
                                             {this.state.grupo["evaluaciones_grupo"].map((evaluacion) => {
+                                                var fecha = new Date(evaluacion["created_at"]);
+                                                console.log(fecha);
                                                 return (
                                                     <tr key={evaluacion["id"]}>
                                                         <td>
@@ -153,7 +157,8 @@ class Curso extends React.Component {
                                                             </Button>
                                                         </td>
                                                         <td>{evaluacion["nombre_evaluacion"]}</td>
-                                                        <td>{evaluacion["created_at"].substring(0, 10)}</td>
+                                                        <td>{format(fecha, "dd-MM-yyyy")}</td>
+                                                        <td>{format(fecha, "hh:mm:ss")}</td>
                                                     </tr>
                                                 );
                                             })}
@@ -209,7 +214,43 @@ class Curso extends React.Component {
                     </Row>
                 </div>
             );
-        else if (this.state.grupo["sigla_grupo"] === "SG") return <div>Sin grupo</div>;
+        else if (this.state.grupo["sigla_grupo"] === "SG")
+            return (
+                <div className="content">
+                    <Row>
+                        <Col md="12">
+                            <Card>
+                                <CardHeader>
+                                    <CardTitle tag="h4">{this.state.grupo["nombre_grupo"] + " / " + this.state.grupo["sigla_grupo"]}</CardTitle>
+                                </CardHeader>
+                                <CardBody>
+                                    <Table responsive>
+                                        <thead className="text-primary">
+                                            <tr>
+                                                <th>Apellidos</th>
+                                                <th>Nombres</th>
+                                                <th>Correo</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {this.state.grupo["estudiantes_grupo"].map((estudiante) => {
+                                                // if (evaluacion["nombre_periodo"] === this.state.periodo)
+                                                return (
+                                                    <tr key={estudiante["id"]}>
+                                                        <td>{estudiante["apellidos_estudiante"]}</td>
+                                                        <td>{estudiante["nombres_estudiante"]}</td>
+                                                        <td>{estudiante["correo_electronico_estudiante"]}</td>
+                                                    </tr>
+                                                );
+                                            })}
+                                        </tbody>
+                                    </Table>
+                                </CardBody>
+                            </Card>
+                        </Col>
+                    </Row>
+                </div>
+            );
         else return <LoadingPage />;
     }
 }

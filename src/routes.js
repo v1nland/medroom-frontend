@@ -27,7 +27,7 @@ var routes = [
     },
     {
         path: "/estudiante/cursos",
-        name: "Mis cursos",
+        name: "Tablero de cursos",
         icon: "nc-icon nc-badge",
         component: EstudianteCursos,
         layout: "/portal",
@@ -67,7 +67,7 @@ var routes = [
     },
     {
         path: "/evaluador/cursos",
-        name: "Mis cursos",
+        name: "Tablero de cursos",
         icon: "nc-icon nc-badge",
         component: EvaluadorCursos,
         layout: "/portal",

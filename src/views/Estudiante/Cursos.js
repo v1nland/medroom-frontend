@@ -1,5 +1,5 @@
 import React from "react";
-import { Card, CardBody, Row, Col } from "reactstrap";
+import { Card, CardBody, Row, Col, Alert } from "reactstrap";
 import LoadingPage from "../../components/LoadingPage/LoadingPage";
 import { getCursos } from "../../database/estudiantes/getCursos";
 // import { formatCursos } from "../../functions/formats/estudiantes/formatCursos";
@@ -46,6 +46,11 @@ class Cursos extends React.Component {
         if (this.state.queriesReady)
             return (
                 <div className="content">
+                    <h4>Cursos asignados ({this.state.cursos.length})</h4>
+                    <Alert color="success">
+                        <i className="nc-icon nc-alert-circle-i" style={{ marginRight: "10px" }} />
+                        Para ingresar a un curso, haga click en bloque correspondiente
+                    </Alert>
                     <Row>
                         {this.state.cursos.map((curso) => {
                             return (
@@ -60,6 +65,8 @@ class Cursos extends React.Component {
                                                     : curso["grupos_curso"][1]["id"]
                                             )
                                         }
+                                        // onMouseEnter={() => console.log("dentro")}
+                                        // onMouseLeave={() => console.log("fuera")}
                                     >
                                         <div className="image">
                                             <img alt="..." src={require("assets/img/damir-bosnjak.jpg")} />

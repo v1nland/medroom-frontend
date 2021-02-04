@@ -31,6 +31,7 @@ import { getGrupo } from "../../database/evaluadores/getGrupo";
 import { postEvaluacion } from "../../database/evaluadores/postEvaluacion";
 import Cookies from "universal-cookie";
 import AlertsHandler from "../../components/AlertsHandler/AlertsHandler";
+import { format } from "date-fns";
 const cookies = new Cookies();
 
 class Curso extends React.Component {
@@ -160,7 +161,7 @@ class Curso extends React.Component {
                                     </Button>
                                     <Card>
                                         <CardHeader>
-                                            <Nav tabs>
+                                            <Nav pills>
                                                 {this.state.grupos.map((grupo) => {
                                                     return (
                                                         <NavItem key={grupo["id"]}>
@@ -180,80 +181,109 @@ class Curso extends React.Component {
                                         <CardBody>
                                             <TabContent activeTab={this.state.activeTab} className="text-center">
                                                 {this.state.grupos.map((grupo) => {
-                                                    return (
-                                                        <TabPane tabId={grupo["id"]} key={grupo["id"]}>
-                                                            <Table bordered>
-                                                                <thead className="text-primary">
-                                                                    <tr>
-                                                                        <th>Apellidos</th>
-                                                                        <th>Nombres</th>
-                                                                        <th>Correo</th>
-                                                                        <th>Número</th>
-                                                                    </tr>
-                                                                </thead>
-                                                                <tbody>
-                                                                    {grupo["estudiantes_grupo"].map((estudiante) => {
-                                                                        return (
-                                                                            <tr key={estudiante["id"]}>
-                                                                                <td>{estudiante["apellidos_estudiante"]}</td>
-                                                                                <td>{estudiante["nombres_estudiante"]}</td>
-                                                                                <td>{estudiante["correo_electronico_estudiante"]}</td>
-                                                                                <td>{estudiante["telefono_celular_estudiante"]}</td>
-                                                                            </tr>
-                                                                        );
-                                                                    })}
-                                                                </tbody>
-                                                            </Table>
-                                                            <hr />
-                                                            <h4 style={{ textAlign: "left" }}>Evaluaciones</h4>
-                                                            <Table striped hover bordered>
-                                                                <thead className="text-primary">
-                                                                    <tr>
-                                                                        <th>Nombre Evaluación</th>
-                                                                        <th>Fecha de creación</th>
-                                                                        <th>Fecha de modificación</th>
-                                                                    </tr>
-                                                                </thead>
-                                                                <tbody key={grupo["id"]}>
-                                                                    {grupo["evaluaciones_grupo"].map((evaluacion) => {
-                                                                        return (
-                                                                            <tr key={evaluacion["id"]}>
-                                                                                <td>{evaluacion["nombre_evaluacion"]}</td>
-                                                                                <td>{evaluacion["created_at"]}</td>
-                                                                                <td>{evaluacion["updated_at"]}</td>
-                                                                            </tr>
-                                                                        );
-                                                                    })}
-                                                                </tbody>
-                                                            </Table>
-                                                            <hr />
-                                                            <h4 style={{ textAlign: "left" }}>Evaluadores del grupo</h4>
-                                                            <Table striped hover bordered>
-                                                                <thead className="text-primary">
-                                                                    <tr>
-                                                                        <th>Apellidos Evaluador</th>
-                                                                        <th>Nombres Evaluador</th>
-                                                                        <th>Cargo Evaluador</th>
-                                                                        <th>Recinto Evaluador</th>
-                                                                        <th>Correo Evaluador</th>
-                                                                    </tr>
-                                                                </thead>
-                                                                <tbody key={grupo["id"]}>
-                                                                    {grupo["evaluadores_grupo"].map((evaluador) => {
-                                                                        return (
-                                                                            <tr key={evaluador["id"]}>
-                                                                                <td>{evaluador["apellidos_evaluador"]}</td>
-                                                                                <td>{evaluador["nombres_evaluador"]}</td>
-                                                                                <td>{evaluador["cargo_evaluador"]}</td>
-                                                                                <td>{evaluador["recinto_evaluador"]}</td>
-                                                                                <td>{evaluador["correo_electronico_evaluador"]}</td>
-                                                                            </tr>
-                                                                        );
-                                                                    })}
-                                                                </tbody>
-                                                            </Table>
-                                                        </TabPane>
-                                                    );
+                                                    if (grupo["sigla_grupo"] === "SG")
+                                                        return (
+                                                            <TabPane tabId={grupo["id"]} key={grupo["id"]}>
+                                                                <Table bordered>
+                                                                    <thead className="text-primary">
+                                                                        <tr>
+                                                                            <th>Apellidos</th>
+                                                                            <th>Nombres</th>
+                                                                            <th>Correo</th>
+                                                                            <th>Número</th>
+                                                                        </tr>
+                                                                    </thead>
+                                                                    <tbody>
+                                                                        {grupo["estudiantes_grupo"].map((estudiante) => {
+                                                                            return (
+                                                                                <tr key={estudiante["id"]}>
+                                                                                    <td>{estudiante["apellidos_estudiante"]}</td>
+                                                                                    <td>{estudiante["nombres_estudiante"]}</td>
+                                                                                    <td>{estudiante["correo_electronico_estudiante"]}</td>
+                                                                                    <td>{estudiante["telefono_celular_estudiante"]}</td>
+                                                                                </tr>
+                                                                            );
+                                                                        })}
+                                                                    </tbody>
+                                                                </Table>
+                                                            </TabPane>
+                                                        );
+                                                    else
+                                                        return (
+                                                            <TabPane tabId={grupo["id"]} key={grupo["id"]}>
+                                                                <Table bordered>
+                                                                    <thead className="text-primary">
+                                                                        <tr>
+                                                                            <th>Apellidos</th>
+                                                                            <th>Nombres</th>
+                                                                            <th>Correo</th>
+                                                                            <th>Número</th>
+                                                                        </tr>
+                                                                    </thead>
+                                                                    <tbody>
+                                                                        {grupo["estudiantes_grupo"].map((estudiante) => {
+                                                                            return (
+                                                                                <tr key={estudiante["id"]}>
+                                                                                    <td>{estudiante["apellidos_estudiante"]}</td>
+                                                                                    <td>{estudiante["nombres_estudiante"]}</td>
+                                                                                    <td>{estudiante["correo_electronico_estudiante"]}</td>
+                                                                                    <td>{estudiante["telefono_celular_estudiante"]}</td>
+                                                                                </tr>
+                                                                            );
+                                                                        })}
+                                                                    </tbody>
+                                                                </Table>
+                                                                <hr />
+                                                                <h4 style={{ textAlign: "left" }}>Evaluaciones</h4>
+                                                                <Table striped hover bordered>
+                                                                    <thead className="text-primary">
+                                                                        <tr>
+                                                                            <th>Nombre Evaluación</th>
+                                                                            <th>Fecha de Evaluación</th>
+                                                                            <th>Hora de Evaluación</th>
+                                                                        </tr>
+                                                                    </thead>
+                                                                    <tbody key={grupo["id"]}>
+                                                                        {grupo["evaluaciones_grupo"].map((evaluacion) => {
+                                                                            var fecha = new Date(evaluacion["created_at"]);
+                                                                            return (
+                                                                                <tr key={evaluacion["id"]}>
+                                                                                    <td>{evaluacion["nombre_evaluacion"]}</td>
+                                                                                    <td>{format(fecha, "dd-MM-yyyy")}</td>
+                                                                                    <td>{format(fecha, "hh:mm:ss")}</td>
+                                                                                </tr>
+                                                                            );
+                                                                        })}
+                                                                    </tbody>
+                                                                </Table>
+                                                                <hr />
+                                                                <h4 style={{ textAlign: "left" }}>Evaluadores del grupo</h4>
+                                                                <Table striped hover bordered>
+                                                                    <thead className="text-primary">
+                                                                        <tr>
+                                                                            <th>Apellidos Evaluador</th>
+                                                                            <th>Nombres Evaluador</th>
+                                                                            <th>Cargo Evaluador</th>
+                                                                            <th>Recinto Evaluador</th>
+                                                                            <th>Correo Evaluador</th>
+                                                                        </tr>
+                                                                    </thead>
+                                                                    <tbody key={grupo["id"]}>
+                                                                        {grupo["evaluadores_grupo"].map((evaluador) => {
+                                                                            return (
+                                                                                <tr key={evaluador["id"]}>
+                                                                                    <td>{evaluador["apellidos_evaluador"]}</td>
+                                                                                    <td>{evaluador["nombres_evaluador"]}</td>
+                                                                                    <td>{evaluador["cargo_evaluador"]}</td>
+                                                                                    <td>{evaluador["recinto_evaluador"]}</td>
+                                                                                    <td>{evaluador["correo_electronico_evaluador"]}</td>
+                                                                                </tr>
+                                                                            );
+                                                                        })}
+                                                                    </tbody>
+                                                                </Table>
+                                                            </TabPane>
+                                                        );
                                                 })}
                                             </TabContent>
                                         </CardBody>

@@ -45,12 +45,15 @@ class Perfil extends React.Component {
     componentDidMount() {
         Promise.all([getPerfil(cookies.get("token"))])
             .then((values) => {
-                this.setState({
-                    nombreAlumno: values[0].data["nombres_estudiante"] + " " + values[0].data["apellidos_estudiante"],
-                    correoAlumno: values[0].data["correo_electronico_estudiante"],
-                    contactoAlumno: values[0].data["telefono_celular_estudiante"],
-                    queriesReady: true,
-                });
+                this.setState(
+                    {
+                        nombreAlumno: values[0].data["nombres_estudiante"] + " " + values[0].data["apellidos_estudiante"],
+                        correoAlumno: values[0].data["correo_electronico_estudiante"],
+                        contactoAlumno: values[0].data["telefono_celular_estudiante"],
+                        queriesReady: true,
+                    },
+                    () => console.log(values[0])
+                );
             })
             .catch((err) => console.log(err));
     }

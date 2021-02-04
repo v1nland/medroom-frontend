@@ -88,6 +88,11 @@ class Evaluacion extends React.Component {
         );
     }
     handleEstudiantes(event) {
+        if (this.state.grupoReady === true) {
+            this.setState({
+                grupoReady: false,
+            });
+        }
         this.setState(
             {
                 [event.target.name]: event.target.value,

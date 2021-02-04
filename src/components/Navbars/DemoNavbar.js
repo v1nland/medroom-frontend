@@ -137,7 +137,7 @@ class Header extends React.Component {
                                 </DropdownToggle>
                                 <DropdownMenu right>
                                     <DropdownItem tag="a" onClick={this.handleLogout}>
-                                        Log out
+                                        Cerrar sesión
                                     </DropdownItem>
                                 </DropdownMenu>
                             </Dropdown>
