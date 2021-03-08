@@ -114,7 +114,7 @@ class Curso extends React.Component {
                                 </tbody>
                             </Table>
                             <div className="info">
-                                <h4 className="info-title">Comentario</h4>
+                                <h4 className="info-title">Feedback Descriptivo</h4>
                                 <p>{this.state.comentarioEvaluacion}</p>
                             </div>
                         </ModalBody>
@@ -143,7 +143,6 @@ class Curso extends React.Component {
                                         <tbody>
                                             {this.state.grupo["evaluaciones_grupo"].map((evaluacion) => {
                                                 var fecha = new Date(evaluacion["created_at"]);
-                                                console.log(fecha);
                                                 return (
                                                     <tr key={evaluacion["id"]}>
                                                         <td>

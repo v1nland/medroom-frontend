@@ -40,6 +40,7 @@ class Evaluacion extends React.Component {
             eficiencia: 5,
             comentarioEvaluacion: "",
             competenciaClinica: 5,
+            puntajeGlobal: 0,
         };
         this.handleChange = this.handleChange.bind(this);
         this.handleGrupos = this.handleGrupos.bind(this);
@@ -286,7 +287,7 @@ class Evaluacion extends React.Component {
                                             </Col>
                                         </Row>
                                         <Row>
-                                            <Col sm="12" md="4">
+                                            <Col sm="12" md="3">
                                                 <FormGroup>
                                                     <Label for="fecha">Nombre evaluación</Label>
                                                     <Input
@@ -310,7 +311,7 @@ class Evaluacion extends React.Component {
                                                     </Input>
                                                 </FormGroup>
                                             </Col>
-                                            <Col sm="12" md="4">
+                                            <Col sm="12" md="3">
                                                 <FormGroup>
                                                     <Label for="rotacion">Periodo</Label>
                                                     <Input
@@ -323,10 +324,16 @@ class Evaluacion extends React.Component {
                                                     ></Input>
                                                 </FormGroup>
                                             </Col>
-                                            <Col sm="12" md="4">
+                                            <Col sm="12" md="3">
                                                 <FormGroup>
-                                                    <Label for="tutor">Evaluador</Label>
+                                                    <Label for="nombreEvaluador">Evaluador</Label>
                                                     <Input type="text" name="nombreEvaluador" disabled value={this.state.nombreEvaluador}></Input>
+                                                </FormGroup>
+                                            </Col>
+                                            <Col sm="12" md="3">
+                                                <FormGroup>
+                                                    <Label for="puntajeGlobal">Puntaje Global</Label>
+                                                    <Input type="number" name="puntajeGlobal" value={this.state.puntajeGlobal}></Input>
                                                 </FormGroup>
                                             </Col>
                                         </Row>
@@ -341,6 +348,7 @@ class Evaluacion extends React.Component {
                                     name="entrevistaMedica"
                                     value={this.state.entrevistaMedica}
                                     onChange={this.handleChange}
+                                    idModal="3"
                                 />
                             </Col>
                         </Row>
@@ -351,16 +359,18 @@ class Evaluacion extends React.Component {
                                     name="examenFisico"
                                     value={this.state.examenFisico}
                                     onChange={this.handleChange}
+                                    idModal="4"
                                 />
                             </Col>
                         </Row>
                         <Row>
                             <Col sm="12" md="12" lg="12">
                                 <Referencia
-                                    label="Profesionalismo/ Cualidad humana"
+                                    label="Profesionalismo"
                                     name="profesionalismo"
                                     value={this.state.profesionalismo}
                                     onChange={this.handleChange}
+                                    idModal="5"
                                 />
                             </Col>
                         </Row>
@@ -371,16 +381,18 @@ class Evaluacion extends React.Component {
                                     name="razonamientoClinico"
                                     value={this.state.razonamientoClinico}
                                     onChange={this.handleChange}
+                                    idModal="6"
                                 />
                             </Col>
                         </Row>
                         <Row>
                             <Col sm="12" md="12" lg="12">
                                 <Referencia
-                                    label="Habilidades de consejería"
+                                    label="Habilidades de comunicación"
                                     name="consejeria"
                                     value={this.state.consejeria}
                                     onChange={this.handleChange}
+                                    idModal="7"
                                 />
                             </Col>
                         </Row>
@@ -391,16 +403,18 @@ class Evaluacion extends React.Component {
                                     name="eficiencia"
                                     value={this.state.eficiencia}
                                     onChange={this.handleChange}
+                                    idModal="8"
                                 />
                             </Col>
                         </Row>
                         <Row>
                             <Col sm="12" md="12" lg="12">
                                 <Referencia
-                                    label="Competencia clínica general"
+                                    label="Competencia clínica general / Valoración global"
                                     name="competenciaClinica"
                                     value={this.state.competenciaClinica}
                                     onChange={this.handleChange}
+                                    idModal="9"
                                 />
                             </Col>
                         </Row>
@@ -409,7 +423,7 @@ class Evaluacion extends React.Component {
                                 <Card>
                                     <CardHeader>
                                         <CardTitle tag="h6" style={{}}>
-                                            Comentarios
+                                            Feedback Descriptivo
                                         </CardTitle>
                                     </CardHeader>
                                     <CardBody>

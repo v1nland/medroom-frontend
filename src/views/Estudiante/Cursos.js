@@ -54,7 +54,7 @@ class Cursos extends React.Component {
                     <Row>
                         {this.state.cursos.map((curso) => {
                             return (
-                                <Col sm="12" md="4" key={curso["id"]}>
+                                <Col sm="12" md="4" key={curso["id"]} style={{ cursor: "pointer" }}>
                                     <Card
                                         className="card-user"
                                         onClick={() =>

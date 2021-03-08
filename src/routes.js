@@ -10,8 +10,6 @@ import AdministradorUDPPerfil from "views/AdministradorUDP/Perfil.js";
 import AdministradorUDPGrupos from "views/AdministradorUDP/Grupos.js";
 import AdministradorTIPerfil from "views/AdministradorTI/Perfil.js";
 import AdministradorTICursos from "views/AdministradorTI/CrearCursos.js";
-// import AdministradorTiCrearUsuarios from "views/AdministradorTI/CrearUsuarios.js";
-// import AdministradorTiAdministrarUsuarios from "views/AdministradorTI/AdministrarUsuarios.js";
 import AdministradorTIEstudiantes from "views/AdministradorTI/Estudiantes.js";
 import AdministradorTIEvaluadores from "views/AdministradorTI/Evaluadores.js";
 import AdministradorTIAdministradores from "views/AdministradorTI/Administradores.js";
@@ -33,14 +31,6 @@ var routes = [
         layout: "/portal",
         perfil: "estudiante",
     },
-    // {
-    //     path: "/estudiante/evaluacion",
-    //     name: "Mis evaluaciones",
-    //     icon: "nc-icon nc-paper",
-    //     component: EstudianteEvaluacion,
-    //     layout: "/portal",
-    //     perfil: "estudiante",
-    // },
     {
         path: "/estudiante/curso/:idCurso/grupo/:idGrupo",
         name: "Mi Curso1",
@@ -90,6 +80,13 @@ var routes = [
         perfil: "evaluador",
     },
     {
+        path: "/",
+        name: "Agregar evaluación",
+        icon: "nc-icon nc-single-copy-04",
+        layout: "/portal",
+        perfil: "evaluador",
+    },
+    {
         path: "/administradorUDP/perfil",
         name: "Mi perfil",
         icon: "nc-icon nc-single-02",
@@ -113,14 +110,6 @@ var routes = [
         layout: "/portal",
         perfil: "administrador_ti",
     },
-    // {
-    //     path: "/administradorTI/crearUsuarios",
-    //     name: "Crear Usuarios",
-    //     icon: "nc-icon nc-tap-01",
-    //     component: AdministradorTiCrearUsuarios,
-    //     layout: "/portal",
-    //     perfil: "administrado_ti",
-    // },
     {
         path: "/administradorTI/crearCursos",
         name: "Crear Cursos",
@@ -129,14 +118,6 @@ var routes = [
         layout: "/portal",
         perfil: "administrador_ti",
     },
-    // {
-    //     path: "/administradorTI/administrarUsuarios",
-    //     name: "Administrar Usuarios",
-    //     icon: "nc-icon nc-book-bookmark",
-    //     component: AdministradorTiAdministrarUsuarios,
-    //     layout: "/portal",
-    //     perfil: "administrador_ti",
-    // },
     {
         path: "/administradorTI/administrarEstudiantes",
         name: "Estudiantes",

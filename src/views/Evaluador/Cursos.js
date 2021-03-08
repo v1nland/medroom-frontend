@@ -2,7 +2,6 @@ import React from "react";
 import { Card, CardBody, Row, Col, Alert } from "reactstrap";
 import LoadingPage from "../../components/LoadingPage/LoadingPage";
 import { getCursos } from "../../database/evaluadores/getCursos";
-// import { formatCursos } from "../../functions/formats/estudiantes/formatCursos";
 import Cookies from "universal-cookie";
 const cookies = new Cookies();
 
@@ -48,7 +47,7 @@ class Cursos extends React.Component {
                     <Row>
                         {this.state.cursos.map((curso) => {
                             return (
-                                <Col sm="12" md="4" key={curso["id"]}>
+                                <Col sm="12" md="4" key={curso["id"]} style={{ cursor: "pointer" }}>
                                     <Card className="card-user" onClick={() => this.handleClick(curso["id"])}>
                                         <div className="image">
                                             <img alt="..." src={require("assets/img/damir-bosnjak.jpg")} />

@@ -43,6 +43,7 @@ class Perfil extends React.Component {
         this.renderAlertPassword = this.renderAlertPassword.bind(this);
     }
     componentDidMount() {
+        console.log("Hola");
         Promise.all([getPerfil(cookies.get("token"))])
             .then((values) => {
                 this.setState({

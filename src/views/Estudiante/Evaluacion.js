@@ -96,7 +96,7 @@ class Evaluaciones extends React.Component {
                                     <tr style={{ textAlign: "true" }}>
                                         <th>Nombre Competencia</th>
                                         <th>Puntaje obtenido</th>
-                                        <th>Comentario</th>
+                                        <th>Feedback Descriptivo</th>
                                     </tr>
                                 </thead>
                                 <tbody>

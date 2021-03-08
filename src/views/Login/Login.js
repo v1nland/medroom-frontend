@@ -21,7 +21,6 @@ import {
     CardGroup,
     Label,
     FormGroup,
-    ButtonGroup,
     DropdownToggle,
     Modal,
     ModalBody,
@@ -56,7 +55,7 @@ class Login extends React.Component {
         this.state = {
             user: "",
             password: "",
-            perfil: 0,
+            perfil: 1,
             buttonClicked: false,
             buttonDisabled: false,
             dropdownClicked: false,
@@ -110,6 +109,7 @@ class Login extends React.Component {
     }
     handleSubmit = (event) => {
         event.preventDefault();
+        console.log(this.state.perfil);
         this.setState({ buttonDisabled: true });
         if (parseInt(this.state.perfil) === 1) {
             loginMedRoom(this.state.user, sha256(this.state.password)).then((resp) => {
@@ -151,6 +151,9 @@ class Login extends React.Component {
                     this.setState({ buttonClicked: false, buttonDisabled: false });
                 }
             });
+        } else {
+            this.AlertsHandler.generate("danger", "Oh no 😥", "Error en el ingreso");
+            this.setState({ buttonClicked: false, buttonDisabled: false });
         }
     };
     handleModalProblemas(rowData) {
@@ -200,7 +203,16 @@ class Login extends React.Component {
                                                         required
                                                     />
                                                 </FormGroup>
-                                                <ButtonGroup className="flex-wrap">
+                                                <FormGroup>
+                                                    <Label for="perfil">Perfil</Label>
+                                                    <Input type="select" name="perfil" id="perfil" onChange={this.handleChange}>
+                                                        <option value={1}>ESTUDIANTE</option>
+                                                        <option value={2}>EVALUADOR</option>
+                                                        <option value={3}>ADMINISTRADOR</option>
+                                                        <option value={4}>ADMINISTRADOR TI</option>
+                                                    </Input>
+                                                </FormGroup>
+                                                {/* <ButtonGroup className="flex-wrap">
                                                     <Button
                                                         color={this.state.perfil === 1 ? "info" : "default"}
                                                         name="perfil"
@@ -233,7 +245,7 @@ class Login extends React.Component {
                                                     >
                                                         ADMINISTRADOR TI
                                                     </Button>
-                                                </ButtonGroup>
+                                                </ButtonGroup> */}
                                                 <Row>
                                                     <Col xs="6">
                                                         <Button
