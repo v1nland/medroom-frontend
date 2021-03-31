@@ -1,14 +1,15 @@
-export function asociarGrupoEstudiante(token, idCurso, idGrupo, idEstudiante) {
-    var FetchURL = `${process.env.REACT_APP_APIURL}/administracion-academica/me/cursos/${idCurso}/grupos/${idGrupo}/estudiantes/${idEstudiante}`;
+export function postGrupos(token, newGrupo, idCurso) {
+    var FetchURL = `${process.env.REACT_APP_APIURL}/administracion-academica/me/cursos/${idCurso}/grupos`;
 
     return fetch(FetchURL, {
-        method: "PUT",
+        method: "POST",
         mode: "cors",
         cache: "no-cache",
         headers: {
             "Content-Type": "application/json; charset=utf-8",
             Authorization: token,
         },
+        body: JSON.stringify(newGrupo),
     })
         .then((response) => response.json())
         .then((resp) => {

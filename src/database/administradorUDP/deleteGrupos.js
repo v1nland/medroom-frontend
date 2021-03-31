@@ -1,8 +1,8 @@
-export function asociarGrupoEstudiante(token, idCurso, idGrupo, idEstudiante) {
-    var FetchURL = `${process.env.REACT_APP_APIURL}/administracion-academica/me/cursos/${idCurso}/grupos/${idGrupo}/estudiantes/${idEstudiante}`;
+export function deleteGrupos(token, idCurso, idGrupo) {
+    var FetchURL = `${process.env.REACT_APP_APIURL}/administracion-academica/me/cursos/${idCurso}/grupos/${idGrupo}`;
 
     return fetch(FetchURL, {
-        method: "PUT",
+        method: "DELETE",
         mode: "cors",
         cache: "no-cache",
         headers: {

@@ -1,8 +1,8 @@
-export function asociarGrupoEstudiante(token, idCurso, idGrupo, idEstudiante) {
-    var FetchURL = `${process.env.REACT_APP_APIURL}/administracion-academica/me/cursos/${idCurso}/grupos/${idGrupo}/estudiantes/${idEstudiante}`;
+export function getEvolucionPorEvaluacion(token, idCurso, idGrupo) {
+    var FetchURL = `${process.env.REACT_APP_APIURL}/evaluadores/me/cursos/${idCurso}/grupos/${idGrupo}/estadisticas/evolucion-evaluacion`;
 
     return fetch(FetchURL, {
-        method: "PUT",
+        method: "GET",
         mode: "cors",
         cache: "no-cache",
         headers: {

@@ -1,7 +1,7 @@
 import React from "react";
 import { Card, CardBody, Row, Col, Alert } from "reactstrap";
 import LoadingPage from "../../components/LoadingPage/LoadingPage";
-import { getCursos } from "../../database/estudiantes/getCursos";
+import { getCursos } from "../../database/administradorUDP/getCursos";
 // import { formatCursos } from "../../functions/formats/estudiantes/formatCursos";
 import Cookies from "universal-cookie";
 const cookies = new Cookies();
@@ -36,8 +36,8 @@ class Cursos extends React.Component {
             [event.target.name]: event.target.value,
         });
     }
-    handleClick(idCurso, idGrupo) {
-        window.location.href = "/portal/estudiante/cursos/" + idCurso + "/grupo/" + idGrupo;
+    handleClick(idCurso) {
+        window.location.href = "/portal/administradorUDP/cursos/" + idCurso;
     }
     render() {
         if (this.state.queriesReady)
@@ -52,17 +52,7 @@ class Cursos extends React.Component {
                         {this.state.cursos.map((curso) => {
                             return (
                                 <Col sm="12" md="4" key={curso["id"]} style={{ cursor: "pointer" }}>
-                                    <Card
-                                        className="card-user"
-                                        onClick={() =>
-                                            this.handleClick(
-                                                curso["id"],
-                                                curso["grupos_curso"][0]["sigla_grupo"] !== "SG"
-                                                    ? curso["grupos_curso"][0]["id"]
-                                                    : curso["grupos_curso"][1]["id"]
-                                            )
-                                        }
-                                    >
+                                    <Card className="card-user" onClick={() => this.handleClick(curso["id"])}>
                                         <div className="image">
                                             <img alt="..." src={require("assets/img/damir-bosnjak.jpg")} />
                                             <div className="centered">Centered</div>

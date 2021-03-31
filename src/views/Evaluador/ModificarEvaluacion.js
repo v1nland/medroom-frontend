@@ -2,15 +2,15 @@ import React from "react";
 import Referencia from "../../components/Referencia/Referencia.js";
 import { Card, CardBody, CardHeader, CardTitle, Form, Row, Col, FormGroup, Label, Input, Button } from "reactstrap";
 import LoadingPage from "../../components/LoadingPage/LoadingPage";
-import { getPerfil } from "../../database/evaluadores/getPerfil";
-import { getGrupo } from "../../database/evaluadores/getGrupo";
-import { getCursos } from "../../database/evaluadores/getCursos";
-import { postEvaluaciones } from "../../database/evaluadores/postEvaluaciones";
+// import { getGrupo } from "../../database/evaluadores/getGrupo";
+// import { postEvaluaciones } from "../../database/evaluadores/postEvaluaciones";
 import AlertsHandler from "../../components/AlertsHandler/AlertsHandler";
 import Cookies from "universal-cookie";
+import { getCalificacionPorEstudiante } from "database/evaluadores/getCalificacionPorEstudiante.js";
+import { putEvaluacionPorEstudiante } from "database/evaluadores/putEvaluacionPorEstudiante.js";
 const cookies = new Cookies();
 
-class Evaluacion extends React.Component {
+class ModificarEvaluacion extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -21,10 +21,11 @@ class Evaluacion extends React.Component {
             nombreEvaluador: "",
             nombreEstudiante: "",
             idPeriodo: 0,
-            periodoEvaluador: "--- Elija un curso ---",
+            periodoEvaluador: "",
             estudiantes: [],
             cursos: [],
             grupos: [],
+            location: {},
             evaluaciones: [],
             cursoEvaluador: 0,
             grupoEvaluador: 0,
@@ -41,18 +42,38 @@ class Evaluacion extends React.Component {
             comentarioEvaluacion: "",
             competenciaClinica: 5,
             puntajeGlobal: 0,
+            idPrueba: 0,
         };
         this.handleChange = this.handleChange.bind(this);
-        this.handleGrupos = this.handleGrupos.bind(this);
-        this.handleEstudiantes = this.handleEstudiantes.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
     }
     componentDidMount() {
-        Promise.all([getPerfil(cookies.get("token")), getCursos(cookies.get("token"))])
+        var location = this.props.location;
+        Promise.all([
+            getCalificacionPorEstudiante(cookies.get("token"), location.idCurso, location.idGrupo, location.idEstudiante, location.idEvaluacion),
+        ])
             .then((values) => {
+                console.log(values[0].data);
                 this.setState({
-                    nombreEvaluador: values[0].data["nombres_evaluador"] + " " + values[0].data["apellidos_evaluador"],
-                    cursos: values[1].data,
+                    cursoEvaluador: location.nombreCurso,
+                    grupoEvaluador: location.nombreGrupo,
+                    idEstudiante: location.nombreEstudiante,
+                    idEvaluacion: values[0].data["evaluacion_calificacion_estudiante"]["nombre_evaluacion"],
+                    periodoEvaluador: values[0].data["periodo_calificacion_estudiante"]["nombre_periodo"],
+                    nombreEvaluador:
+                        values[0].data["evaluador_calificacion_estudiante"]["nombres_evaluador"] +
+                        " " +
+                        values[0].data["evaluador_calificacion_estudiante"]["apellidos_evaluador"],
+                    puntajeGlobal: values[0].data["valoracion_general_calificacion_estudiante"],
+                    comentarioEvaluacion: values[0].data["observacion_calificacion_calificacion_estudiante"],
+                    entrevistaMedica: 5,
+                    examenFisico: 5,
+                    profesionalismo: 5,
+                    razonamientoClinico: 5,
+                    consejeria: 5,
+                    eficiencia: 5,
+                    competenciaClinica: 5,
+                    location: location,
                     queriesReady: true,
                 });
             })
@@ -62,54 +83,6 @@ class Evaluacion extends React.Component {
         this.setState({
             [event.target.name]: event.target.value,
         });
-    }
-    handleGrupos(event) {
-        this.setState(
-            {
-                [event.target.name]: event.target.value,
-            },
-            () =>
-                Promise.all([getGrupo(cookies.get("token"), this.state.cursoEvaluador)])
-                    .then((values) => {
-                        this.setState({
-                            grupos: values[0].data,
-                            periodo: values[0].data[""],
-                            cursoReady: true,
-                        });
-                        for (let i = 0; i < this.state.cursos.length; i++) {
-                            if (this.state.cursos[i]["id"] === parseInt(this.state.cursoEvaluador)) {
-                                this.setState({
-                                    periodoEvaluador: this.state.cursos[i]["periodo_curso"]["nombre_periodo"],
-                                    periodoId: this.state.cursos[i]["periodo_curso"]["id"],
-                                });
-                            }
-                        }
-                    })
-                    .catch((err) => console.log(err))
-        );
-    }
-    handleEstudiantes(event) {
-        if (this.state.grupoReady === true) {
-            this.setState({
-                grupoReady: false,
-            });
-        }
-        this.setState(
-            {
-                [event.target.name]: event.target.value,
-            },
-            () => {
-                for (let i = 0; i < this.state.grupos.length; i++) {
-                    if (this.state.grupos[i]["id"] === parseInt(this.state.grupoEvaluador)) {
-                        this.setState({
-                            estudiantes: this.state.grupos[i]["estudiantes_grupo"],
-                            evaluaciones: this.state.grupos[i]["evaluaciones_grupo"],
-                            grupoReady: true,
-                        });
-                    }
-                }
-            }
-        );
     }
     handleSubmit(event) {
         event.preventDefault();
@@ -164,16 +137,16 @@ class Evaluacion extends React.Component {
             ],
             tiempo_utilizado_calificacion_estudiante: 0,
         };
-        postEvaluaciones(
+        putEvaluacionPorEstudiante(
             cookies.get("token"),
-            newEvaluacion,
-            parseInt(this.state.cursoEvaluador),
-            parseInt(this.state.grupoEvaluador),
-            this.state.idEstudiante,
-            parseInt(this.state.idEvaluacion)
+            parseInt(this.state.location.idCurso),
+            parseInt(this.state.location.idGrupo),
+            this.state.location.idEstudiante,
+            parseInt(this.state.location.idEvaluacion),
+            newEvaluacion
         ).then((resp) => {
             if (resp.meta === "OK") {
-                this.AlertsHandler.generate("success", "Evaluado", "Evaluación realizada con éxito");
+                this.AlertsHandler.generate("success", "Evaluado", "Evaluación modificada con éxito");
                 this.setState({
                     idEstudiante: 0,
                     entrevistaMedica: 5,
@@ -219,72 +192,40 @@ class Evaluacion extends React.Component {
                                                 <FormGroup>
                                                     <Label for="tutor">Curso</Label>
                                                     <Input
-                                                        type="select"
+                                                        type="text"
                                                         name="cursoEvaluador"
                                                         value={this.state.cursoEvaluador}
+                                                        disabled
                                                         onChange={this.handleGrupos}
                                                         required
-                                                    >
-                                                        <option disabled key={0} value={0}>
-                                                            -- Elija un curso --
-                                                        </option>
-                                                        {this.state.cursos.map((curso) => {
-                                                            return (
-                                                                <option key={curso["id"]} value={curso["id"]}>
-                                                                    {curso["nombre_curso"]}
-                                                                </option>
-                                                            );
-                                                        })}
-                                                    </Input>
+                                                    ></Input>
                                                 </FormGroup>
                                             </Col>
                                             <Col sm="12" md="4">
                                                 <FormGroup>
                                                     <Label for="grupoEvaluador">Grupo</Label>
                                                     <Input
-                                                        type="select"
+                                                        type="text"
                                                         name="grupoEvaluador"
-                                                        disabled={!this.state.cursoReady}
+                                                        disabled
                                                         value={this.state.grupoEvaluador}
                                                         onChange={this.handleEstudiantes}
                                                         required
-                                                    >
-                                                        <option disabled value={0}>
-                                                            -- Elija un grupo --
-                                                        </option>
-                                                        {this.state.grupos.map((grupo) => {
-                                                            return (
-                                                                <option key={grupo["id"]} value={grupo["id"]}>
-                                                                    {grupo["nombre_grupo"]}
-                                                                </option>
-                                                            );
-                                                        })}
-                                                    </Input>
+                                                    ></Input>
                                                 </FormGroup>
                                             </Col>
                                             <Col sm="12" md="4">
                                                 <FormGroup>
                                                     <Label for="nombre">Nombre estudiante</Label>
                                                     <Input
-                                                        type="select"
+                                                        type="text"
                                                         name="idEstudiante"
                                                         id="idEstudiante"
                                                         value={this.state.idEstudiante}
                                                         onChange={this.handleChange}
-                                                        disabled={!this.state.grupoReady}
+                                                        disabled
                                                         required
-                                                    >
-                                                        <option disabled value={0}>
-                                                            -- Elija un estudiante --
-                                                        </option>
-                                                        {this.state.estudiantes.map((estudiante) => {
-                                                            return (
-                                                                <option key={estudiante["id"]} value={estudiante["id"]}>
-                                                                    {estudiante["nombres_estudiante"] + " " + estudiante["apellidos_estudiante"]}
-                                                                </option>
-                                                            );
-                                                        })}
-                                                    </Input>
+                                                    ></Input>
                                                 </FormGroup>
                                             </Col>
                                         </Row>
@@ -293,24 +234,13 @@ class Evaluacion extends React.Component {
                                                 <FormGroup>
                                                     <Label for="fecha">Nombre evaluación</Label>
                                                     <Input
-                                                        type="select"
+                                                        type="text"
                                                         name="idEvaluacion"
                                                         value={this.state.idEvaluacion}
                                                         onChange={this.handleChange}
-                                                        disabled={!this.state.grupoReady}
+                                                        disabled
                                                         required
-                                                    >
-                                                        <option disabled value={"0"}>
-                                                            -- Elija una evaluación --
-                                                        </option>
-                                                        {this.state.evaluaciones.map((evaluacion) => {
-                                                            return (
-                                                                <option key={evaluacion["id"]} value={evaluacion["id"]}>
-                                                                    {evaluacion["nombre_evaluacion"]}
-                                                                </option>
-                                                            );
-                                                        })}
-                                                    </Input>
+                                                    ></Input>
                                                 </FormGroup>
                                             </Col>
                                             <Col sm="12" md="3">
@@ -322,7 +252,7 @@ class Evaluacion extends React.Component {
                                                         id="periodoEvaluador"
                                                         value={this.state.periodoEvaluador}
                                                         onChange={this.handleChange}
-                                                        disabled={true}
+                                                        disabled
                                                     ></Input>
                                                 </FormGroup>
                                             </Col>
@@ -463,4 +393,4 @@ class Evaluacion extends React.Component {
     }
 }
 
-export default Evaluacion;
+export default ModificarEvaluacion;

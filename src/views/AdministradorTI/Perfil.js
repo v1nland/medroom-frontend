@@ -43,7 +43,6 @@ class Perfil extends React.Component {
         this.renderAlertPassword = this.renderAlertPassword.bind(this);
     }
     componentDidMount() {
-        console.log("Hola");
         Promise.all([getPerfil(cookies.get("token"))])
             .then((values) => {
                 this.setState({
@@ -57,17 +56,25 @@ class Perfil extends React.Component {
             .catch((err) => console.log(err));
     }
     validatePassword() {
-        if (
+        if (this.state.passwordOldAdministrador !== "" && this.state.passwordAdministrador === "" && this.state.passwordConfAdministrador === "") {
+            this.setState({
+                passwordsReady: true,
+            });
+        } else if (
+            this.state.passwordOldAdministrador !== "" &&
+            this.state.passwordAdministrador !== "" &&
+            this.state.passwordAdministrador === this.state.passwordConfAdministrador
+        ) {
+            this.setState({
+                passwordsReady: true,
+            });
+        } else if (
             this.state.passwordAdministrador === "" ||
             this.state.passwordConfAdministrador === "" ||
             this.state.passwordAdministrador !== this.state.passwordConfAdministrador
         ) {
             this.setState({
                 passwordsReady: false,
-            });
-        } else if (this.state.passwordAdministrador !== "" && this.state.passwordConfAdministrador !== "") {
-            this.setState({
-                passwordsReady: true,
             });
         }
     }
@@ -96,7 +103,8 @@ class Perfil extends React.Component {
     handleSubmit(event) {
         event.preventDefault();
         var newDatos = {
-            hash_contrasena_administrador_ti: sha256(this.state.passwordAdministrador),
+            hash_contrasena_administrador_ti: sha256(this.state.passwordOldAdministrador),
+            hash_nueva_contrasena_administrador_ti: sha256(this.state.passwordAdministrador),
             telefono_celular_administrador_ti: this.state.contactoAdministrador,
         };
         putPerfil(cookies.get("token"), newDatos).then((resp) => {
@@ -179,7 +187,7 @@ class Perfil extends React.Component {
                                         <Row>
                                             <Col sm="12" md="4">
                                                 <FormGroup>
-                                                    <label>Contraseña Antigua</label>
+                                                    <label>Contraseña Actual</label>
                                                     <Input
                                                         name="passwordOldAdministrador"
                                                         value={this.state.passwordOldAdministrador}
@@ -201,6 +209,7 @@ class Perfil extends React.Component {
                                                         type="password"
                                                         required
                                                     />
+                                                    {this.renderAlertPassword()}
                                                 </FormGroup>
                                             </Col>
                                             <Col sm="12" md="4">

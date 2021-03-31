@@ -7,8 +7,10 @@ class Referencia extends React.Component {
         super(props);
         this.state = {
             isOpen: false,
+            valor: 5,
         };
         this.handlePopOver = this.handlePopOver.bind(this);
+        this.handleChange = this.handleChange.bind(this);
     }
 
     handlePopOver() {
@@ -16,7 +18,11 @@ class Referencia extends React.Component {
             isOpen: !this.state.isOpen,
         });
     }
-
+    handleChange(event) {
+        this.setState({
+            [event.target.name]: event.target.value,
+        });
+    }
     render() {
         return (
             <div className="content">
@@ -32,7 +38,7 @@ class Referencia extends React.Component {
                             ></i>
                         </CardTitle>
                         <Tooltip placement="right" isOpen={this.state.isOpen} target={"Popover" + this.props.idModal} toggle={this.handlePopOver}>
-                            {this.props.label}
+                            {this.props.descripcion}
                         </Tooltip>
                     </CardHeader>
                     <CardBody style={{ marginBottom: "5px" }}>
@@ -109,8 +115,15 @@ class Referencia extends React.Component {
                                 <Col md="4" style={{ marginTop: "10px" }}>
                                     <div className="form-check-radio form-check-inline">
                                         <Label className="form-check-label">
-                                            <Input type="radio" name={this.props.name} id="opcion5" value={5} />5
-                                            <span className="form-check-sign"></span>
+                                            <Input
+                                                type="radio"
+                                                name={this.props.name}
+                                                id="opcion5"
+                                                value={5}
+                                                // checked={this.props.value === 5}
+                                                onChange={this.handleChange}
+                                            />
+                                            5<span className="form-check-sign"></span>
                                         </Label>
                                     </div>
                                 </Col>

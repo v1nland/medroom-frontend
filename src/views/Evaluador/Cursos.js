@@ -33,7 +33,7 @@ class Cursos extends React.Component {
         });
     }
     handleClick(idCurso) {
-        window.location.href = "/portal/evaluador/curso/" + idCurso;
+        window.location.href = "/portal/evaluador/cursos/" + idCurso;
     }
     render() {
         if (this.state.queriesReady)
@@ -42,12 +42,12 @@ class Cursos extends React.Component {
                     <h4>Cursos asignados ({this.state.cursos.length})</h4>
                     <Alert color="success">
                         <i className="nc-icon nc-alert-circle-i" style={{ marginRight: "10px" }} />
-                        Para ingresar a un curso, haga click en bloque correspondiente
+                        Para ingresar a un curso, haz click en bloque correspondiente
                     </Alert>
                     <Row>
                         {this.state.cursos.map((curso) => {
                             return (
-                                <Col sm="12" md="4" key={curso["id"]} style={{ cursor: "pointer" }}>
+                                <Col sm="12" md="12" xl="4" key={curso["id"]} style={{ cursor: "pointer" }}>
                                     <Card className="card-user" onClick={() => this.handleClick(curso["id"])}>
                                         <div className="image">
                                             <img alt="..." src={require("assets/img/damir-bosnjak.jpg")} />

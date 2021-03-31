@@ -1,5 +1,5 @@
-export function asociarGrupoEstudiante(token, idCurso, idGrupo, idEstudiante) {
-    var FetchURL = `${process.env.REACT_APP_APIURL}/administracion-academica/me/cursos/${idCurso}/grupos/${idGrupo}/estudiantes/${idEstudiante}`;
+export function putGrupos(token, newGrupo, idCurso, idGrupo) {
+    var FetchURL = `${process.env.REACT_APP_APIURL}/administracion-academica/me/cursos/${idCurso}/grupos/${idGrupo}`;
 
     return fetch(FetchURL, {
         method: "PUT",
@@ -9,6 +9,7 @@ export function asociarGrupoEstudiante(token, idCurso, idGrupo, idEstudiante) {
             "Content-Type": "application/json; charset=utf-8",
             Authorization: token,
         },
+        body: JSON.stringify(newGrupo),
     })
         .then((response) => response.json())
         .then((resp) => {

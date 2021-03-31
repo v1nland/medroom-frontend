@@ -2,15 +2,14 @@ import React from "react";
 import { Card, CardBody, Row, Col, Input, Button, Modal, ModalHeader, ModalBody, FormGroup, Label, ModalFooter } from "reactstrap";
 import MaterialTable from "material-table";
 import SearchIcon from "@material-ui/icons/Search";
-import { Paper } from "@material-ui/core/";
+import { Paper, TableCell, TableRow, Table, Box, Typography, TableHead, TableBody, Chip } from "@material-ui/core/";
 import Localization from "../../helpers/Localization";
 import { formatGrupos } from "../../helpers/AdministradorUDP/formatGrupos";
+import { formatSinGrupos } from "../../helpers/AdministradorUDP/formatSinGrupos";
 import { getGrupos } from "../../database/administradorUDP/getGrupos";
-import { postGrupo } from "../../database/administradorUDP/postGrupo";
-import { putGrupo } from "../../database/administradorUDP/putGrupo";
-import { getCursos } from "../../database/administradorUDP/getCursos";
-import { getEvaluadores } from "../../database/administradorUDP/getEvaluadores";
-import { getEstudiantes } from "../../database/administradorUDP/getEstudiantes";
+import { postGrupos } from "../../database/administradorUDP/postGrupos";
+import { putGrupos } from "../../database/administradorUDP/putGrupos";
+import { deleteGrupos } from "../../database/administradorUDP/deleteGrupos";
 import { asociarGrupoEstudiante } from "../../database/administradorUDP/asociarGrupoEstudiante";
 import { asociarGrupoEvaluador } from "../../database/administradorUDP/asociarGrupoEvaluador";
 import Cookies from "universal-cookie";
@@ -18,7 +17,7 @@ import LoadingPage from "../../components/LoadingPage/LoadingPage";
 import AlertsHandler from "../../components/AlertsHandler/AlertsHandler";
 const cookies = new Cookies();
 
-class Grupos extends React.Component {
+class Curso extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -29,6 +28,7 @@ class Grupos extends React.Component {
             queriesReady: false,
             periodos: [],
             grupos: [],
+            sinGrupo: [],
             cursos: [],
             evaluadores: [],
             estudiantes: [],
@@ -38,6 +38,8 @@ class Grupos extends React.Component {
             idCurso: 0,
             idEvaluador: 0,
             idEstudiante: 0,
+
+            //Modales
             modalEliminarGrupo: false,
             modalAgregarGrupo: false,
             modalEditarGrupo: false,
@@ -49,25 +51,20 @@ class Grupos extends React.Component {
         this.handleModalAgregarGrupo = this.handleModalAgregarGrupo.bind(this);
         this.handleEditarGrupo = this.handleEditarGrupo.bind(this);
         this.handleModalEditarGrupo = this.handleModalEditarGrupo.bind(this);
+        this.handleEliminarGrupo = this.handleEliminarGrupo.bind(this);
+        this.handleModalEliminarGrupo = this.handleModalEliminarGrupo.bind(this);
         this.handleAsociarEvaluador = this.handleAsociarEvaluador.bind(this);
         this.handleModalAsociarEvaluador = this.handleModalAsociarEvaluador.bind(this);
         this.handleAsociarEstudiante = this.handleAsociarEstudiante.bind(this);
         this.handleModalAsociarEstudiante = this.handleModalAsociarEstudiante.bind(this);
     }
     componentDidMount() {
-        Promise.all([
-            getGrupos(cookies.get("token")),
-            getCursos(cookies.get("token")),
-            getEvaluadores(cookies.get("token")),
-            getEstudiantes(cookies.get("token")),
-        ])
+        Promise.all([getGrupos(cookies.get("token"), this.props.match.params.idCurso)])
             .then((values) => {
                 this.setState({
                     queriesReady: true,
                     grupos: formatGrupos(values[0].data),
-                    cursos: values[1].data,
-                    evaluadores: values[2].data,
-                    estudiantes: values[3].data,
+                    sinGrupo: formatSinGrupos(values[0].data),
                 });
             })
             .catch((err) => console.log(err));
@@ -79,12 +76,10 @@ class Grupos extends React.Component {
     }
     handleAgregarGrupo() {
         var newGrupo = {
-            id_curso: parseInt(this.state.idCurso),
-            id_evaluador: "0",
             nombre_grupo: this.state.nombreGrupo,
             sigla_grupo: this.state.siglaGrupo,
         };
-        postGrupo(cookies.get("token"), newGrupo)
+        postGrupos(cookies.get("token"), newGrupo, this.props.match.params.idCurso)
             .then((resp) => {
                 if (resp.meta === "OK") {
                     this.AlertsHandler.generate("success", "Agregado", "Nuevo grupo agregado con éxito");
@@ -99,14 +94,7 @@ class Grupos extends React.Component {
             })
             .catch((err) => console.log(err));
     }
-    handleModalAgregarGrupo(rowData) {
-        if (rowData["id"] != null) {
-            this.setState({
-                nombreGrupo: rowData["nombre_curso"],
-                siglaGrupo: rowData["sigla_curso"],
-                idGrupo: rowData["id"],
-            });
-        }
+    handleModalAgregarGrupo() {
         this.setState({
             modalAgregarGrupo: !this.state.modalAgregarGrupo,
         });
@@ -114,11 +102,10 @@ class Grupos extends React.Component {
 
     handleEditarGrupo(rowData) {
         var newGrupo = {
-            nombre_curso: this.state.nombreGrupo,
-            sigla_curso: this.state.siglaGrupo,
-            id_periodo: 1,
+            nombre_grupo: this.state.nombreGrupo,
+            sigla_grupo: this.state.siglaGrupo,
         };
-        putGrupo(cookies.get("token"), newGrupo, this.state.idGrupo)
+        putGrupos(cookies.get("token"), newGrupo, this.props.match.params.idCurso, this.state.idGrupo)
             .then((resp) => {
                 if (resp.meta === "OK") {
                     this.AlertsHandler.generate("success", "Agregado", "Grupo modificado con éxito");
@@ -136,8 +123,8 @@ class Grupos extends React.Component {
     handleModalEditarGrupo(rowData) {
         if (rowData["id"] != null) {
             this.setState({
-                nombreGrupo: rowData["nombre_curso"],
-                siglaGrupo: rowData["sigla_curso"],
+                nombreGrupo: rowData["nombre_grupo"],
+                siglaGrupo: rowData["sigla_grupo"],
                 idGrupo: rowData["id"],
             });
         }
@@ -146,15 +133,40 @@ class Grupos extends React.Component {
             modalEditarGrupo: !this.state.modalEditarGrupo,
         });
     }
-    handleAsociarEvaluador(rowData) {
-        asociarGrupoEvaluador(cookies.get("token"), this.state.idCurso, this.state.idGrupo, this.state.idEvaluador)
+    handleEliminarGrupo(event) {
+        event.preventDefault();
+        deleteGrupos(cookies.get("token"), this.props.match.params.idCurso, this.state.idGrupo)
             .then((resp) => {
                 if (resp.meta === "OK") {
-                    this.AlertsHandler.generate("success", "Agregado", "Grupo modificado con éxito");
+                    this.AlertsHandler.generate("success", "Eliminado", "Grupo eliminado con éxito");
+                    this.setState({
+                        modalEliminarGrupo: false,
+                    });
+                } else {
+                    this.AlertsHandler.generate("danger", "Oops!", "Parece que hubo un problema");
+                }
+            })
+            .catch((err) => console.log(err));
+    }
+    handleModalEliminarGrupo(rowData) {
+        if (rowData["id"] != null) {
+            this.setState({
+                idGrupo: rowData["id"],
+            });
+        }
+        this.setState({
+            modalEliminarGrupo: !this.state.modalEliminarGrupo,
+        });
+    }
+    handleAsociarEvaluador() {
+        asociarGrupoEvaluador(cookies.get("token"), this.props.match.params.idCurso, this.state.idGrupo, this.state.idEvaluador)
+            .then((resp) => {
+                if (resp.meta === "OK") {
+                    this.AlertsHandler.generate("success", "Agregado", "Nuevo grupo agregado con éxito");
                     this.setState({
                         nombreGrupo: "",
                         siglaGrupo: "",
-                        modalAsociarEstudiante: false,
+                        modalAsociarEvaluador: false,
                     });
                 } else {
                     this.AlertsHandler.generate("danger", "Oops!", "Parece que hubo un problema");
@@ -163,25 +175,16 @@ class Grupos extends React.Component {
             .catch((err) => console.log(err));
     }
     handleModalAsociarEvaluador(rowData) {
-        if (rowData["id"] != null) {
-            this.setState({
-                nombreGrupo: rowData["nombre_curso"],
-                siglaGrupo: rowData["sigla_curso"],
-                idCurso: rowData["id_curso"],
-                idGrupo: rowData["id"],
-            });
-        }
-
         this.setState({
+            idGrupo: rowData["id"],
             modalAsociarEvaluador: !this.state.modalAsociarEvaluador,
         });
     }
-
-    handleAsociarEstudiante(rowData) {
-        asociarGrupoEstudiante(cookies.get("token"), this.state.idCurso, this.state.idGrupo, this.state.idEstudiante)
+    handleAsociarEstudiante() {
+        asociarGrupoEstudiante(cookies.get("token"), this.props.match.params.idCurso, this.state.idGrupo, this.state.idEstudiante)
             .then((resp) => {
                 if (resp.meta === "OK") {
-                    this.AlertsHandler.generate("success", "Agregado", "Grupo modificado con éxito");
+                    this.AlertsHandler.generate("success", "Agregado", "Nuevo grupo agregado con éxito");
                     this.setState({
                         nombreGrupo: "",
                         siglaGrupo: "",
@@ -194,16 +197,8 @@ class Grupos extends React.Component {
             .catch((err) => console.log(err));
     }
     handleModalAsociarEstudiante(rowData) {
-        if (rowData["id"] != null) {
-            this.setState({
-                nombreGrupo: rowData["nombre_curso"],
-                siglaGrupo: rowData["sigla_curso"],
-                idCurso: rowData["id_curso"],
-                idGrupo: rowData["id"],
-            });
-        }
-
         this.setState({
+            idGrupo: rowData["id"],
             modalAsociarEstudiante: !this.state.modalAsociarEstudiante,
         });
     }
@@ -236,19 +231,24 @@ class Grupos extends React.Component {
                                         }}
                                         actions={[
                                             {
-                                                icon: "personadd",
-                                                tooltip: "Asociar estudiante",
-                                                onClick: (event, rowData) => this.handleModalAsociarEstudiante(rowData),
-                                            },
-                                            {
-                                                icon: "assignmentturnedin",
+                                                icon: "book",
                                                 tooltip: "Asociar evaluador",
                                                 onClick: (event, rowData) => this.handleModalAsociarEvaluador(rowData),
                                             },
                                             {
+                                                icon: "school",
+                                                tooltip: "Asociar estudiante",
+                                                onClick: (event, rowData) => this.handleModalAsociarEstudiante(rowData),
+                                            },
+                                            {
                                                 icon: "create",
-                                                tooltip: "Editar curso",
+                                                tooltip: "Editar grupo",
                                                 onClick: (event, rowData) => this.handleModalEditarGrupo(rowData),
+                                            },
+                                            {
+                                                icon: "delete",
+                                                tooltip: "Borrar grupo",
+                                                onClick: (event, rowData) => this.handleModalEliminarGrupo(rowData),
                                             },
                                         ]}
                                         options={{
@@ -263,50 +263,65 @@ class Grupos extends React.Component {
                                                 fontWeight: "normal",
                                             },
                                         }}
+                                        detailPanel={(rowData) => {
+                                            return (
+                                                <Box margin={1} style={{}}>
+                                                    <Typography variant="h6" gutterBottom component="div" style={{ marginLeft: "10px" }}>
+                                                        Detalle Grupo
+                                                    </Typography>
+                                                    <Table size="small" aria-label="purchases">
+                                                        <TableHead>
+                                                            <TableRow>
+                                                                <TableCell style={{ fontWeight: "bold" }}>Rol</TableCell>
+                                                                <TableCell style={{ fontWeight: "bold" }}>Apellidos</TableCell>
+                                                                <TableCell style={{ fontWeight: "bold" }}>Nombres</TableCell>
+                                                                <TableCell style={{ fontWeight: "bold" }}>Correo</TableCell>
+                                                            </TableRow>
+                                                        </TableHead>
+                                                        <TableBody>
+                                                            {rowData["evaluadores_grupo"].map((evaluador, i) => (
+                                                                <TableRow key={i}>
+                                                                    <TableCell>
+                                                                        <Chip label="Evaluador" color="primary" />
+                                                                    </TableCell>
+                                                                    <TableCell> {evaluador["apellidos_evaluador"]} </TableCell>
+                                                                    <TableCell> {evaluador["nombres_evaluador"]} </TableCell>
+                                                                    <TableCell> {evaluador["correo_electronico_evaluador"]} </TableCell>
+                                                                </TableRow>
+                                                            ))}
+                                                            {rowData["estudiantes_grupo"].map((estudiante, i) => (
+                                                                <TableRow key={i}>
+                                                                    <TableCell>
+                                                                        <Chip label="Estudiante" color="secondary" />
+                                                                    </TableCell>
+                                                                    <TableCell> {estudiante["apellidos_estudiante"]} </TableCell>
+                                                                    <TableCell> {estudiante["nombres_estudiante"]} </TableCell>
+                                                                    <TableCell> {estudiante["correo_electronico_estudiante"]} </TableCell>
+                                                                </TableRow>
+                                                            ))}
+                                                        </TableBody>
+                                                    </Table>
+                                                </Box>
+                                            );
+                                        }}
                                     />
                                 </CardBody>
                             </Card>
                         </Col>
                     </Row>
                     <Modal aria-labelledby="contained-modal-title-vcenter" centered isOpen={this.state.modalAgregarGrupo}>
-                        <ModalHeader>Agregar nuevo Grupo</ModalHeader>
+                        <ModalHeader>Agregar nuevo grupo</ModalHeader>
                         <ModalBody>
-                            <form>
-                                <Row>
-                                    <Col sm="12" md="12">
-                                        <small>Curso</small>
-                                        <Input type="select" name="idCurso" value={this.state.idCurso} onChange={this.handleChange} required>
-                                            <option disabled value={"0"}>
-                                                -- Elija un curso --
-                                            </option>
-                                            {this.state.cursos.map((curso) => {
-                                                return (
-                                                    <option key={curso["id"]} value={curso["id"]}>
-                                                        {curso["nombre_curso"]}
-                                                    </option>
-                                                );
-                                            })}
-                                        </Input>
-                                    </Col>
-                                </Row>
-                                <Row>
-                                    <Col sm="12" md="12">
-                                        <small>Nombre Grupo</small>
-                                        <Input
-                                            name="nombreGrupo"
-                                            value={this.state.nombreGrupo}
-                                            onChange={this.handleChange}
-                                            placeholder="Grupo Médico"
-                                        />
-                                    </Col>
-                                </Row>
-                                <Row>
-                                    <Col sm="12" md="12">
-                                        <small>Sigla Grupo</small>
-                                        <Input name="siglaGrupo" value={this.state.siglaGrupo} onChange={this.handleChange} placeholder="GMED-1" />
-                                    </Col>
-                                </Row>
-                            </form>
+                            <FormGroup>
+                                <Label for="nombreGrupo" style={{ marginTop: "10px" }}>
+                                    Nombre nuevo grupo
+                                </Label>
+                                <Input type="text" name="nombreGrupo" id="nombreGrupo" placeholder="Grupo 1" onChange={this.handleChange} />
+                                <Label for="siglaGrupo" style={{ marginTop: "10px" }}>
+                                    Nombre sigla grupo
+                                </Label>
+                                <Input type="text" name="siglaGrupo" id="siglaGrupo" placeholder="G01" onChange={this.handleChange} />
+                            </FormGroup>
                         </ModalBody>
                         <ModalFooter>
                             <Button color="success" type="submit" onClick={this.handleAgregarGrupo}>
@@ -320,7 +335,7 @@ class Grupos extends React.Component {
                         <ModalBody>
                             <FormGroup>
                                 <Label for="nombreGrupo" style={{ marginTop: "10px" }}>
-                                    Nombre curso
+                                    Nombre grupo
                                 </Label>
                                 <Input type="text" name="nombreGrupo" id="nombreGrupo" value={this.state.nombreGrupo} onChange={this.handleChange} />
                                 <Label for="siglaGrupo" style={{ marginTop: "10px" }}>
@@ -333,66 +348,65 @@ class Grupos extends React.Component {
                             <Button color="success" type="submit" onClick={this.handleEditarGrupo}>
                                 Modificar
                             </Button>
-                            <Button onClick={this.handleModalEditarGrupo}>Salir</Button>
+                            <Button onClick={this.handleModalEditarGrupo}>Cancelar</Button>
+                        </ModalFooter>
+                    </Modal>
+                    <Modal aria-labelledby="contained-modal-title-vcenter" centered isOpen={this.state.modalEliminarGrupo}>
+                        <ModalHeader>¿Está seguro que desea eliminar el grupo?</ModalHeader>
+                        <ModalFooter>
+                            <Button color="danger" type="submit" onClick={this.handleEliminarGrupo}>
+                                Eliminar
+                            </Button>
+                            <Button onClick={this.handleModalEliminarGrupo}>Cancelar</Button>
                         </ModalFooter>
                     </Modal>
                     <Modal aria-labelledby="contained-modal-title-vcenter" centered isOpen={this.state.modalAsociarEvaluador}>
-                        <ModalHeader>Asociar Evaluador</ModalHeader>
+                        <ModalHeader>Asociar evaluador</ModalHeader>
                         <ModalBody>
                             <FormGroup>
-                                <Row>
-                                    <Col sm="12" md="12">
-                                        <small>Evaluador</small>
-                                        <Input type="select" name="idEvaluador" value={this.state.idEvaluador} onChange={this.handleChange} required>
-                                            <option disabled value={"0"}>
-                                                -- Elija un evaluador --
+                                <Label for="idEvaluador" style={{ marginTop: "10px" }}>
+                                    Nombre evaluador
+                                </Label>
+                                <Input type="select" name="idEvaluador" value={this.state.idEvaluador} onChange={this.handleChange} required>
+                                    <option disabled value={"0"}>
+                                        -- Elija un evaluador --
+                                    </option>
+                                    {this.state.sinGrupo["evaluadores_grupo"].map((evaluador) => {
+                                        return (
+                                            <option key={evaluador["id"]} value={evaluador["id"]}>
+                                                {evaluador["nombres_evaluador"] + " " + evaluador["apellidos_evaluador"]}
                                             </option>
-                                            {this.state.evaluadores.map((evaluador) => {
-                                                return (
-                                                    <option key={evaluador["id"]} value={evaluador["id"]}>
-                                                        {evaluador["nombres_evaluador"] + " " + evaluador["apellidos_evaluador"]}
-                                                    </option>
-                                                );
-                                            })}
-                                        </Input>
-                                    </Col>
-                                </Row>
+                                        );
+                                    })}
+                                </Input>
                             </FormGroup>
                         </ModalBody>
                         <ModalFooter>
                             <Button color="success" type="submit" onClick={this.handleAsociarEvaluador}>
                                 Asociar
                             </Button>
-                            <Button onClick={this.handleModalAsociarEvaluador}>Salir</Button>
+                            <Button onClick={this.handleModalAsociarEvaluador}>Cancelar</Button>
                         </ModalFooter>
                     </Modal>
                     <Modal aria-labelledby="contained-modal-title-vcenter" centered isOpen={this.state.modalAsociarEstudiante}>
-                        <ModalHeader>Asociar Estudiante</ModalHeader>
+                        <ModalHeader>Asociar estudiante</ModalHeader>
                         <ModalBody>
                             <FormGroup>
-                                <Row>
-                                    <Col sm="12" md="12">
-                                        <small>Estudiante</small>
-                                        <Input
-                                            type="select"
-                                            name="idEstudiante"
-                                            value={this.state.idEstudiante}
-                                            onChange={this.handleChange}
-                                            required
-                                        >
-                                            <option disabled value={"0"}>
-                                                -- Elija un estudiante --
+                                <Label for="idEstudiante" style={{ marginTop: "10px" }}>
+                                    Nombre estudiante
+                                </Label>
+                                <Input type="select" name="idEstudiante" value={this.state.idEstudiante} onChange={this.handleChange} required>
+                                    <option disabled value={"0"}>
+                                        -- Elija un estudiante --
+                                    </option>
+                                    {this.state.sinGrupo["estudiantes_grupo"].map((estudiante) => {
+                                        return (
+                                            <option key={estudiante["id"]} value={estudiante["id"]}>
+                                                {estudiante["nombres_estudiante"] + " " + estudiante["apellidos_estudiante"]}
                                             </option>
-                                            {this.state.estudiantes.map((estudiante) => {
-                                                return (
-                                                    <option key={estudiante["id"]} value={estudiante["id"]}>
-                                                        {estudiante["nombres_estudiante"] + " " + estudiante["apellidos_estudiante"]}
-                                                    </option>
-                                                );
-                                            })}
-                                        </Input>
-                                    </Col>
-                                </Row>
+                                        );
+                                    })}
+                                </Input>
                             </FormGroup>
                         </ModalBody>
                         <ModalFooter>
@@ -409,4 +423,4 @@ class Grupos extends React.Component {
     }
 }
 
-export default Grupos;
+export default Curso;

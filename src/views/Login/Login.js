@@ -109,7 +109,6 @@ class Login extends React.Component {
     }
     handleSubmit = (event) => {
         event.preventDefault();
-        console.log(this.state.perfil);
         this.setState({ buttonDisabled: true });
         if (parseInt(this.state.perfil) === 1) {
             loginMedRoom(this.state.user, sha256(this.state.password)).then((resp) => {
@@ -208,7 +207,7 @@ class Login extends React.Component {
                                                     <Input type="select" name="perfil" id="perfil" onChange={this.handleChange}>
                                                         <option value={1}>ESTUDIANTE</option>
                                                         <option value={2}>EVALUADOR</option>
-                                                        <option value={3}>ADMINISTRADOR</option>
+                                                        <option value={3}>ADMINISTRADOR ACADÉMICO</option>
                                                         <option value={4}>ADMINISTRADOR TI</option>
                                                     </Input>
                                                 </FormGroup>
@@ -272,7 +271,7 @@ class Login extends React.Component {
                             </Col>
                         </Row>
                     </Container>
-                    <Modal isOpen={this.state.modalProblemas}>
+                    <Modal aria-labelledby="contained-modal-title-vcenter" centered isOpen={this.state.modalProblemas}>
                         <ModalHeader>Recuperación</ModalHeader>
                         <ModalBody>
                             Para recuperar la contraseña o usuario, por favor contactar con <a href={"soport@mail.udp.cl"}>soporte@mail.udp.cl</a>
@@ -287,10 +286,11 @@ class Login extends React.Component {
                 </div>
             );
         else {
-            console.log(decoded.perfil);
             if (decoded.perfil === "estudiante") return <Redirect to="/portal/estudiante/perfil" />;
             else if (decoded.perfil === "evaluador") return <Redirect to="/portal/evaluador/perfil" />;
             else if (decoded.perfil === "estudiante") return <Redirect to="/portal/estudiante/perfil" />;
+            else if (decoded.perfil === "administrador_academico") return <Redirect to="/portal/administradorUDP/perfil" />;
+            else if (decoded.perfil === "administrador_ti") return <Redirect to="/portal/administradorTI/perfil" />;
             else return <div> {decoded.perfil} Oops, no deberías estar aquí xD</div>;
         }
     }

@@ -205,7 +205,7 @@ class Administradores extends React.Component {
                             </Card>
                         </Col>
                     </Row>
-                    <Modal isOpen={this.state.modalAgregarAdministrador}>
+                    <Modal aria-labelledby="contained-modal-title-vcenter" centered isOpen={this.state.modalAgregarAdministrador}>
                         <ModalHeader>Crear Administrador</ModalHeader>
                         <ModalBody>
                             <form>
@@ -284,7 +284,7 @@ class Administradores extends React.Component {
                             <Button onClick={this.handleModalAgregarAdministrador}>Salir</Button>
                         </ModalFooter>
                     </Modal>
-                    <Modal isOpen={this.state.modalEditarAdministrador}>
+                    <Modal aria-labelledby="contained-modal-title-vcenter" centered isOpen={this.state.modalEditarAdministrador}>
                         <ModalHeader>Crear Administrador</ModalHeader>
                         <ModalBody>
                             <form>

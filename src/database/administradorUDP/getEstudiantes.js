@@ -1,5 +1,5 @@
 export function getEstudiantes(token) {
-    var FetchURL = `${process.env.REACT_APP_APIURL}/administracion-academica/estudiantes`;
+    var FetchURL = `${process.env.REACT_APP_APIURL}/administracion-academica/me/estudiantes`;
 
     return fetch(FetchURL, {
         method: "GET",

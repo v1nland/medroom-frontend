@@ -3,11 +3,13 @@ import EstudianteCursos from "views/Estudiante/Cursos.js";
 import EstudianteCurso from "views/Estudiante/Curso.js";
 import EvaluadorPerfil from "views/Evaluador/Perfil.js";
 import EvaluadorEvaluacion from "views/Evaluador/Evaluacion.js";
-import EvaluadorReporte from "views/Evaluador/Reporte.js";
+import EvaluadorModificarEvaluacion from "views/Evaluador/ModificarEvaluacion.js";
+// import EvaluadorReporte from "views/Evaluador/Reporte.js";
 import EvaluadorCurso from "views/Evaluador/Curso.js";
 import EvaluadorCursos from "views/Evaluador/Cursos.js";
 import AdministradorUDPPerfil from "views/AdministradorUDP/Perfil.js";
-import AdministradorUDPGrupos from "views/AdministradorUDP/Grupos.js";
+import AdministradorUDPCursos from "views/AdministradorUDP/Cursos.js";
+import AdministradorUDPCurso from "views/AdministradorUDP/Curso.js";
 import AdministradorTIPerfil from "views/AdministradorTI/Perfil.js";
 import AdministradorTICursos from "views/AdministradorTI/CrearCursos.js";
 import AdministradorTIEstudiantes from "views/AdministradorTI/Estudiantes.js";
@@ -24,7 +26,7 @@ var routes = [
         perfil: "estudiante",
     },
     {
-        path: "/estudiante/cursos",
+        path: "/estudiante/tablero",
         name: "Tablero de cursos",
         icon: "nc-icon nc-badge",
         component: EstudianteCursos,
@@ -32,8 +34,8 @@ var routes = [
         perfil: "estudiante",
     },
     {
-        path: "/estudiante/curso/:idCurso/grupo/:idGrupo",
-        name: "Mi Curso1",
+        path: "/estudiante/cursos/:idCurso/grupo/:idGrupo",
+        name: "No mostrar1",
         icon: "nc-icon nc-paper",
         component: EstudianteCurso,
         layout: "/portal",
@@ -48,15 +50,15 @@ var routes = [
         perfil: "evaluador",
     },
     {
-        path: "/evaluador/curso/:idCurso",
-        name: "Mi Curso2",
+        path: "/evaluador/cursos/:idCurso",
+        name: "No mostrar2",
         icon: "nc-icon nc-single-copy-04",
         component: EvaluadorCurso,
         layout: "/portal",
         perfil: "evaluador",
     },
     {
-        path: "/evaluador/cursos",
+        path: "/evaluador/tablero",
         name: "Tablero de cursos",
         icon: "nc-icon nc-badge",
         component: EvaluadorCursos,
@@ -72,35 +74,51 @@ var routes = [
         perfil: "evaluador",
     },
     {
-        path: "/evaluador/reporte",
-        name: "Ver reportes",
-        icon: "nc-icon nc-single-copy-04",
-        component: EvaluadorReporte,
+        path: "/evaluador/modificar/evaluacion",
+        name: "Modificar Evaluacion",
+        icon: "nc-icon nc-ruler-pencil",
+        component: EvaluadorModificarEvaluacion,
         layout: "/portal",
         perfil: "evaluador",
     },
-    {
-        path: "/",
-        name: "Agregar evaluación",
-        icon: "nc-icon nc-single-copy-04",
-        layout: "/portal",
-        perfil: "evaluador",
-    },
+    // {
+    //     path: "/evaluador/reporte",
+    //     name: "Ver reportes",
+    //     icon: "nc-icon nc-single-copy-04",
+    //     component: EvaluadorReporte,
+    //     layout: "/portal",
+    //     perfil: "evaluador",
+    // },
+    // {
+    //     path: "/evaluador/agregar",
+    //     name: "Agregar evaluación",
+    //     icon: "nc-icon nc-single-copy-04",
+    //     layout: "/portal",
+    //     perfil: "evaluador",
+    // },
     {
         path: "/administradorUDP/perfil",
         name: "Mi perfil",
-        icon: "nc-icon nc-single-02",
+        icon: "nc-icon nc-badge",
         component: AdministradorUDPPerfil,
         layout: "/portal",
         perfil: "administrador_academico",
     },
     {
-        path: "/administradorUDP/grupos",
-        name: "Grupos",
+        path: "/administradorUDP/tablero",
+        name: "Tablero de cursos",
         icon: "nc-icon nc-vector",
-        component: AdministradorUDPGrupos,
+        component: AdministradorUDPCursos,
         layout: "/portal",
         perfil: "administrador_academico",
+    },
+    {
+        path: "/administradorUDP/cursos/:idCurso",
+        name: "No mostrar3",
+        icon: "nc-icon nc-single-copy-04",
+        component: AdministradorUDPCurso,
+        layout: "/portal",
+        perfil: "evaluador",
     },
     {
         path: "/administradorTI/perfil",
