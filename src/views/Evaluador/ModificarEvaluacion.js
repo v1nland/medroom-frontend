@@ -129,11 +129,6 @@ class ModificarEvaluacion extends React.Component {
                     id_competencia: "OREF",
                     calificacion_puntaje: parseInt(this.state.eficiencia),
                 },
-                {
-                    feedback_puntaje: "string",
-                    id_competencia: "VAGL",
-                    calificacion_puntaje: parseInt(this.state.competenciaClinica),
-                },
             ],
             tiempo_utilizado_calificacion_estudiante: 0,
         };

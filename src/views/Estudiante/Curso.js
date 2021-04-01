@@ -128,10 +128,6 @@ class Curso extends React.Component {
                                     {this.state.comentarioEvaluacion}
                                 </Media>
                             </Media>
-                            {/* <div className="info">
-                                <h4 className="info-title">Feedback Descriptivo</h4>
-                                <p>{this.state.comentarioEvaluacion}</p>
-                            </div> */}
                             <Radar data={this.state.data} options={optionsCompetencia} width={400} height={200} style={{ marginTop: "35px" }} />
                         </ModalBody>
                         <ModalFooter>
