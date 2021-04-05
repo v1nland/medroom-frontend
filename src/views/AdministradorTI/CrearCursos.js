@@ -76,7 +76,8 @@ class Cursos extends React.Component {
         this.handleModalCargaMasiva = this.handleModalCargaMasiva.bind(this);
         this.handleCargaMasivaGrupos = this.handleCargaMasivaGrupos.bind(this);
         this.handleModalCargaMasivaGrupos = this.handleModalCargaMasivaGrupos.bind(this);
-        this.handleForce = this.handleForce.bind(this);
+        this.handleForceCursos = this.handleForceCursos.bind(this);
+        this.handleForceGrupos = this.handleForceGrupos.bind(this);
         this.handleDescargarReporte = this.handleDescargarReporte.bind(this);
     }
     componentDidMount() {
@@ -94,10 +95,16 @@ class Cursos extends React.Component {
             [event.target.name]: event.target.value,
         });
     }
-    handleForce(data, fileInfo) {
+    handleForceCursos(data, fileInfo) {
         this.setState({
             cargaCursos: data,
             fileCargaCursos: fileInfo,
+        });
+    }
+    handleForceGrupos(data, fileInfo) {
+        this.setState({
+            cargaGrupos: data,
+            fileCargaGrupos: fileInfo,
         });
     }
     handleAgregarCurso() {
@@ -386,7 +393,7 @@ class Cursos extends React.Component {
                                 <CSVReader
                                     cssClass="csv-reader-input"
                                     label="Selecciona un archivo .csv"
-                                    onFileLoaded={(data, fileInfo) => this.handleForce(data, fileInfo)}
+                                    onFileLoaded={(data, fileInfo) => this.handleForceCursos(data, fileInfo)}
                                     parserOptions={papaparseOptions}
                                     inputId="cargaCursos"
                                     inputName="cargaCursos"
@@ -408,7 +415,7 @@ class Cursos extends React.Component {
                                 <CSVReader
                                     cssClass="csv-reader-input"
                                     label="Selecciona un archivo .csv"
-                                    onFileLoaded={(data, fileInfo) => this.handleForce(data, fileInfo)}
+                                    onFileLoaded={(data, fileInfo) => this.handleForceGrupos(data, fileInfo)}
                                     parserOptions={papaparseOptions}
                                     inputId="cargaGrupos"
                                     inputName="cargaGrupos"
