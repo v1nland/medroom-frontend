@@ -160,8 +160,8 @@ class Estudiantes extends React.Component {
     }
     handleForce(data, fileInfo) {
         this.setState({
-            cargaCursos: data,
-            fileCargaCursos: fileInfo,
+            cargaEstudiantes: data,
+            fileCargaEstudiantes: fileInfo,
         });
     }
 
