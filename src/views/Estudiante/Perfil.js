@@ -104,7 +104,7 @@ class Perfil extends React.Component {
         event.preventDefault();
         var newDatos = {
             hash_contrasena_estudiante: sha256(this.state.passwordOldAlumno),
-            hash_nueva_contrasena_estudiante: sha256(this.state.passwordAlumno),
+            hash_nueva_contrasena_estudiante: this.state.passwordAlumno ? sha256(this.state.passwordAlumno) : null,
             telefono_celular_estudiante: this.state.contactoAlumno,
         };
         putPerfil(cookies.get("token"), newDatos).then((resp) => {

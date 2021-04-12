@@ -12,6 +12,7 @@ const papaparseOptions = {
     header: true,
     dynamicTyping: true,
     skipEmptyLines: true,
+    delimiter: ";",
     transformHeader: (header) => header.toLowerCase().replace(/\W/g, "_"),
 };
 z;

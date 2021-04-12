@@ -1,7 +1,24 @@
 import React from "react";
 import Referencia from "../../components/Referencia/Referencia.js";
-import { Card, CardBody, CardHeader, CardTitle, Form, Row, Col, FormGroup, Label, Input, Button } from "reactstrap";
+import {
+    Card,
+    CardBody,
+    CardHeader,
+    CardTitle,
+    Form,
+    Row,
+    Col,
+    FormGroup,
+    Label,
+    Input,
+    Button,
+    Modal,
+    ModalBody,
+    ModalFooter,
+    ModalHeader,
+} from "reactstrap";
 import LoadingPage from "../../components/LoadingPage/LoadingPage";
+import HelpIcon from "@material-ui/icons/Help";
 import { getPerfil } from "../../database/evaluadores/getPerfil";
 import { getGrupo } from "../../database/evaluadores/getGrupo";
 import { getCursos } from "../../database/evaluadores/getCursos";
@@ -17,6 +34,7 @@ class Evaluacion extends React.Component {
             queriesReady: true,
             cursoReady: false,
             grupoReady: false,
+            modalInformacion: false,
             idEstudiante: 0,
             nombreEvaluador: "",
             nombreEstudiante: "",
@@ -46,6 +64,7 @@ class Evaluacion extends React.Component {
         this.handleGrupos = this.handleGrupos.bind(this);
         this.handleEstudiantes = this.handleEstudiantes.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
+        this.handleInformacion = this.handleInformacion.bind(this);
     }
     componentDidMount() {
         Promise.all([getPerfil(cookies.get("token")), getCursos(cookies.get("token"))])
@@ -111,6 +130,12 @@ class Evaluacion extends React.Component {
             }
         );
     }
+    handleInformacion() {
+        this.setState({
+            modalInformacion: !this.state.modalInformacion,
+        });
+    }
+
     handleSubmit(event) {
         event.preventDefault();
         var newEvaluacion = {
@@ -345,6 +370,17 @@ class Evaluacion extends React.Component {
                         </Row>
                         <Row>
                             <Col sm="12" md="12" lg="12">
+                                <Button
+                                    className="btn-round"
+                                    onClick={this.handleInformacion}
+                                    style={{ backgroundColor: "#F2C14E", marginBottom: "20px" }}
+                                >
+                                    Ayuda <HelpIcon style={{ marginBottom: "2px", marginLeft: "5px" }} />
+                                </Button>
+                            </Col>
+                        </Row>
+                        <Row>
+                            <Col sm="12" md="12" lg="12">
                                 <Referencia
                                     label="Habilidad de entrevista médica"
                                     descripcion={`- Facilita las explicaciones del paciente- Estructurada y exhaustiva
@@ -451,6 +487,89 @@ class Evaluacion extends React.Component {
                             </Col>
                         </Row>
                     </Form>
+                    <Modal aria-labelledby="contained-modal-title-vcenter" centered isOpen={this.state.modalInformacion}>
+                        <ModalHeader>Descriptores de las competencias</ModalHeader>
+                        <ModalBody>
+                            <i>
+                                <b>Anamnesis</b>
+                            </i>
+                            <br />
+                            <br />
+                            <ul>
+                                <li>Facilita las explicaciones del paciente</li>
+                                <li>Estructurada y exhaustiva</li>
+                                <li>Hace preguntas adecuadas para obtener información del paciente</li>
+                                <li>Responde adecuadamente a expresiones claves verbales y no verbales del paciente</li>
+                            </ul>
+                            <br />
+                            <i>
+                                <b>Profesionalismo</b>
+                            </i>
+                            <br />
+                            <br />
+                            <ul>
+                                <li>Presentación del médico</li>
+                                <li>Muestra respeto y crea un clima de confianza. Empático</li>
+                                <li>Se comporta de forma ética y considera los aspectos legales relevantes al caso</li>
+                                <li>Atento a las necesidades del paciente en términos de confort, confidencialidad y respeto</li>
+                            </ul>
+                            <br />
+                            <i>
+                                <b>Juicio clínico</b>
+                            </i>
+                            <br />
+                            <br />
+                            <ul>
+                                <li>Realiza una orientación diagnóstica adecuada con un diagnóstico diferencial</li>
+                                <li>Formula un plan de manejo coherente con el diagnóstico</li>
+                                <li>Hace/indica los estudios diagnósticos considerando riesgos, beneficios y costes</li>
+                            </ul>
+                            <br />
+                            <i>
+                                <b>Habilidades comunicativas</b>
+                            </i>
+                            <br />
+                            <br />
+                            <ul>
+                                <li>Utiliza un lenguaje comprensible y empático para el paciente</li>
+                                <li>Franco y honesto</li>
+                                <li>Explora las perspectivas del paciente y la familia</li>
+                                <li>Informa y consensúa el plan de manejo/tratamiento con el paciente</li>
+                            </ul>
+                            <br />
+                            <i>
+                                <b>Organizadón/efidencia</b>
+                            </i>
+                            <br />
+                            <br />
+                            <ul>
+                                <li>Prioriza los problemas</li>
+                                <li>Buena gestión del tiempo y los recursos</li>
+                                <li>Derivaciones adecuadas</li>
+                                <li>Es concreto</li>
+                                <li>Recapitula y hace un resumen final</li>
+                                <li>Capacidad de trabajo en equipo </li>
+                            </ul>
+                            <br />
+                            <i>
+                                <b>Valoración global</b>
+                            </i>
+                            <br />
+                            <br />
+                            <ul>
+                                <li>
+                                    Demuestra satisfactoriamente juicio clínico, capacidad de síntesis y de resolución, y tiene en cuenta los aspectos
+                                    de eficiencia, valorando riesgos y beneficios en el plan de manejo{" "}
+                                </li>
+                            </ul>
+                            <br />
+                        </ModalBody>
+                        <ModalFooter>
+                            <Button color="success" type="submit" onClick={this.handleInformacion}>
+                                Entiendo
+                            </Button>
+                        </ModalFooter>
+                    </Modal>
                     <AlertsHandler onRef={(ref) => (this.AlertsHandler = ref)} />
                 </div>
             );

@@ -104,7 +104,7 @@ class Perfil extends React.Component {
         event.preventDefault();
         var newDatos = {
             hash_contrasena_administrador_ti: sha256(this.state.passwordOldAdministrador),
-            hash_nueva_contrasena_administrador_ti: sha256(this.state.passwordAdministrador),
+            hash_nueva_contrasena_administrador_ti: this.state.passwordAdministrador ? sha256(this.state.passwordAdministrador) : null,
             telefono_celular_administrador_ti: this.state.contactoAdministrador,
         };
         putPerfil(cookies.get("token"), newDatos).then((resp) => {
@@ -207,7 +207,6 @@ class Perfil extends React.Component {
                                                         onChange={this.handleChange}
                                                         placeholder="******"
                                                         type="password"
-                                                        required
                                                     />
                                                     {this.renderAlertPassword()}
                                                 </FormGroup>
@@ -221,7 +220,6 @@ class Perfil extends React.Component {
                                                         onChange={this.handleChange}
                                                         placeholder="******"
                                                         type="password"
-                                                        required
                                                     />
                                                     {this.renderAlertPassword()}
                                                 </FormGroup>

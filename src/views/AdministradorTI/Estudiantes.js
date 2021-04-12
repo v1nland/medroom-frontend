@@ -23,6 +23,7 @@ const papaparseOptions = {
     header: true,
     dynamicTyping: true,
     skipEmptyLines: true,
+    delimiter: ";",
     transformHeader: (header) => header.toLowerCase().replace(/\W/g, "_"),
 };
 
@@ -159,6 +160,9 @@ class Estudiantes extends React.Component {
         });
     }
     handleForce(data, fileInfo) {
+        for (let i = 0; i < data.length; i++) {
+            data[i]["id_grupos"] = data[i]["id_grupos"].replace("[", "").replace("]", "").split(",").map(Number);
+        }
         this.setState({
             cargaEstudiantes: data,
             fileCargaEstudiantes: fileInfo,

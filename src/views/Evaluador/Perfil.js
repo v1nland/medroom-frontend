@@ -92,7 +92,7 @@ class Perfil extends React.Component {
         var newDatos = {
             cargo_evaluador: this.state.cargoEvaluador,
             hash_contrasena_evaluador: sha256(this.state.passwordOldEvaluador),
-            hash_nueva_contrasena_evaluador: sha256(this.state.passwordEvaluador),
+            hash_nueva_contrasena_evaluador: this.state.passwordEvaluador ? sha256(this.state.passwordEvaluador) : null,
             telefono_celular_evaluador: this.state.contactoEvaluador,
         };
         putPerfil(cookies.get("token"), newDatos).then((resp) => {
