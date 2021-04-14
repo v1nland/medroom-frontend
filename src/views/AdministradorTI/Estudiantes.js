@@ -16,6 +16,7 @@ import { formatEstudiantes } from "../../helpers/AdministradorTI/formatEstudiant
 import LoadingPage from "../../components/LoadingPage/LoadingPage";
 import AlertsHandler from "../../components/AlertsHandler/AlertsHandler";
 import { sha256 } from "js-sha256";
+import { formatCargaEstudiantes } from "functions/formats/administradorTI/formatCargaEstudiantes";
 import { formatCursos } from "functions/formats/estudiantes/formatCursos";
 import CSVReader from "react-csv-reader";
 const cookies = new Cookies();
@@ -238,9 +239,8 @@ class Estudiantes extends React.Component {
         });
     }
     handleCargaMasiva() {
-        var estudiantes = {
-            estudiantes: this.state.cargaEstudiantes,
-        };
+        var estudiantes = formatCargaEstudiantes(this.state.cargaEstudiantes);
+
         cargarEstudiantes(cookies.get("token"), estudiantes)
             .then((resp) => {
                 if (resp.meta === "OK") {
