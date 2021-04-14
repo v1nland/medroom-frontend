@@ -11,7 +11,7 @@ export function formatCargaEstudiantes(data) {
         estudiantes[i]["hash_contrasena_estudiante"] = sha256(String(estudiante["rut"]));
         estudiantes[i]["correo_electronico_estudiante"] = estudiante["correo"];
         estudiantes[i]["telefono_fijo_estudiante"] = estudiante["telefono_fijo"];
-        estudiantes[i]["telefono_fijo_estudiante"] = estudiante["telefono_celular"];
+        estudiantes[i]["telefono_telefono_celular"] = estudiante["telefono_celular"];
         ++i;
     });
     return estudiantes;
