@@ -245,20 +245,20 @@ class Login extends React.Component {
                                                         ADMINISTRADOR TI
                                                     </Button>
                                                 </ButtonGroup> */}
+                                                <Row>
+                                                    <Col xs="12">
+                                                        <Button
+                                                            type="submit"
+                                                            color="primary"
+                                                            size="lg"
+                                                            onClick={this.handleButton}
+                                                            disabled={this.state.buttonDisabled}
+                                                        >
+                                                            {renderTextButton(this.state.buttonClicked)}
+                                                        </Button>
+                                                    </Col>
+                                                </Row>
                                             </Form>
-                                            <Row>
-                                                <Col xs="12">
-                                                    <Button
-                                                        type="submit"
-                                                        color="primary"
-                                                        size="lg"
-                                                        onClick={this.handleButton}
-                                                        disabled={this.state.buttonDisabled}
-                                                    >
-                                                        {renderTextButton(this.state.buttonClicked)}
-                                                    </Button>
-                                                </Col>
-                                            </Row>
                                         </CardBody>
                                     </Card>
                                 </CardGroup>
