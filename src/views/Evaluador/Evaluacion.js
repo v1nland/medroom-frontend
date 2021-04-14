@@ -538,7 +538,7 @@ class Evaluacion extends React.Component {
                             </ul>
                             <br />
                             <i>
-                                <b>Organizadón/efidencia</b>
+                                <b>Organización/ eficiencia</b>
                             </i>
                             <br />
                             <br />
