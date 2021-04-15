@@ -25,7 +25,7 @@ class Cursos extends React.Component {
         Promise.all([getCursos(cookies.get("token"))])
             .then((values) => {
                 this.setState({
-                    cursos: values[0].data,
+                    cursos: values[0].data ?? [],
                     queriesReady: true,
                 });
             })
@@ -36,8 +36,8 @@ class Cursos extends React.Component {
             [event.target.name]: event.target.value,
         });
     }
-    handleClick(idCurso, idGrupo) {
-        window.location.href = "/portal/estudiante/cursos/" + idCurso + "/grupo/" + idGrupo;
+    handleClick(idPeriodo, siglaCurso, siglaGrupo) {
+        window.location.href = "/portal/estudiante/periodos/" + idPeriodo + "/cursos/" + siglaCurso + "/grupo/" + siglaGrupo;
     }
     render() {
         if (this.state.queriesReady)
@@ -50,38 +50,33 @@ class Cursos extends React.Component {
                     </Alert>
                     <Row>
                         {this.state.cursos.map((curso) => {
-                            return (
-                                <Col sm="12" md="4" key={curso["id"]} style={{ cursor: "pointer" }}>
-                                    <Card
-                                        className="card-user"
-                                        onClick={() =>
-                                            this.handleClick(
-                                                curso["id"],
-                                                curso["grupos_curso"][0]["sigla_grupo"] !== "SG"
-                                                    ? curso["grupos_curso"][0]["id"]
-                                                    : curso["grupos_curso"][1]["id"]
-                                            )
-                                        }
-                                    >
-                                        <div className="image">
-                                            <img alt="..." src={require("assets/img/damir-bosnjak.jpg")} />
-                                            <div className="centered">Centered</div>
-                                        </div>
-                                        <CardBody>
-                                            <div className="author">
-                                                <img alt="..." className="avatar border-gray" src={require("assets/img/mike.jpg")} style={{}} />
-                                                <h5 className="title">{curso["nombre_curso"]}</h5>
+                            if (curso["grupo_estudiante"] !== "SG")
+                                return (
+                                    <Col sm="12" md="4" key={curso["sigla_curso"]} style={{ cursor: "pointer" }}>
+                                        <Card
+                                            className="card-user"
+                                            onClick={() => this.handleClick(curso["id_periodo"], curso["sigla_curso"], curso["grupo_estudiante"])}
+                                        >
+                                            <div className="image">
+                                                <img alt="..." src={require("assets/img/damir-bosnjak.jpg")} />
+                                                <div className="centered">Centered</div>
                                             </div>
-                                            <p className="description text-center">
-                                                {curso["sigla_curso"]}
-                                                <br />
-                                                {curso["periodo_curso"]["nombre_periodo"]}
-                                                <br />
-                                            </p>
-                                        </CardBody>
-                                    </Card>
-                                </Col>
-                            );
+                                            <CardBody>
+                                                <div className="author">
+                                                    <img alt="..." className="avatar border-gray" src={require("assets/img/mike.jpg")} style={{}} />
+                                                    <h5 className="title">{curso["nombre_curso"]}</h5>
+                                                </div>
+                                                <p className="description text-center">
+                                                    {curso["sigla_curso"]}
+                                                    <br />
+                                                    {curso["id_periodo"]}
+                                                    <br />
+                                                </p>
+                                            </CardBody>
+                                        </Card>
+                                    </Col>
+                                );
+                            else return <div></div>;
                         })}
                     </Row>
                 </div>

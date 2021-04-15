@@ -30,7 +30,7 @@ class Perfil extends React.Component {
             queriesReady: false,
             passwordsReady: false,
             nombreAlumno: "",
-            carreraAlumno: "Estudiante de Medicina UDP",
+            carreraAlumno: "Estudiante de Medicina",
             universidadAlumno: "Universidad Diego Portales",
             correoAlumno: "",
             contactoAlumno: 0,

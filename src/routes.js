@@ -34,7 +34,7 @@ var routes = [
         perfil: "estudiante",
     },
     {
-        path: "/estudiante/cursos/:idCurso/grupo/:idGrupo",
+        path: "/estudiante/periodos/:idPeriodo/cursos/:siglaCurso/grupo/:siglaGrupo",
         name: "No mostrar1",
         icon: "nc-icon nc-paper",
         component: EstudianteCurso,
