@@ -1,8 +1,7 @@
 import React from "react";
-import { Card, CardBody, Row, Col } from "reactstrap";
+import { Card, CardBody, Row, Col, Alert } from "reactstrap";
 import LoadingPage from "../../components/LoadingPage/LoadingPage";
 import { getCursos } from "../../database/evaluadores/getCursos";
-// import { formatCursos } from "../../functions/formats/estudiantes/formatCursos";
 import Cookies from "universal-cookie";
 const cookies = new Cookies();
 
@@ -34,16 +33,21 @@ class Cursos extends React.Component {
         });
     }
     handleClick(idCurso) {
-        window.location.href = "/portal/evaluador/curso/" + idCurso;
+        window.location.href = "/portal/evaluador/cursos/" + idCurso;
     }
     render() {
         if (this.state.queriesReady)
             return (
                 <div className="content">
+                    <h4>Cursos asignados ({this.state.cursos.length})</h4>
+                    <Alert color="success">
+                        <i className="nc-icon nc-alert-circle-i" style={{ marginRight: "10px" }} />
+                        Para ingresar a un curso, haz click en bloque correspondiente
+                    </Alert>
                     <Row>
                         {this.state.cursos.map((curso) => {
                             return (
-                                <Col sm="12" md="4" key={curso["id"]}>
+                                <Col sm="12" md="12" xl="4" key={curso["id"]} style={{ cursor: "pointer" }}>
                                     <Card className="card-user" onClick={() => this.handleClick(curso["id"])}>
                                         <div className="image">
                                             <img alt="..." src={require("assets/img/damir-bosnjak.jpg")} />

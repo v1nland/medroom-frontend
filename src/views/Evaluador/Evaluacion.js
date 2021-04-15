@@ -1,7 +1,24 @@
 import React from "react";
 import Referencia from "../../components/Referencia/Referencia.js";
-import { Card, CardBody, CardHeader, CardTitle, Form, Row, Col, FormGroup, Label, Input, Button } from "reactstrap";
+import {
+    Card,
+    CardBody,
+    CardHeader,
+    CardTitle,
+    Form,
+    Row,
+    Col,
+    FormGroup,
+    Label,
+    Input,
+    Button,
+    Modal,
+    ModalBody,
+    ModalFooter,
+    ModalHeader,
+} from "reactstrap";
 import LoadingPage from "../../components/LoadingPage/LoadingPage";
+import HelpIcon from "@material-ui/icons/Help";
 import { getPerfil } from "../../database/evaluadores/getPerfil";
 import { getGrupo } from "../../database/evaluadores/getGrupo";
 import { getCursos } from "../../database/evaluadores/getCursos";
@@ -17,6 +34,7 @@ class Evaluacion extends React.Component {
             queriesReady: true,
             cursoReady: false,
             grupoReady: false,
+            modalInformacion: false,
             idEstudiante: 0,
             nombreEvaluador: "",
             nombreEstudiante: "",
@@ -40,11 +58,13 @@ class Evaluacion extends React.Component {
             eficiencia: 5,
             comentarioEvaluacion: "",
             competenciaClinica: 5,
+            puntajeGlobal: 0,
         };
         this.handleChange = this.handleChange.bind(this);
         this.handleGrupos = this.handleGrupos.bind(this);
         this.handleEstudiantes = this.handleEstudiantes.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
+        this.handleInformacion = this.handleInformacion.bind(this);
     }
     componentDidMount() {
         Promise.all([getPerfil(cookies.get("token")), getCursos(cookies.get("token"))])
@@ -88,6 +108,11 @@ class Evaluacion extends React.Component {
         );
     }
     handleEstudiantes(event) {
+        if (this.state.grupoReady === true) {
+            this.setState({
+                grupoReady: false,
+            });
+        }
         this.setState(
             {
                 [event.target.name]: event.target.value,
@@ -105,6 +130,12 @@ class Evaluacion extends React.Component {
             }
         );
     }
+    handleInformacion() {
+        this.setState({
+            modalInformacion: !this.state.modalInformacion,
+        });
+    }
+
     handleSubmit(event) {
         event.preventDefault();
         var newEvaluacion = {
@@ -118,6 +149,7 @@ class Evaluacion extends React.Component {
             numero_observaciones_previas_calificacion_estudiante: "string",
             observacion_calificacion_calificacion_estudiante: this.state.comentarioEvaluacion,
             paciente_calificacion_estudiante: "string",
+            valoracion_general_calificacion_estudiante: parseInt(this.state.puntajeGlobal),
             puntajes_calificacion_estudiante: [
                 {
                     feedback_puntaje: "string",
@@ -149,11 +181,6 @@ class Evaluacion extends React.Component {
                     id_competencia: "OREF",
                     calificacion_puntaje: parseInt(this.state.eficiencia),
                 },
-                {
-                    feedback_puntaje: "string",
-                    id_competencia: "VAGL",
-                    calificacion_puntaje: parseInt(this.state.competenciaClinica),
-                },
             ],
             tiempo_utilizado_calificacion_estudiante: 0,
         };
@@ -177,6 +204,7 @@ class Evaluacion extends React.Component {
                     eficiencia: 5,
                     competenciaClinica: 5,
                     comentarioEvaluacion: "",
+                    puntajeGlobal: 0,
                 });
             } else {
                 this.AlertsHandler.generate("danger", "Oops!", "Parece que hubo un problema");
@@ -281,7 +309,7 @@ class Evaluacion extends React.Component {
                                             </Col>
                                         </Row>
                                         <Row>
-                                            <Col sm="12" md="4">
+                                            <Col sm="12" md="3">
                                                 <FormGroup>
                                                     <Label for="fecha">Nombre evaluación</Label>
                                                     <Input
@@ -305,7 +333,7 @@ class Evaluacion extends React.Component {
                                                     </Input>
                                                 </FormGroup>
                                             </Col>
-                                            <Col sm="12" md="4">
+                                            <Col sm="12" md="3">
                                                 <FormGroup>
                                                     <Label for="rotacion">Periodo</Label>
                                                     <Input
@@ -318,10 +346,21 @@ class Evaluacion extends React.Component {
                                                     ></Input>
                                                 </FormGroup>
                                             </Col>
-                                            <Col sm="12" md="4">
+                                            <Col sm="12" md="3">
                                                 <FormGroup>
-                                                    <Label for="tutor">Evaluador</Label>
+                                                    <Label for="nombreEvaluador">Evaluador</Label>
                                                     <Input type="text" name="nombreEvaluador" disabled value={this.state.nombreEvaluador}></Input>
+                                                </FormGroup>
+                                            </Col>
+                                            <Col sm="12" md="3">
+                                                <FormGroup>
+                                                    <Label for="puntajeGlobal">Puntaje Global</Label>
+                                                    <Input
+                                                        type="number"
+                                                        name="puntajeGlobal"
+                                                        value={this.state.puntajeGlobal}
+                                                        onChange={this.handleChange}
+                                                    ></Input>
                                                 </FormGroup>
                                             </Col>
                                         </Row>
@@ -331,11 +370,27 @@ class Evaluacion extends React.Component {
                         </Row>
                         <Row>
                             <Col sm="12" md="12" lg="12">
+                                <Button
+                                    className="btn-round"
+                                    onClick={this.handleInformacion}
+                                    style={{ backgroundColor: "#F2C14E", marginBottom: "20px" }}
+                                >
+                                    Ayuda <HelpIcon style={{ marginBottom: "2px", marginLeft: "5px" }} />
+                                </Button>
+                            </Col>
+                        </Row>
+                        <Row>
+                            <Col sm="12" md="12" lg="12">
                                 <Referencia
                                     label="Habilidad de entrevista médica"
+                                    descripcion={`- Facilita las explicaciones del paciente- Estructurada y exhaustiva
+                                    Hace preguntas adecuadas para obtener información del paciente
+                                    Responde adecuadamente a expresiones claves verbales y no verbales del
+                                   paciente`}
                                     name="entrevistaMedica"
                                     value={this.state.entrevistaMedica}
                                     onChange={this.handleChange}
+                                    idModal="3"
                                 />
                             </Col>
                         </Row>
@@ -346,16 +401,18 @@ class Evaluacion extends React.Component {
                                     name="examenFisico"
                                     value={this.state.examenFisico}
                                     onChange={this.handleChange}
+                                    idModal="4"
                                 />
                             </Col>
                         </Row>
                         <Row>
                             <Col sm="12" md="12" lg="12">
                                 <Referencia
-                                    label="Profesionalismo/ Cualidad humana"
+                                    label="Profesionalismo"
                                     name="profesionalismo"
                                     value={this.state.profesionalismo}
                                     onChange={this.handleChange}
+                                    idModal="5"
                                 />
                             </Col>
                         </Row>
@@ -366,16 +423,18 @@ class Evaluacion extends React.Component {
                                     name="razonamientoClinico"
                                     value={this.state.razonamientoClinico}
                                     onChange={this.handleChange}
+                                    idModal="6"
                                 />
                             </Col>
                         </Row>
                         <Row>
                             <Col sm="12" md="12" lg="12">
                                 <Referencia
-                                    label="Habilidades de consejería"
+                                    label="Habilidades de comunicación"
                                     name="consejeria"
                                     value={this.state.consejeria}
                                     onChange={this.handleChange}
+                                    idModal="7"
                                 />
                             </Col>
                         </Row>
@@ -386,25 +445,27 @@ class Evaluacion extends React.Component {
                                     name="eficiencia"
                                     value={this.state.eficiencia}
                                     onChange={this.handleChange}
+                                    idModal="8"
                                 />
                             </Col>
                         </Row>
-                        <Row>
+                        {/* <Row>
                             <Col sm="12" md="12" lg="12">
                                 <Referencia
-                                    label="Competencia clínica general"
+                                    label="Competencia clínica general / Valoración global"
                                     name="competenciaClinica"
                                     value={this.state.competenciaClinica}
                                     onChange={this.handleChange}
+                                    idModal="9"
                                 />
                             </Col>
-                        </Row>
+                        </Row> */}
                         <Row>
                             <Col>
                                 <Card>
                                     <CardHeader>
                                         <CardTitle tag="h6" style={{}}>
-                                            Comentarios
+                                            Feedback Descriptivo
                                         </CardTitle>
                                     </CardHeader>
                                     <CardBody>
@@ -426,6 +487,89 @@ class Evaluacion extends React.Component {
                             </Col>
                         </Row>
                     </Form>
+                    <Modal aria-labelledby="contained-modal-title-vcenter" centered isOpen={this.state.modalInformacion}>
+                        <ModalHeader>Descriptores de las competencias</ModalHeader>
+                        <ModalBody>
+                            <i>
+                                <b>Anamnesis</b>
+                            </i>
+                            <br />
+                            <br />
+                            <ul>
+                                <li>Facilita las explicaciones del paciente</li>
+                                <li>Estructurada y exhaustiva</li>
+                                <li>Hace preguntas adecuadas para obtener información del paciente</li>
+                                <li>Responde adecuadamente a expresiones claves verbales y no verbales del paciente</li>
+                            </ul>
+                            <br />
+                            <i>
+                                <b>Profesionalismo</b>
+                            </i>
+                            <br />
+                            <br />
+                            <ul>
+                                <li>Presentación del médico</li>
+                                <li>Muestra respeto y crea un clima de confianza. Empático</li>
+                                <li>Se comporta de forma ética y considera los aspectos legales relevantes al caso</li>
+                                <li>Atento a las necesidades del paciente en términos de confort, confidencialidad y respeto</li>
+                            </ul>
+                            <br />
+                            <i>
+                                <b>Juicio clínico</b>
+                            </i>
+                            <br />
+                            <br />
+                            <ul>
+                                <li>Realiza una orientación diagnóstica adecuada con un diagnóstico diferencial</li>
+                                <li>Formula un plan de manejo coherente con el diagnóstico</li>
+                                <li>Hace/indica los estudios diagnósticos considerando riesgos, beneficios y costes</li>
+                            </ul>
+                            <br />
+                            <i>
+                                <b>Habilidades comunicativas</b>
+                            </i>
+                            <br />
+                            <br />
+                            <ul>
+                                <li>Utiliza un lenguaje comprensible y empático para el paciente</li>
+                                <li>Franco y honesto</li>
+                                <li>Explora las perspectivas del paciente y la familia</li>
+                                <li>Informa y consensúa el plan de manejo/tratamiento con el paciente</li>
+                            </ul>
+                            <br />
+                            <i>
+                                <b>Organización/ eficiencia</b>
+                            </i>
+                            <br />
+                            <br />
+                            <ul>
+                                <li>Prioriza los problemas</li>
+                                <li>Buena gestión del tiempo y los recursos</li>
+                                <li>Derivaciones adecuadas</li>
+                                <li>Es concreto</li>
+                                <li>Recapitula y hace un resumen final</li>
+                                <li>Capacidad de trabajo en equipo </li>
+                            </ul>
+                            <br />
+                            <i>
+                                <b>Valoración global</b>
+                            </i>
+                            <br />
+                            <br />
+                            <ul>
+                                <li>
+                                    Demuestra satisfactoriamente juicio clínico, capacidad de síntesis y de resolución, y tiene en cuenta los aspectos
+                                    de eficiencia, valorando riesgos y beneficios en el plan de manejo{" "}
+                                </li>
+                            </ul>
+                            <br />
+                        </ModalBody>
+                        <ModalFooter>
+                            <Button color="success" type="submit" onClick={this.handleInformacion}>
+                                Entiendo
+                            </Button>
+                        </ModalFooter>
+                    </Modal>
                     <AlertsHandler onRef={(ref) => (this.AlertsHandler = ref)} />
                 </div>
             );

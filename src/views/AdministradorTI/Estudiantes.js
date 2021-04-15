@@ -1,5 +1,5 @@
 import React from "react";
-import { Card, CardBody, Row, Col, Input, Button, Modal, ModalHeader, ModalBody, ModalFooter } from "reactstrap";
+import { Card, CardBody, Row, Col, Input, Button, Modal, ModalHeader, ModalBody, ModalFooter, FormGroup } from "reactstrap";
 import MaterialTable from "material-table";
 import SearchIcon from "@material-ui/icons/Search";
 import { Paper } from "@material-ui/core/";
@@ -9,14 +9,24 @@ import { postEstudiante } from "../../database/administradorTI/postEstudiante";
 import { putEstudiante } from "../../database/administradorTI/putEstudiante";
 import { deleteEstudiante } from "../../database/administradorTI/deleteEstudiante";
 import { getCursos } from "../../database/administradorTI/getCursos";
+import { cargarEstudiantes } from "../../database/administradorTI/cargarEstudiantes";
 import { asociarCursoEstudiante } from "../../database/administradorTI/asociarCursoEstudiante";
 import Cookies from "universal-cookie";
 import { formatEstudiantes } from "../../helpers/AdministradorTI/formatEstudiantes";
 import LoadingPage from "../../components/LoadingPage/LoadingPage";
 import AlertsHandler from "../../components/AlertsHandler/AlertsHandler";
 import { sha256 } from "js-sha256";
+import { formatCargaEstudiantes } from "functions/formats/administradorTI/formatCargaEstudiantes";
 import { formatCursos } from "functions/formats/estudiantes/formatCursos";
+import CSVReader from "react-csv-reader";
 const cookies = new Cookies();
+const papaparseOptions = {
+    header: true,
+    dynamicTyping: true,
+    skipEmptyLines: true,
+    delimiter: ";",
+    transformHeader: (header) => header.toLowerCase().replace(/\W/g, "_"),
+};
 
 class Estudiantes extends React.Component {
     constructor(props) {
@@ -33,6 +43,8 @@ class Estudiantes extends React.Component {
             queriesReady: false,
             estudiantes: [],
             cursos: [],
+            cargaEstudiantes: [],
+            fileCargaEstudiantes: {},
 
             //DATOS
             nombresEstudiante: "",
@@ -59,18 +71,18 @@ class Estudiantes extends React.Component {
         this.handleModalAsociarCurso = this.handleModalAsociarCurso.bind(this);
         this.handleEliminarEstudiante = this.handleEliminarEstudiante.bind(this);
         this.handleModalEliminarEstudiante = this.handleModalEliminarEstudiante.bind(this);
+        this.handleCargaMasiva = this.handleCargaMasiva.bind(this);
+        this.handleModalCargaMasiva = this.handleModalCargaMasiva.bind(this);
+        this.handleForce = this.handleForce.bind(this);
     }
     componentDidMount() {
         Promise.all([getEstudiantes(cookies.get("token")), getCursos(cookies.get("token"))])
             .then((values) => {
-                this.setState(
-                    {
-                        queriesReady: true,
-                        estudiantes: formatEstudiantes(values[0].data),
-                        cursos: formatCursos(values[1].data),
-                    },
-                    () => console.log(this.state.cursos)
-                );
+                this.setState({
+                    queriesReady: true,
+                    estudiantes: formatEstudiantes(values[0].data),
+                    cursos: formatCursos(values[1].data),
+                });
             })
             .catch((err) => console.log(err));
     }
@@ -148,6 +160,15 @@ class Estudiantes extends React.Component {
             modalAsociarCurso: !this.state.modalAsociarCurso,
         });
     }
+    handleForce(data, fileInfo) {
+        for (let i = 0; i < data.length; i++) {
+            data[i]["id_grupos"] = data[i]["id_grupos"].replace("[", "").replace("]", "").split(",").map(Number);
+        }
+        this.setState({
+            cargaEstudiantes: data,
+            fileCargaEstudiantes: fileInfo,
+        });
+    }
 
     handleEditarEstudiante(event) {
         event.preventDefault();
@@ -217,6 +238,27 @@ class Estudiantes extends React.Component {
             modalEliminarEstudiante: !this.state.modalEliminarEstudiante,
         });
     }
+    handleCargaMasiva() {
+        var estudiantes = formatCargaEstudiantes(this.state.cargaEstudiantes);
+
+        cargarEstudiantes(cookies.get("token"), estudiantes)
+            .then((resp) => {
+                if (resp.meta === "OK") {
+                    this.AlertsHandler.generate("success", "Agregado", "Estudiantes agregados con éxito");
+                    this.setState({
+                        modalCargaMasiva: false,
+                    });
+                } else {
+                    this.AlertsHandler.generate("danger", "Oops!", "Parece que hubo un problema");
+                }
+            })
+            .catch((err) => console.log(err));
+    }
+    handleModalCargaMasiva(rowData) {
+        this.setState({
+            modalCargaMasiva: !this.state.modalCargaMasiva,
+        });
+    }
     render() {
         if (this.state.queriesReady)
             return (
@@ -225,8 +267,15 @@ class Estudiantes extends React.Component {
                         <Col md="12">
                             <Card>
                                 <CardBody>
-                                    <Button color="primary" onClick={this.handleModalAgregarEstudiante} style={{ marginBottom: "30px" }}>
+                                    <Button
+                                        color="primary"
+                                        onClick={this.handleModalAgregarEstudiante}
+                                        style={{ marginBottom: "30px", marginRight: "10px" }}
+                                    >
                                         Crear Estudiante <i className="fas fa-plus"></i>
+                                    </Button>
+                                    <Button color="success" onClick={this.handleModalCargaMasiva} style={{ marginBottom: "30px" }}>
+                                        Carga masiva <i className="fas fa-plus"></i>
                                     </Button>
                                     <MaterialTable
                                         columns={this.state.columnas}
@@ -278,7 +327,7 @@ class Estudiantes extends React.Component {
                             </Card>
                         </Col>
                     </Row>
-                    <Modal isOpen={this.state.modalAgregarEstudiante}>
+                    <Modal aria-labelledby="contained-modal-title-vcenter" centered isOpen={this.state.modalAgregarEstudiante}>
                         <ModalHeader>Crear Estudiante</ModalHeader>
                         <ModalBody>
                             <form>
@@ -357,7 +406,7 @@ class Estudiantes extends React.Component {
                             <Button onClick={this.handleModalAgregarEstudiante}>Salir</Button>
                         </ModalFooter>
                     </Modal>
-                    <Modal isOpen={this.state.modalEditarEstudiante}>
+                    <Modal aria-labelledby="contained-modal-title-vcenter" centered isOpen={this.state.modalEditarEstudiante}>
                         <ModalHeader>Crear Estudiante</ModalHeader>
                         <ModalBody>
                             <form>
@@ -436,7 +485,7 @@ class Estudiantes extends React.Component {
                             <Button onClick={this.handleModalEditarEstudiante}>Salir</Button>
                         </ModalFooter>
                     </Modal>
-                    <Modal isOpen={this.state.modalAsociarCurso}>
+                    <Modal aria-labelledby="contained-modal-title-vcenter" centered isOpen={this.state.modalAsociarCurso}>
                         <ModalHeader>Asociar Curso</ModalHeader>
                         <ModalBody>
                             <form>
@@ -466,13 +515,35 @@ class Estudiantes extends React.Component {
                             <Button onClick={this.handleModalAsociarCurso}>Salir</Button>
                         </ModalFooter>
                     </Modal>
-                    <Modal isOpen={this.state.modalEliminarEstudiante}>
+                    <Modal aria-labelledby="contained-modal-title-vcenter" centered isOpen={this.state.modalEliminarEstudiante}>
                         <ModalHeader>¿Está seguro que desea eliminar al estudiante?</ModalHeader>
                         <ModalFooter>
                             <Button color="danger" type="submit" onClick={this.handleEliminarEstudiante}>
                                 Eliminar
                             </Button>
                             <Button onClick={this.handleModalEliminarEstudiante}>Cancelar</Button>
+                        </ModalFooter>
+                    </Modal>
+                    <Modal aria-labelledby="contained-modal-title-vcenter" centered isOpen={this.state.modalCargaMasiva}>
+                        <ModalHeader>Carga masiva</ModalHeader>
+                        <ModalBody>
+                            <FormGroup>
+                                <CSVReader
+                                    cssClass="csv-reader-input"
+                                    label="Selecciona un archivo .csv"
+                                    onFileLoaded={(data, fileInfo) => this.handleForce(data, fileInfo)}
+                                    parserOptions={papaparseOptions}
+                                    inputId="cargaEstudiantes"
+                                    inputName="cargaEstudiantes"
+                                    inputStyle={{ color: "red" }}
+                                />
+                            </FormGroup>
+                        </ModalBody>
+                        <ModalFooter>
+                            <Button color="success" type="submit" onClick={this.handleCargaMasiva}>
+                                Cargar
+                            </Button>
+                            <Button onClick={this.handleModalCargaMasiva}>Cancelar</Button>
                         </ModalFooter>
                     </Modal>
                     <AlertsHandler onRef={(ref) => (this.AlertsHandler = ref)} />

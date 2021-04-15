@@ -7,10 +7,13 @@ import Localization from "../../helpers/Localization";
 import { getAdministradores } from "../../database/administradorTI/getAdministradores";
 import { postAdministrador } from "../../database/administradorTI/postAdministrador";
 import { putAdministrador } from "../../database/administradorTI/putAdministrador";
+import { asociarCursoAdministrador } from "../../database/administradorTI/asociarCursoAdministrador";
 import Cookies from "universal-cookie";
+import { getCursos } from "../../database/administradorTI/getCursos";
 import { formatAdministradores } from "../../helpers/AdministradorTI/formatAdministradores";
 import LoadingPage from "../../components/LoadingPage/LoadingPage";
 import AlertsHandler from "../../components/AlertsHandler/AlertsHandler";
+import { formatCursos } from "functions/formats/estudiantes/formatCursos";
 import { sha256 } from "js-sha256";
 const cookies = new Cookies();
 
@@ -28,6 +31,7 @@ class Administradores extends React.Component {
             ],
             queriesReady: false,
             administradores: [],
+            cursos: [],
 
             //DATOS
             nombresAdministrador: "",
@@ -38,6 +42,7 @@ class Administradores extends React.Component {
             telefonoAdministrador: "",
             celularAdministrador: "",
             idAdministrador: "",
+            idCurso: 0,
 
             modalEliminarAdministrador: false,
             modalAgregarAdministrador: false,
@@ -48,13 +53,16 @@ class Administradores extends React.Component {
         this.handleModalAgregarAdministrador = this.handleModalAgregarAdministrador.bind(this);
         this.handleEditarAdministrador = this.handleEditarAdministrador.bind(this);
         this.handleModalEditarAdministrador = this.handleModalEditarAdministrador.bind(this);
+        this.handleAsociarCurso = this.handleAsociarCurso.bind(this);
+        this.handleModalAsociarCurso = this.handleModalAsociarCurso.bind(this);
     }
     componentDidMount() {
-        Promise.all([getAdministradores(cookies.get("token"))])
+        Promise.all([getAdministradores(cookies.get("token")), getCursos(cookies.get("token"))])
             .then((values) => {
                 this.setState({
                     queriesReady: true,
                     administradores: formatAdministradores(values[0].data),
+                    cursos: formatCursos(values[1].data),
                 });
             })
             .catch((err) => console.log(err));
@@ -62,6 +70,35 @@ class Administradores extends React.Component {
     handleChange(event) {
         this.setState({
             [event.target.name]: event.target.value,
+        });
+    }
+    handleAsociarCurso(event) {
+        event.preventDefault();
+        asociarCursoAdministrador(cookies.get("token"), this.state.idCurso, this.state.idAdministrador)
+            .then((resp) => {
+                if (resp.meta === "OK") {
+                    this.AlertsHandler.generate("success", "Agregado", "Administrador asociado con éxito");
+                    this.setState(
+                        {
+                            idCurso: 0,
+                            modalAsociarCurso: !this.state.modalAsociarCurso,
+                        },
+                        () => resp
+                    );
+                } else {
+                    this.AlertsHandler.generate("danger", "Oops!", "Parece que hubo un problema");
+                }
+            })
+            .catch((err) => console.log(err));
+    }
+    handleModalAsociarCurso(rowData) {
+        if (rowData["id"] != null) {
+            this.setState({
+                idAdministrador: rowData["id"],
+            });
+        }
+        this.setState({
+            modalAsociarCurso: !this.state.modalAsociarCurso,
         });
     }
     handleAgregarAdministrador(event) {
@@ -178,6 +215,11 @@ class Administradores extends React.Component {
                                         }}
                                         actions={[
                                             {
+                                                icon: "people",
+                                                tooltip: "Asociar curso",
+                                                onClick: (event, rowData) => this.handleModalAsociarCurso(rowData),
+                                            },
+                                            {
                                                 icon: "create",
                                                 tooltip: "Editar administrador",
                                                 onClick: (event, rowData) => this.handleModalEditarAdministrador(rowData),
@@ -205,7 +247,7 @@ class Administradores extends React.Component {
                             </Card>
                         </Col>
                     </Row>
-                    <Modal isOpen={this.state.modalAgregarAdministrador}>
+                    <Modal aria-labelledby="contained-modal-title-vcenter" centered isOpen={this.state.modalAgregarAdministrador}>
                         <ModalHeader>Crear Administrador</ModalHeader>
                         <ModalBody>
                             <form>
@@ -284,7 +326,7 @@ class Administradores extends React.Component {
                             <Button onClick={this.handleModalAgregarAdministrador}>Salir</Button>
                         </ModalFooter>
                     </Modal>
-                    <Modal isOpen={this.state.modalEditarAdministrador}>
+                    <Modal aria-labelledby="contained-modal-title-vcenter" centered isOpen={this.state.modalEditarAdministrador}>
                         <ModalHeader>Crear Administrador</ModalHeader>
                         <ModalBody>
                             <form>
@@ -361,6 +403,36 @@ class Administradores extends React.Component {
                                 Modificar
                             </Button>
                             <Button onClick={this.handleModalEditarAdministrador}>Salir</Button>
+                        </ModalFooter>
+                    </Modal>
+                    <Modal aria-labelledby="contained-modal-title-vcenter" centered isOpen={this.state.modalAsociarCurso}>
+                        <ModalHeader>Asociar Curso</ModalHeader>
+                        <ModalBody>
+                            <form>
+                                <Row>
+                                    <Col sm="12" md="12">
+                                        <small>Curso</small>
+                                        <Input type="select" name="idCurso" value={this.state.idCurso} onChange={this.handleChange} required>
+                                            <option disabled value={"0"}>
+                                                -- Elija un curso --
+                                            </option>
+                                            {this.state.cursos.map((curso) => {
+                                                return (
+                                                    <option key={curso["id"]} value={curso["id"]}>
+                                                        {curso["nombre_curso"]}
+                                                    </option>
+                                                );
+                                            })}
+                                        </Input>
+                                    </Col>
+                                </Row>
+                            </form>
+                        </ModalBody>
+                        <ModalFooter>
+                            <Button color="success" type="submit" onClick={this.handleAsociarCurso}>
+                                Asociar
+                            </Button>
+                            <Button onClick={this.handleModalAsociarCurso}>Salir</Button>
                         </ModalFooter>
                     </Modal>
                     <AlertsHandler onRef={(ref) => (this.AlertsHandler = ref)} />

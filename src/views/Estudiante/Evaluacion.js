@@ -88,7 +88,7 @@ class Evaluaciones extends React.Component {
         if (this.state.queriesReady)
             return (
                 <div className="content">
-                    <Modal isOpen={this.state.detalle} handle>
+                    <Modal aria-labelledby="contained-modal-title-vcenter" centered isOpen={this.state.detalle} handle>
                         <ModalHeader>{this.state.nombreEvaluacion}</ModalHeader>
                         <ModalBody>
                             <Table responsive striped bordered>
@@ -96,7 +96,7 @@ class Evaluaciones extends React.Component {
                                     <tr style={{ textAlign: "true" }}>
                                         <th>Nombre Competencia</th>
                                         <th>Puntaje obtenido</th>
-                                        <th>Comentario</th>
+                                        <th>Feedback Descriptivo</th>
                                     </tr>
                                 </thead>
                                 <tbody>

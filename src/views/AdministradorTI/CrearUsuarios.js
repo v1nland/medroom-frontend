@@ -6,12 +6,22 @@ import { postAdministrador } from "../../database/administradorTI/postAdministra
 import AlertsHandler from "../../components/AlertsHandler/AlertsHandler";
 import { sha256 } from "js-sha256";
 import Cookies from "universal-cookie";
+import CSVReader from "react-csv-reader";
 const cookies = new Cookies();
+const papaparseOptions = {
+    header: true,
+    dynamicTyping: true,
+    skipEmptyLines: true,
+    delimiter: ";",
+    transformHeader: (header) => header.toLowerCase().replace(/\W/g, "_"),
+};
+z;
 
 class CrearUsuarios extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
+            fileCargaCursos: {},
             //Estudiante
             nombresEstudiante: "",
             apellidosEstudiante: "",
@@ -47,6 +57,9 @@ class CrearUsuarios extends React.Component {
         this.handleAgregarEstudiante = this.handleAgregarEstudiante.bind(this);
         this.handleAgregarEvaluador = this.handleAgregarEvaluador.bind(this);
         this.handleAgregarAdministrador = this.handleAgregarAdministrador.bind(this);
+        this.handleCargaMasiva = this.handleCargaMasiva.bind(this);
+        this.handleModalCargaMasiva = this.handleModalCargaMasiva.bind(this);
+        this.handleForce = this.handleForce.bind(this);
     }
     componentDidMount() {
         Promise.all([])

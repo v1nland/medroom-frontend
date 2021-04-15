@@ -56,13 +56,25 @@ class Perfil extends React.Component {
     }
 
     validatePassword() {
-        if (this.state.passwordAlumno === "" || this.state.passwordConfAlumno === "" || this.state.passwordAlumno !== this.state.passwordConfAlumno) {
-            this.setState({
-                passwordsReady: false,
-            });
-        } else if (this.state.passwordAlumno !== "" && this.state.passwordConfAlumno !== "") {
+        if (this.state.passwordOldAlumno !== "" && this.state.passwordAlumno === "" && this.state.passwordConfAlumno === "") {
             this.setState({
                 passwordsReady: true,
+            });
+        } else if (
+            this.state.passwordOldAlumno !== "" &&
+            this.state.passwordAlumno !== "" &&
+            this.state.passwordAlumno === this.state.passwordConfAlumno
+        ) {
+            this.setState({
+                passwordsReady: true,
+            });
+        } else if (
+            this.state.passwordAlumno === "" ||
+            this.state.passwordConfAlumno === "" ||
+            this.state.passwordAlumno !== this.state.passwordConfAlumno
+        ) {
+            this.setState({
+                passwordsReady: false,
             });
         }
     }
@@ -91,7 +103,8 @@ class Perfil extends React.Component {
     handleSubmit(event) {
         event.preventDefault();
         var newDatos = {
-            hash_contrasena_estudiante: sha256(this.state.passwordAlumno),
+            hash_contrasena_estudiante: sha256(this.state.passwordOldAlumno),
+            hash_nueva_contrasena_estudiante: this.state.passwordAlumno ? sha256(this.state.passwordAlumno) : null,
             telefono_celular_estudiante: this.state.contactoAlumno,
         };
         putPerfil(cookies.get("token"), newDatos).then((resp) => {
@@ -100,6 +113,7 @@ class Perfil extends React.Component {
                 this.setState({
                     passwordAlumno: "",
                     passwordConfAlumno: "",
+                    passwordOldAlumno: "",
                 });
             } else {
                 this.AlertsHandler.generate("danger", "Oops!", "Parece que hubo un problema");
@@ -172,14 +186,13 @@ class Perfil extends React.Component {
                                         <Row>
                                             <Col sm="12" md="4">
                                                 <FormGroup>
-                                                    <label>Contraseña Antigua</label>
+                                                    <label>Contraseña Actual</label>
                                                     <Input
                                                         name="passwordOldAlumno"
                                                         value={this.state.passwordOldAlumno}
                                                         onChange={this.handleChange}
                                                         placeholder="******"
                                                         type="password"
-                                                        required
                                                     />
                                                 </FormGroup>
                                             </Col>
@@ -192,7 +205,6 @@ class Perfil extends React.Component {
                                                         onChange={this.handleChange}
                                                         placeholder="******"
                                                         type="password"
-                                                        required
                                                     />
                                                 </FormGroup>
                                             </Col>
@@ -205,7 +217,6 @@ class Perfil extends React.Component {
                                                         onChange={this.handleChange}
                                                         placeholder="******"
                                                         type="password"
-                                                        required
                                                     />
                                                     {this.renderAlertPassword()}
                                                 </FormGroup>

@@ -9,7 +9,24 @@ import Cookies from "universal-cookie";
 import jwt_decode from "jwt-decode";
 import { sha256 } from "js-sha256";
 import AlertsHandler from "../../components/AlertsHandler/AlertsHandler";
-import { Card, CardBody, Row, Col, Input, Button, Form, Container, CardGroup, Label, FormGroup, ButtonGroup, DropdownToggle } from "reactstrap";
+import {
+    Card,
+    CardBody,
+    Row,
+    Col,
+    Input,
+    Button,
+    Form,
+    Container,
+    CardGroup,
+    Label,
+    FormGroup,
+    DropdownToggle,
+    Modal,
+    ModalBody,
+    ModalHeader,
+    ModalFooter,
+} from "reactstrap";
 
 const cookies = new Cookies();
 var token = cookies.get("token");
@@ -38,10 +55,11 @@ class Login extends React.Component {
         this.state = {
             user: "",
             password: "",
-            perfil: 0,
+            perfil: 1,
             buttonClicked: false,
             buttonDisabled: false,
             dropdownClicked: false,
+            modalProblemas: false,
         };
         this.handleChange = this.handleChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
@@ -49,6 +67,7 @@ class Login extends React.Component {
         this.handleButton = this.handleButton.bind(this);
         this.handleLogged = this.handleLogged.bind(this);
         this.renderLogged = this.renderLogged.bind(this);
+        this.handleModalProblemas = this.handleModalProblemas.bind(this);
     }
     componentDidMount() {
         Promise.all([])
@@ -94,7 +113,6 @@ class Login extends React.Component {
         if (parseInt(this.state.perfil) === 1) {
             loginMedRoom(this.state.user, sha256(this.state.password)).then((resp) => {
                 if (resp.meta === "OK") {
-                    this.AlertsHandler.generate("success", "Ingresado 💙", "Credenciales correctas");
                     cookies.set("token", resp.data.token, { path: "/" });
                     window.location.href = "/portal/estudiante/perfil";
                 } else {
@@ -105,7 +123,6 @@ class Login extends React.Component {
         } else if (parseInt(this.state.perfil) === 2) {
             loginEvaluador(this.state.user, sha256(this.state.password)).then((resp) => {
                 if (resp.meta === "OK") {
-                    this.AlertsHandler.generate("success", "Ingresado 💙", "Credenciales correctas");
                     cookies.set("token", resp.data.token, { path: "/" });
                     window.location.href = "/portal/evaluador/perfil";
                 } else {
@@ -116,7 +133,6 @@ class Login extends React.Component {
         } else if (parseInt(this.state.perfil) === 3) {
             loginAdministradorUDP(this.state.user, sha256(this.state.password)).then((resp) => {
                 if (resp.meta === "OK") {
-                    this.AlertsHandler.generate("success", "Ingresado 💙", "Credenciales correctas");
                     cookies.set("token", resp.data.token, { path: "/" });
                     window.location.href = "/portal/administradorUDP/perfil";
                 } else {
@@ -127,7 +143,6 @@ class Login extends React.Component {
         } else if (parseInt(this.state.perfil) === 4) {
             loginAdministradorTI(this.state.user, sha256(this.state.password)).then((resp) => {
                 if (resp.meta === "OK") {
-                    this.AlertsHandler.generate("success", "Ingresado 💙", "Credenciales correctas");
                     cookies.set("token", resp.data.token, { path: "/" });
                     window.location.href = "/portal/administradorTI/perfil";
                 } else {
@@ -135,8 +150,16 @@ class Login extends React.Component {
                     this.setState({ buttonClicked: false, buttonDisabled: false });
                 }
             });
+        } else {
+            this.AlertsHandler.generate("danger", "Oh no 😥", "Error en el ingreso");
+            this.setState({ buttonClicked: false, buttonDisabled: false });
         }
     };
+    handleModalProblemas(rowData) {
+        this.setState({
+            modalProblemas: !this.state.modalProblemas,
+        });
+    }
     render() {
         if (!this.handleLogged())
             return (
@@ -156,7 +179,7 @@ class Login extends React.Component {
                                     <Card className="p-4">
                                         <CardBody>
                                             <Form onSubmit={this.handleSubmit}>
-                                                <h1>Login</h1>
+                                                <h1>Iniciar Sesión</h1>
                                                 <FormGroup className="mb-3">
                                                     <Label for="Usuario">Correo electrónico</Label>
                                                     <Input
@@ -179,27 +202,16 @@ class Login extends React.Component {
                                                         required
                                                     />
                                                 </FormGroup>
-                                                {/* <Dropdown
-                                                    isOpen={this.state.dropdownClicked}
-                                                    toggle={this.handleDropdown}
-                                                    value={this.state.perfil}
-                                                    onChange={this.handleChange}
-                                                >
-                                                    {this.renderLogged()}
-                                                    <DropdownMenu>
-                                                        <DropdownItem header>Perfil</DropdownItem>
-                                                        <DropdownItem name="perfil" value={1} onClick={this.handleChange}>
-                                                            Estudiante
-                                                        </DropdownItem>
-                                                        <DropdownItem name="perfil" value={2} onClick={this.handleChange}>
-                                                            Evaluador
-                                                        </DropdownItem>
-                                                        <DropdownItem name="perfil" value={3} onClick={this.handleChange}>
-                                                            Administrador
-                                                        </DropdownItem>
-                                                    </DropdownMenu>
-                                                </Dropdown> */}
-                                                <ButtonGroup className="flex-wrap">
+                                                <FormGroup>
+                                                    <Label for="perfil">Perfil</Label>
+                                                    <Input type="select" name="perfil" id="perfil" onChange={this.handleChange}>
+                                                        <option value={1}>ESTUDIANTE</option>
+                                                        <option value={2}>EVALUADOR</option>
+                                                        <option value={3}>ADMINISTRADOR ACADÉMICO</option>
+                                                        <option value={4}>ADMINISTRADOR TI</option>
+                                                    </Input>
+                                                </FormGroup>
+                                                {/* <ButtonGroup className="flex-wrap">
                                                     <Button
                                                         color={this.state.perfil === 1 ? "info" : "default"}
                                                         name="perfil"
@@ -232,23 +244,17 @@ class Login extends React.Component {
                                                     >
                                                         ADMINISTRADOR TI
                                                     </Button>
-                                                </ButtonGroup>
+                                                </ButtonGroup> */}
                                                 <Row>
-                                                    <Col xs="6">
+                                                    <Col xs="12">
                                                         <Button
                                                             type="submit"
                                                             color="primary"
-                                                            className="px-4"
                                                             size="lg"
                                                             onClick={this.handleButton}
                                                             disabled={this.state.buttonDisabled}
                                                         >
                                                             {renderTextButton(this.state.buttonClicked)}
-                                                        </Button>
-                                                    </Col>
-                                                    <Col xs="6" className="text-right">
-                                                        <Button color="primary" outline={true}>
-                                                            ¿Problemas?
                                                         </Button>
                                                     </Col>
                                                 </Row>
@@ -259,14 +265,26 @@ class Login extends React.Component {
                             </Col>
                         </Row>
                     </Container>
+                    <Modal aria-labelledby="contained-modal-title-vcenter" centered isOpen={this.state.modalProblemas}>
+                        <ModalHeader>Recuperación</ModalHeader>
+                        <ModalBody>
+                            Para recuperar la contraseña o usuario, por favor contactar con <a href={"soport@mail.udp.cl"}>soporte@mail.udp.cl</a>
+                        </ModalBody>
+                        <ModalFooter>
+                            <Button color="success" type="submit" onClick={this.handleModalProblemas}>
+                                Entendido
+                            </Button>
+                        </ModalFooter>
+                    </Modal>
                     <AlertsHandler onRef={(ref) => (this.AlertsHandler = ref)} />
                 </div>
             );
         else {
-            console.log(decoded.perfil);
             if (decoded.perfil === "estudiante") return <Redirect to="/portal/estudiante/perfil" />;
             else if (decoded.perfil === "evaluador") return <Redirect to="/portal/evaluador/perfil" />;
             else if (decoded.perfil === "estudiante") return <Redirect to="/portal/estudiante/perfil" />;
+            else if (decoded.perfil === "administrador_academico") return <Redirect to="/portal/administradorUDP/perfil" />;
+            else if (decoded.perfil === "administrador_ti") return <Redirect to="/portal/administradorTI/perfil" />;
             else return <div> {decoded.perfil} Oops, no deberías estar aquí xD</div>;
         }
     }

@@ -1,15 +1,23 @@
 import React from "react";
-import { Line } from "react-chartjs-2";
+import { Line, Radar } from "react-chartjs-2";
 import { estudianteOptions } from "variables/charts.js";
-import { Card, CardHeader, CardBody, CardTitle, Row, Col, Table, Button, Modal, ModalHeader, ModalBody, ModalFooter } from "reactstrap";
+import { Card, CardHeader, CardBody, CardTitle, Row, Col, Table, Button, Modal, ModalHeader, ModalBody, ModalFooter, Media } from "reactstrap";
 import LoadingPage from "../../components/LoadingPage/LoadingPage";
 import { getCurso } from "../../database/estudiantes/getCurso";
 import { getGrupo } from "../../database/estudiantes/getGrupo";
 import { getCalificacion } from "../../database/estudiantes/getCalificacion";
 import { getEvolucionCompetencia } from "../../database/estudiantes/getEvolucionCompetencia";
 import { formatEvaluaciones } from "../../functions/formats/estudiantes/formatEvaluaciones";
+import { formatGraficoCompetencias } from "../../functions/formats/estudiantes/formatGraficoCompetencias";
+import { format } from "date-fns";
 import Cookies from "universal-cookie";
 const cookies = new Cookies();
+
+const optionsCompetencia = {
+    scale: {
+        ticks: { beginAtZero: true, min: 0, max: 9 },
+    },
+};
 
 class Curso extends React.Component {
     constructor(props) {
@@ -21,6 +29,7 @@ class Curso extends React.Component {
             grupo: {},
             competencias: [],
             evolucionCompetencia: [],
+            data: {},
             nombreEvaluacion: "",
             comentarioEvaluacion: "",
             nombreEvaluador: "",
@@ -38,17 +47,14 @@ class Curso extends React.Component {
             getEvolucionCompetencia(cookies.get("token"), this.props.match.params.idCurso, this.props.match.params.idGrupo),
         ])
             .then((values) => {
-                this.setState(
-                    {
-                        curso: values[0].data,
-                        grupo: values[1].data[0],
-                        idCurso: values[0].data["id"],
-                        idGrupo: values[1].data[0]["id"],
-                        evolucionCompetencia: formatEvaluaciones(values[2].data),
-                        queriesReady: true,
-                    },
-                    () => console.log(this.state.evolucionCompetencia)
-                );
+                this.setState({
+                    curso: values[0].data,
+                    grupo: values[1].data[0],
+                    idCurso: values[0].data["id"],
+                    idGrupo: values[1].data[0]["id"],
+                    evolucionCompetencia: formatEvaluaciones(values[2].data),
+                    queriesReady: true,
+                });
             })
             .catch((err) => console.log(err));
     }
@@ -65,29 +71,25 @@ class Curso extends React.Component {
     openDetalle(idEvaluacion, nombreEvaluacion) {
         Promise.all([getCalificacion(cookies.get("token"), this.state.idCurso, this.state.idGrupo, idEvaluacion)])
             .then((values) => {
-                this.setState(
-                    {
-                        competencias: values[0].data["puntajes_calificacion_estudiante"],
-                        comentarioEvaluacion: values[0].data["observacion_calificacion_calificacion_estudiante"],
-                        nombreEvaluacion: nombreEvaluacion,
-                        nombreEvaluador:
-                            values[0].data["evaluador_calificacion_estudiante"]["nombres_evaluador"] +
-                            " " +
-                            values[0].data["evaluador_calificacion_estudiante"]["apellidos_evaluador"],
-                        detalle: true,
-                    },
-                    () => {
-                        console.log(this.state.competencias);
-                    }
-                );
+                this.setState({
+                    data: formatGraficoCompetencias(values[0].data["puntajes_calificacion_estudiante"]),
+                    competencias: values[0].data["puntajes_calificacion_estudiante"],
+                    comentarioEvaluacion: values[0].data["observacion_calificacion_calificacion_estudiante"],
+                    nombreEvaluacion: nombreEvaluacion,
+                    nombreEvaluador:
+                        values[0].data["evaluador_calificacion_estudiante"]["nombres_evaluador"] +
+                        " " +
+                        values[0].data["evaluador_calificacion_estudiante"]["apellidos_evaluador"],
+                    detalle: true,
+                });
             })
             .catch((err) => console.log(err));
     }
     render() {
-        if (this.state.queriesReady)
+        if (this.state.queriesReady && this.state.grupo["sigla_grupo"] !== "SG")
             return (
                 <div className="content">
-                    <Modal isOpen={this.state.detalle}>
+                    <Modal size="lg" aria-labelledby="contained-modal-title-vcenter" centered isOpen={this.state.detalle}>
                         <ModalHeader>{this.state.nombreEvaluacion}</ModalHeader>
                         <ModalBody>
                             <div className="info">
@@ -112,10 +114,21 @@ class Curso extends React.Component {
                                     })}
                                 </tbody>
                             </Table>
-                            <div className="info">
-                                <h4 className="info-title">Comentario</h4>
-                                <p>{this.state.comentarioEvaluacion}</p>
-                            </div>
+                            <Media>
+                                <Media left href="#">
+                                    <Media
+                                        object
+                                        src={require("../../images/doctor.png")}
+                                        alt="profile.png"
+                                        style={{ width: "64px", height: "64px", marginTop: "25px", marginRight: "10px" }}
+                                    />
+                                </Media>
+                                <Media body>
+                                    <Media heading>Feedback Descriptivo</Media>
+                                    {this.state.comentarioEvaluacion}
+                                </Media>
+                            </Media>
+                            <Radar data={this.state.data} options={optionsCompetencia} width={400} height={200} style={{ marginTop: "35px" }} />
                         </ModalBody>
                         <ModalFooter>
                             <Button color="primary" onClick={this.handleDetalle}>
@@ -135,11 +148,13 @@ class Curso extends React.Component {
                                             <tr>
                                                 <th>Detalle</th>
                                                 <th>Nombre Evaluacion</th>
-                                                <th>Fecha</th>
+                                                <th>Fecha Evaluacion</th>
+                                                <th>Hora Evaluacion</th>
                                             </tr>
                                         </thead>
                                         <tbody>
                                             {this.state.grupo["evaluaciones_grupo"].map((evaluacion) => {
+                                                var fecha = new Date(evaluacion["created_at"]);
                                                 return (
                                                     <tr key={evaluacion["id"]}>
                                                         <td>
@@ -153,7 +168,8 @@ class Curso extends React.Component {
                                                             </Button>
                                                         </td>
                                                         <td>{evaluacion["nombre_evaluacion"]}</td>
-                                                        <td>{evaluacion["created_at"].substring(0, 10)}</td>
+                                                        <td>{format(fecha, "dd-MM-yyyy")}</td>
+                                                        <td>{format(fecha, "hh:mm:ss")}</td>
                                                     </tr>
                                                 );
                                             })}
@@ -209,7 +225,43 @@ class Curso extends React.Component {
                     </Row>
                 </div>
             );
-        else if (this.state.grupo["sigla_grupo"] === "SG") return <div>Sin grupo</div>;
+        else if (this.state.grupo["sigla_grupo"] === "SG")
+            return (
+                <div className="content">
+                    <Row>
+                        <Col md="12">
+                            <Card>
+                                <CardHeader>
+                                    <CardTitle tag="h4">{this.state.grupo["nombre_grupo"] + " / " + this.state.grupo["sigla_grupo"]}</CardTitle>
+                                </CardHeader>
+                                <CardBody>
+                                    <Table responsive>
+                                        <thead className="text-primary">
+                                            <tr>
+                                                <th>Apellidos</th>
+                                                <th>Nombres</th>
+                                                <th>Correo</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {this.state.grupo["estudiantes_grupo"].map((estudiante) => {
+                                                // if (evaluacion["nombre_periodo"] === this.state.periodo)
+                                                return (
+                                                    <tr key={estudiante["id"]}>
+                                                        <td>{estudiante["apellidos_estudiante"]}</td>
+                                                        <td>{estudiante["nombres_estudiante"]}</td>
+                                                        <td>{estudiante["correo_electronico_estudiante"]}</td>
+                                                    </tr>
+                                                );
+                                            })}
+                                        </tbody>
+                                    </Table>
+                                </CardBody>
+                            </Card>
+                        </Col>
+                    </Row>
+                </div>
+            );
         else return <LoadingPage />;
     }
 }

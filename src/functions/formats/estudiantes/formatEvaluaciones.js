@@ -3,7 +3,6 @@ export function formatEvaluaciones(data) {
         labels: [],
         datasets: [],
     };
-    console.log(data);
 
     if (data["eje_x"].length === 0) return table_data;
 
@@ -11,7 +10,7 @@ export function formatEvaluaciones(data) {
     if (data === null) {
         return table_data;
     }
-    for (var i = 0; i < 7; i++) {
+    for (var i = 0; i < 6; i++) {
         table_data["datasets"].push({
             data: [],
             fill: false,
@@ -60,12 +59,12 @@ export function formatEvaluaciones(data) {
         table_data["datasets"][5]["pointBorderColor"] = "#5A0B4D";
         table_data["datasets"][5]["label"] = "PROFESIONALISMO";
     }
-    for (i = 0; i < data["valores"]["VAGL"].length; i++) {
-        table_data["datasets"][6]["data"].push(data["valores"]["VAGL"][i]["puntaje_estudiante"]);
-        table_data["datasets"][6]["borderColor"] = "#F90093";
-        table_data["datasets"][6]["pointBorderColor"] = "#F90093";
-        table_data["datasets"][6]["label"] = "VALORACION GLOBAL";
-    }
+    // for (i = 0; i < data["valores"]["VAGL"].length; i++) {
+    //     table_data["datasets"][6]["data"].push(data["valores"]["VAGL"][i]["puntaje_estudiante"]);
+    //     table_data["datasets"][6]["borderColor"] = "#F90093";
+    //     table_data["datasets"][6]["pointBorderColor"] = "#F90093";
+    //     table_data["datasets"][6]["label"] = "VALORACION GLOBAL";
+    // }
 
     return table_data;
 }

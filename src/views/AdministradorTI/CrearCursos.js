@@ -6,13 +6,38 @@ import { Paper } from "@material-ui/core/";
 import Localization from "../../helpers/Localization";
 import { getCursos } from "../../database/administradorTI/getCursos";
 import { postCurso } from "../../database/administradorTI/postCurso";
+import { cargarCursos } from "../../database/administradorTI/cargarCursos";
+import { cargarGrupos } from "../../database/administradorTI/cargarGrupos";
 import { putCurso } from "../../database/administradorTI/putCurso";
-// import { getPeriodos } from "../../database/periodos/getPeriodos";
+import { deleteCurso } from "../../database/administradorTI/deleteCurso";
+import { getReporteCurso } from "../../database/administradorTI/getReporteCurso";
 import Cookies from "universal-cookie";
 import { formatCursos } from "../../helpers/AdministradorTI/formatCursos";
+import { formatReporte } from "../../functions/formats/administradorTI/formatReporte";
 import LoadingPage from "../../components/LoadingPage/LoadingPage";
 import AlertsHandler from "../../components/AlertsHandler/AlertsHandler";
+import CSVReader from "react-csv-reader";
+import { ExportToCsv } from "export-to-csv";
 const cookies = new Cookies();
+const papaparseOptions = {
+    header: true,
+    dynamicTyping: true,
+    skipEmptyLines: true,
+    transformHeader: (header) => header.toLowerCase().replace(/\W/g, "_"),
+};
+const options = {
+    fieldSeparator: ",",
+    quoteStrings: '"',
+    filename: "REPORTE",
+    decimalSeparator: ".",
+    showLabels: true,
+    showTitle: false,
+    title: "Reporte",
+    useTextFile: false,
+    useBom: true,
+    useKeysAsHeaders: true,
+    // headers: ['Column 1', 'Column 2', etc...] <-- Won't work with useKeysAsHeaders present!
+};
 
 class Cursos extends React.Component {
     constructor(props) {
@@ -27,18 +52,33 @@ class Cursos extends React.Component {
             queriesReady: false,
             periodos: [],
             cursos: [],
+            cargaCursos: [],
+            fileCargaCursos: {},
+            cargaGrupos: [],
+            fileCargaGrupos: {},
             nombreCurso: "",
             siglaCurso: "",
             idCurso: 0,
             modalEliminarCurso: false,
             modalAgregarCurso: false,
             modalEditarCurso: false,
+            modalCargaMasiva: false,
+            modalCargaMasivaGrupos: false,
         };
         this.handleChange = this.handleChange.bind(this);
         this.handleAgregarCurso = this.handleAgregarCurso.bind(this);
         this.handleModalAgregarCurso = this.handleModalAgregarCurso.bind(this);
         this.handleEditarCurso = this.handleEditarCurso.bind(this);
         this.handleModalEditarCurso = this.handleModalEditarCurso.bind(this);
+        this.handleEliminarCurso = this.handleEliminarCurso.bind(this);
+        this.handleModalEliminarCurso = this.handleModalEliminarCurso.bind(this);
+        this.handleCargaMasiva = this.handleCargaMasiva.bind(this);
+        this.handleModalCargaMasiva = this.handleModalCargaMasiva.bind(this);
+        this.handleCargaMasivaGrupos = this.handleCargaMasivaGrupos.bind(this);
+        this.handleModalCargaMasivaGrupos = this.handleModalCargaMasivaGrupos.bind(this);
+        this.handleForceCursos = this.handleForceCursos.bind(this);
+        this.handleForceGrupos = this.handleForceGrupos.bind(this);
+        this.handleDescargarReporte = this.handleDescargarReporte.bind(this);
     }
     componentDidMount() {
         Promise.all([getCursos(cookies.get("token"))])
@@ -53,6 +93,18 @@ class Cursos extends React.Component {
     handleChange(event) {
         this.setState({
             [event.target.name]: event.target.value,
+        });
+    }
+    handleForceCursos(data, fileInfo) {
+        this.setState({
+            cargaCursos: data,
+            fileCargaCursos: fileInfo,
+        });
+    }
+    handleForceGrupos(data, fileInfo) {
+        this.setState({
+            cargaGrupos: data,
+            fileCargaGrupos: fileInfo,
         });
     }
     handleAgregarCurso() {
@@ -116,6 +168,92 @@ class Cursos extends React.Component {
             modalEditarCurso: !this.state.modalEditarCurso,
         });
     }
+
+    handleEliminarCurso(rowData) {
+        deleteCurso(cookies.get("token"), this.state.idCurso)
+            .then((resp) => {
+                if (resp.meta === "OK") {
+                    this.AlertsHandler.generate("success", "Agregado", "Curso eliminado con éxito");
+                    this.setState({
+                        modalEliminarCurso: false,
+                    });
+                } else {
+                    this.AlertsHandler.generate("danger", "Oops!", "Parece que hubo un problema");
+                }
+            })
+            .catch((err) => console.log(err));
+    }
+    handleModalEliminarCurso(rowData) {
+        if (rowData["id"] != null) {
+            this.setState({
+                idCurso: rowData["id"],
+            });
+        }
+
+        this.setState({
+            modalEliminarCurso: !this.state.modalEliminarCurso,
+        });
+    }
+    handleCargaMasiva() {
+        var cursos = {
+            cursos: this.state.cargaCursos,
+        };
+        cargarCursos(cookies.get("token"), cursos)
+            .then((resp) => {
+                if (resp.meta === "OK") {
+                    this.AlertsHandler.generate("success", "Agregado", "Cursos agregados con éxito");
+                    this.setState({
+                        modalCargaMasiva: false,
+                    });
+                } else {
+                    this.AlertsHandler.generate("danger", "Oops!", "Parece que hubo un problema");
+                }
+            })
+            .catch((err) => console.log(err));
+    }
+    handleModalCargaMasiva(rowData) {
+        this.setState({
+            modalCargaMasiva: !this.state.modalCargaMasiva,
+        });
+    }
+    handleCargaMasivaGrupos() {
+        var grupos = {
+            grupos: this.state.cargaGrupos,
+        };
+        cargarGrupos(cookies.get("token"), grupos)
+            .then((resp) => {
+                if (resp.meta === "OK") {
+                    this.AlertsHandler.generate("success", "Agregado", "Grupos agregados con éxito");
+                    this.setState({
+                        modalCargaMasivaGrupos: false,
+                    });
+                } else {
+                    this.AlertsHandler.generate("danger", "Oops!", "Parece que hubo un problema");
+                }
+            })
+            .catch((err) => console.log(err));
+    }
+    handleModalCargaMasivaGrupos(rowData) {
+        this.setState({
+            modalCargaMasivaGrupos: !this.state.modalCargaMasivaGrupos,
+        });
+    }
+    handleDescargarReporte(rowData) {
+        // console.log(rowData);
+        getReporteCurso(cookies.get("token"), rowData["id"])
+            .then((resp) => {
+                if (resp.meta === "OK") {
+                    // console.log(resp.data);
+                    const customOptions = options;
+                    customOptions["filename"] = "REPORTE " + rowData["nombre_curso"];
+                    const csvExporter = new ExportToCsv(customOptions);
+                    csvExporter.generateCsv(formatReporte(resp.data));
+                } else {
+                    this.AlertsHandler.generate("danger", "Oops!", "Parece que hubo un problema");
+                }
+            })
+            .catch((err) => console.log(err));
+    }
     render() {
         if (this.state.queriesReady)
             return (
@@ -124,8 +262,22 @@ class Cursos extends React.Component {
                         <Col md="12">
                             <Card>
                                 <CardBody>
-                                    <Button color="primary" onClick={this.handleModalAgregarCurso} style={{ marginBottom: "30px" }}>
+                                    <Button
+                                        color="primary"
+                                        onClick={this.handleModalAgregarCurso}
+                                        style={{ marginBottom: "30px", marginRight: "10px" }}
+                                    >
                                         Agregar curso <i className="fas fa-plus"></i>
+                                    </Button>
+                                    <Button
+                                        color="success"
+                                        onClick={this.handleModalCargaMasiva}
+                                        style={{ marginBottom: "30px", marginRight: "10px" }}
+                                    >
+                                        Carga masiva Cursos <i className="fas fa-plus"></i>
+                                    </Button>
+                                    <Button color="danger" onClick={this.handleModalCargaMasivaGrupos} style={{ marginBottom: "30px" }}>
+                                        Carga masiva Grupos <i className="fas fa-plus"></i>
                                     </Button>
                                     <MaterialTable
                                         columns={this.state.columnas}
@@ -152,7 +304,12 @@ class Cursos extends React.Component {
                                             {
                                                 icon: "delete",
                                                 tooltip: "Borrar curso",
-                                                onClick: (event, rowData) => this.handleDeleteCurso(rowData),
+                                                onClick: (event, rowData) => this.handleModalEliminarCurso(rowData),
+                                            },
+                                            {
+                                                icon: "assignmentreturned",
+                                                tooltip: "Descargar reporte",
+                                                onClick: (event, rowData) => this.handleDescargarReporte(rowData),
                                             },
                                         ]}
                                         options={{
@@ -172,7 +329,7 @@ class Cursos extends React.Component {
                             </Card>
                         </Col>
                     </Row>
-                    <Modal isOpen={this.state.modalAgregarCurso}>
+                    <Modal aria-labelledby="contained-modal-title-vcenter" centered isOpen={this.state.modalAgregarCurso}>
                         <ModalHeader>Agregar nuevo Curso</ModalHeader>
                         <ModalBody>
                             <FormGroup>
@@ -199,7 +356,7 @@ class Cursos extends React.Component {
                             <Button onClick={this.handleModalAgregarCurso}>Salir</Button>
                         </ModalFooter>
                     </Modal>
-                    <Modal isOpen={this.state.modalEditarCurso}>
+                    <Modal aria-labelledby="contained-modal-title-vcenter" centered isOpen={this.state.modalEditarCurso}>
                         <ModalHeader>Editar Curso</ModalHeader>
                         <ModalBody>
                             <FormGroup>
@@ -218,6 +375,59 @@ class Cursos extends React.Component {
                                 Modificar
                             </Button>
                             <Button onClick={this.handleModalEditarCurso}>Salir</Button>
+                        </ModalFooter>
+                    </Modal>
+                    <Modal aria-labelledby="contained-modal-title-vcenter" centered isOpen={this.state.modalEliminarCurso}>
+                        <ModalHeader>¿Está seguro que desea eliminar el curso?</ModalHeader>
+                        <ModalFooter>
+                            <Button color="danger" type="submit" onClick={this.handleEliminarCurso}>
+                                Eliminar
+                            </Button>
+                            <Button onClick={this.handleModalEliminarCurso}>Cancelar</Button>
+                        </ModalFooter>
+                    </Modal>
+                    <Modal aria-labelledby="contained-modal-title-vcenter" centered isOpen={this.state.modalCargaMasiva}>
+                        <ModalHeader>Carga masiva</ModalHeader>
+                        <ModalBody>
+                            <FormGroup>
+                                <CSVReader
+                                    cssClass="csv-reader-input"
+                                    label="Selecciona un archivo .csv"
+                                    onFileLoaded={(data, fileInfo) => this.handleForceCursos(data, fileInfo)}
+                                    parserOptions={papaparseOptions}
+                                    inputId="cargaCursos"
+                                    inputName="cargaCursos"
+                                    inputStyle={{ color: "red" }}
+                                />
+                            </FormGroup>
+                        </ModalBody>
+                        <ModalFooter>
+                            <Button color="success" type="submit" onClick={this.handleCargaMasiva}>
+                                Cargar
+                            </Button>
+                            <Button onClick={this.handleModalCargaMasiva}>Cancelar</Button>
+                        </ModalFooter>
+                    </Modal>
+                    <Modal aria-labelledby="contained-modal-title-vcenter" centered isOpen={this.state.modalCargaMasivaGrupos}>
+                        <ModalHeader>Carga masiva</ModalHeader>
+                        <ModalBody>
+                            <FormGroup>
+                                <CSVReader
+                                    cssClass="csv-reader-input"
+                                    label="Selecciona un archivo .csv"
+                                    onFileLoaded={(data, fileInfo) => this.handleForceGrupos(data, fileInfo)}
+                                    parserOptions={papaparseOptions}
+                                    inputId="cargaGrupos"
+                                    inputName="cargaGrupos"
+                                    inputStyle={{ color: "red" }}
+                                />
+                            </FormGroup>
+                        </ModalBody>
+                        <ModalFooter>
+                            <Button color="success" type="submit" onClick={this.handleCargaMasivaGrupos}>
+                                Cargar
+                            </Button>
+                            <Button onClick={this.handleModalCargaMasivaGrupos}>Cancelar</Button>
                         </ModalFooter>
                     </Modal>
                     <AlertsHandler onRef={(ref) => (this.AlertsHandler = ref)} />

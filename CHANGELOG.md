@@ -14,7 +14,9 @@
   - https://github.com/creativetimofficial/ct-paper-dashboard-pro-react/issues/6 - solution to this is to change the usage of the ModalHeader from Reactstrap to simple Bootstrap ones:
   So, instead of:
 ```
-<ModalHeader className="justify-content-center" toggle={this.toggleModalDemo}>
+  <Modal aria-labelledby="contained-modal-title-vcenter" centered     aria-labelledby="contained-modal-title-vcenter"
+      centered     aria-labelledby="contained-modal-title-vcenter"
+      centeredHeader className="justify-content-center" toggle={this.toggleModalDemo}>
     Modal Title
 </ModalHeader>
 ```

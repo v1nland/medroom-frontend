@@ -46,7 +46,6 @@ class Evaluadores extends React.Component {
             recintoEvaluador: "",
             idEvaluador: "",
             idCurso: 0,
-
             modalEliminarEvaluador: false,
             modalAgregarEvaluador: false,
             modalEditarEvaluador: false,
@@ -123,7 +122,6 @@ class Evaluadores extends React.Component {
     }
     handleAsociarCurso(event) {
         event.preventDefault();
-        console.log(this.state.idCurso, this.state.idEvaluador);
         asociarCursoEvaluador(cookies.get("token"), this.state.idCurso, this.state.idEvaluador)
             .then((resp) => {
                 if (resp.meta === "OK") {
@@ -294,7 +292,7 @@ class Evaluadores extends React.Component {
                             </Card>
                         </Col>
                     </Row>
-                    <Modal isOpen={this.state.modalAgregarEvaluador}>
+                    <Modal aria-labelledby="contained-modal-title-vcenter" centered isOpen={this.state.modalAgregarEvaluador}>
                         <ModalHeader>Crear Evaluador</ModalHeader>
                         <ModalBody>
                             <form>
@@ -395,7 +393,7 @@ class Evaluadores extends React.Component {
                             <Button onClick={this.handleModalAgregarEvaluador}>Salir</Button>
                         </ModalFooter>
                     </Modal>
-                    <Modal isOpen={this.state.modalEditarEvaluador}>
+                    <Modal aria-labelledby="contained-modal-title-vcenter" centered isOpen={this.state.modalEditarEvaluador}>
                         <ModalHeader>Crear Evaluador</ModalHeader>
                         <ModalBody>
                             <form>
@@ -496,7 +494,7 @@ class Evaluadores extends React.Component {
                             <Button onClick={this.handleModalEditarEvaluador}>Salir</Button>
                         </ModalFooter>
                     </Modal>
-                    <Modal isOpen={this.state.modalAsociarCurso}>
+                    <Modal aria-labelledby="contained-modal-title-vcenter" centered isOpen={this.state.modalAsociarCurso}>
                         <ModalHeader>Asociar Curso</ModalHeader>
                         <ModalBody>
                             <form>
@@ -526,7 +524,7 @@ class Evaluadores extends React.Component {
                             <Button onClick={this.handleModalAsociarCurso}>Salir</Button>
                         </ModalFooter>
                     </Modal>
-                    <Modal isOpen={this.state.modalEliminarEvaluador}>
+                    <Modal aria-labelledby="contained-modal-title-vcenter" centered isOpen={this.state.modalEliminarEvaluador}>
                         <ModalHeader>¿Está seguro que desea eliminar al evaluador?</ModalHeader>
                         <ModalFooter>
                             <Button color="danger" type="submit" onClick={this.handleEliminarEvaluador}>

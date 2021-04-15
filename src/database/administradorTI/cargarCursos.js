@@ -1,14 +1,15 @@
-export function putGrupo(token, idGrupo) {
-    var FetchURL = `${process.env.REACT_APP_APIURL}/administracion-academica/grupos/${idGrupo}`;
+export function cargarCursos(token, archivoCSV) {
+    var FetchURL = `${process.env.REACT_APP_APIURL}/administracion-ti/cursos/carga-masiva`;
 
     return fetch(FetchURL, {
-        method: "PUT",
+        method: "POST",
         mode: "cors",
         cache: "no-cache",
         headers: {
             "Content-Type": "application/json; charset=utf-8",
             Authorization: token,
         },
+        body: JSON.stringify(archivoCSV),
     })
         .then((response) => response.json())
         .then((resp) => {

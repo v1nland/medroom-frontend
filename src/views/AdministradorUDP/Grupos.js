@@ -84,7 +84,6 @@ class Grupos extends React.Component {
             nombre_grupo: this.state.nombreGrupo,
             sigla_grupo: this.state.siglaGrupo,
         };
-        // console.log(newGrupo);
         postGrupo(cookies.get("token"), newGrupo)
             .then((resp) => {
                 if (resp.meta === "OK") {
@@ -269,7 +268,7 @@ class Grupos extends React.Component {
                             </Card>
                         </Col>
                     </Row>
-                    <Modal isOpen={this.state.modalAgregarGrupo}>
+                    <Modal aria-labelledby="contained-modal-title-vcenter" centered isOpen={this.state.modalAgregarGrupo}>
                         <ModalHeader>Agregar nuevo Grupo</ModalHeader>
                         <ModalBody>
                             <form>
@@ -316,7 +315,7 @@ class Grupos extends React.Component {
                             <Button onClick={this.handleModalAgregarGrupo}>Salir</Button>
                         </ModalFooter>
                     </Modal>
-                    <Modal isOpen={this.state.modalEditarGrupo}>
+                    <Modal aria-labelledby="contained-modal-title-vcenter" centered isOpen={this.state.modalEditarGrupo}>
                         <ModalHeader>Editar Grupo</ModalHeader>
                         <ModalBody>
                             <FormGroup>
@@ -337,7 +336,7 @@ class Grupos extends React.Component {
                             <Button onClick={this.handleModalEditarGrupo}>Salir</Button>
                         </ModalFooter>
                     </Modal>
-                    <Modal isOpen={this.state.modalAsociarEvaluador}>
+                    <Modal aria-labelledby="contained-modal-title-vcenter" centered isOpen={this.state.modalAsociarEvaluador}>
                         <ModalHeader>Asociar Evaluador</ModalHeader>
                         <ModalBody>
                             <FormGroup>
@@ -367,7 +366,7 @@ class Grupos extends React.Component {
                             <Button onClick={this.handleModalAsociarEvaluador}>Salir</Button>
                         </ModalFooter>
                     </Modal>
-                    <Modal isOpen={this.state.modalAsociarEstudiante}>
+                    <Modal aria-labelledby="contained-modal-title-vcenter" centered isOpen={this.state.modalAsociarEstudiante}>
                         <ModalHeader>Asociar Estudiante</ModalHeader>
                         <ModalBody>
                             <FormGroup>

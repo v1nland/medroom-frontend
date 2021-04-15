@@ -1,8 +1,9 @@
 import React from "react";
 import { NavLink } from "react-router-dom";
-import { Nav } from "reactstrap";
+import { Nav, FormGroup, Button, ModalFooter, Modal, ModalHeader, Label, ModalBody, Input, FormText } from "reactstrap";
 import PerfectScrollbar from "perfect-scrollbar";
-import { getCursos } from "../../database/estudiantes/getCursos";
+// import { getCursos } from "../../database/estudiantes/getCursos";
+import { getCursos } from "../../database/evaluadores/getCursos";
 
 import logo from "../../images/logo_udp.png";
 import Cookies from "universal-cookie";
@@ -21,10 +22,15 @@ class Sidebar extends React.Component {
         super(props);
         this.state = {
             cursos: [],
+            modalNewEvaluacion: false,
+            idCurso: 0,
+            idGrupo: 0,
+            nombreEvaluacion: "",
         };
         this.activeRoute.bind(this);
         this.sidebar = React.createRef();
-        this.handleCursosEstudiante = this.handleCursosEstudiante.bind(this);
+        this.handleModalNewEvaluacion = this.handleModalNewEvaluacion.bind(this);
+        this.handleNewEvaluacion = this.handleNewEvaluacion.bind(this);
     }
     // verifies if routeName is the one active (in browser input)
     activeRoute(routeName) {
@@ -37,14 +43,22 @@ class Sidebar extends React.Component {
                 suppressScrollY: false,
             });
         }
-        if (decoded.perfil === "estudiante") this.handleCursosEstudiante();
     }
-    handleCursosEstudiante() {
+    handleModalNewEvaluacion(event) {
+        this.setState({
+            modalNewEvaluacion: !this.state.modalNewEvaluacion,
+        });
+    }
+    handleNewEvaluacion() {
         Promise.all([getCursos(cookies.get("token"))])
             .then((values) => {
-                this.setState({
-                    cursos: values[0].data,
-                });
+                this.setState(
+                    {
+                        cursos: values[0].data,
+                        modalNewEvaluacion: !this.state.modalNewEvaluacion,
+                    },
+                    () => console.log(this.state.cursos)
+                );
             })
             .catch((err) => console.log(err));
     }
@@ -69,8 +83,21 @@ class Sidebar extends React.Component {
                 <div className="sidebar-wrapper" ref={this.sidebar}>
                     <Nav>
                         {this.props.routes.map((prop, key) => {
-                            if (prop.name.search("Mi Curso") === -1 && prop.perfil === decoded.perfil) {
-                                // if (prop.name.search("Mi Curso") === -1) {
+                            // if (prop.perfil === decoded.perfil && prop.perfil === "evaluador" && prop.name.search("Agregar evaluación") !== -1) {
+                            //     return (
+                            //         <li onClick={this.handleNewEvaluacion} key={"/evaluador/agregar"}>
+                            //             <NavLink to="/portal/evaluador/evaluacion" className="nav-link">
+                            //                 <i className="nc-icon nc-simple-add" />
+                            //                 <p>Agregar Evaluación</p>
+                            //             </NavLink>
+                            //         </li>
+                            //     );
+                            // } else
+                            if (
+                                prop.name.search("No mostrar") === -1 &&
+                                prop.name.search("Modificar Evaluacion") === -1 &&
+                                prop.perfil === decoded.perfil
+                            ) {
                                 return (
                                     <li className={this.activeRoute(prop.path) + (prop.pro ? " active-pro" : "")} key={prop.path}>
                                         <NavLink to={prop.layout + prop.path} className="nav-link" activeClassName="active">
@@ -81,17 +108,52 @@ class Sidebar extends React.Component {
                                 );
                             } else return <li key={prop.path}></li>;
                         })}
-                        {/* {this.state.cursos.map((curso, key) => {
-                            return (
-                                <li className={this.activeRoute("/portal/estudiante/curso/") + curso["id"]} key={1}>
-                                    <NavLink to={"/portal/estudiante/curso/" + curso["id"]} className="nav-link" activeClassName="active">
-                                        <p>{curso["nombre_curso"]}</p>
-                                    </NavLink>
-                                </li>
-                            );
-                        })} */}
                     </Nav>
                 </div>
+                <Modal aria-labelledby="contained-modal-title-vcenter" centered isOpen={this.state.modalNewEvaluacion}>
+                    <ModalHeader>Agregar nueva evaluación</ModalHeader>
+                    <ModalBody>
+                        <FormGroup>
+                            <Label for="idGrupo">Curso</Label>
+                            <Input type="select" name="idCurso" value={this.state.idCurso} onChange={this.handleChange} required>
+                                <option disabled value={0}>
+                                    -- Elija un curso --
+                                </option>
+                                {/* {this.state.grupos.map((grupo) => {
+                                    return (
+                                        <option key={grupo["id"]} value={grupo["id"]}>
+                                            {grupo["nombre_grupo"]}
+                                        </option>
+                                    );
+                                })} */}
+                            </Input>
+                            <Label for="idGrupo">Grupo</Label>
+                            <Input type="select" name="idGrupo" value={this.state.idGrupo} onChange={this.handleChange} required>
+                                <option disabled value={0}>
+                                    -- Elija un grupo --
+                                </option>
+                                {/* {this.state.grupos.map((grupo) => {
+                                    return (
+                                        <option key={grupo["id"]} value={grupo["id"]}>
+                                            {grupo["nombre_grupo"]}
+                                        </option>
+                                    );
+                                })} */}
+                            </Input>
+                            <Label for="nombreEvaluacion" style={{ marginTop: "10px" }}>
+                                Nombre nueva evaluación
+                            </Label>
+                            <Input type="text" name="nombreEvaluacion" id="nombreEvaluacion" placeholder="CONTROL 1" onChange={this.handleChange} />
+                            <FormText color="muted">Se recomienda mantener consistencia en los nombres de las evaluaciones.</FormText>
+                        </FormGroup>
+                    </ModalBody>
+                    <ModalFooter>
+                        <Button color="success" type="submit" onClick={this.handleSubmitNewEvaluacion}>
+                            Agregar
+                        </Button>
+                        <Button onClick={this.handleNewEvaluacion}>Salir</Button>
+                    </ModalFooter>
+                </Modal>
             </div>
         );
     }

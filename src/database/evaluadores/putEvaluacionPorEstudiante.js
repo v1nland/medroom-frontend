@@ -1,15 +1,15 @@
-export function postGrupo(token, newGrupo) {
-    var FetchURL = `${process.env.REACT_APP_APIURL}/administracion-academica/grupos`;
+export function putEvaluacionPorEstudiante(token, idCurso, idGrupo, idEstudiante, idEvaluacion, newEvaluacion) {
+    var FetchURL = `${process.env.REACT_APP_APIURL}/evaluadores/me/cursos/${idCurso}/grupos/${idGrupo}/estudiantes/${idEstudiante}/evaluaciones/${idEvaluacion}/calificacion`;
 
     return fetch(FetchURL, {
-        method: "POST",
+        method: "PUT",
         mode: "cors",
         cache: "no-cache",
         headers: {
             "Content-Type": "application/json; charset=utf-8",
             Authorization: token,
         },
-        body: JSON.stringify(newGrupo),
+        body: JSON.stringify(newEvaluacion),
     })
         .then((response) => response.json())
         .then((resp) => {

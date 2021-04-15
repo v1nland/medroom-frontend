@@ -1,5 +1,5 @@
 export function getEvaluadores(token) {
-    var FetchURL = `${process.env.REACT_APP_APIURL}/administracion-academica/evaluadores`;
+    var FetchURL = `${process.env.REACT_APP_APIURL}/administracion-academica/me/evaluadores`;
 
     return fetch(FetchURL, {
         method: "GET",

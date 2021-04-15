@@ -6,6 +6,7 @@ import { Router, Route, Switch, Redirect } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.css";
 import "assets/scss/paper-dashboard.scss?v=1.2.0";
 import "assets/demo/demo.css";
+import "assets/css/quotes.css";
 import "perfect-scrollbar/css/perfect-scrollbar.css";
 
 import AdminLayout from "layouts/Admin.js";
@@ -18,7 +19,6 @@ ReactDOM.render(
     <Router history={hist}>
         <Switch>
             <Route path="/portal/login" component={Login} />
-            {/* <Route path="/portal/estudiante/:idCurso" component={Curso} /> */}
             <Route path="/portal" render={(props) => <AdminLayout {...props} />} />
             <Redirect to="/portal/login" />
         </Switch>

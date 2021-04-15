@@ -45,17 +45,25 @@ class Perfil extends React.Component {
             .catch((err) => console.log(err));
     }
     validatePassword() {
-        if (
+        if (this.state.passwordOldEvaluador !== "" && this.state.passwordEvaluador === "" && this.state.passwordConfEvaluador === "") {
+            this.setState({
+                passwordsReady: true,
+            });
+        } else if (
+            this.state.passwordOldEvaluador !== "" &&
+            this.state.passwordEvaluador !== "" &&
+            this.state.passwordEvaluador === this.state.passwordConfEvaluador
+        ) {
+            this.setState({
+                passwordsReady: true,
+            });
+        } else if (
             this.state.passwordEvaluador === "" ||
             this.state.passwordConfEvaluador === "" ||
             this.state.passwordEvaluador !== this.state.passwordConfEvaluador
         ) {
             this.setState({
                 passwordsReady: false,
-            });
-        } else if (this.state.passwordEvaluador !== "" && this.state.passwordConfEvaluador !== "") {
-            this.setState({
-                passwordsReady: true,
             });
         }
     }
@@ -83,7 +91,8 @@ class Perfil extends React.Component {
         event.preventDefault();
         var newDatos = {
             cargo_evaluador: this.state.cargoEvaluador,
-            hash_contrasena_evaluador: sha256(this.state.passwordEvaluador),
+            hash_contrasena_evaluador: sha256(this.state.passwordOldEvaluador),
+            hash_nueva_contrasena_evaluador: this.state.passwordEvaluador ? sha256(this.state.passwordEvaluador) : null,
             telefono_celular_evaluador: this.state.contactoEvaluador,
         };
         putPerfil(cookies.get("token"), newDatos).then((resp) => {
@@ -92,6 +101,7 @@ class Perfil extends React.Component {
                 this.setState({
                     passwordEvaluador: "",
                     passwordConfEvaluador: "",
+                    passwordOldEvaluador: "",
                 });
             } else {
                 this.AlertsHandler.generate("danger", "Oops!", "Parece que hubo un problema");
@@ -185,7 +195,6 @@ class Perfil extends React.Component {
                                                         placeholder="******"
                                                         type="password"
                                                     />
-                                                    {this.renderAlertPassword()}
                                                 </FormGroup>
                                             </Col>
                                             <Col sm="12" md="4">
@@ -198,6 +207,7 @@ class Perfil extends React.Component {
                                                         placeholder="******"
                                                         type="password"
                                                     />
+                                                    {this.renderAlertPassword()}
                                                 </FormGroup>
                                             </Col>
                                             <Col sm="12" md="4">
@@ -216,7 +226,7 @@ class Perfil extends React.Component {
                                         </Row>
                                         <Row>
                                             <div className="update ml-auto mr-auto">
-                                                <Button className="btn-round" color="primary" type="submit">
+                                                <Button className="btn-round" color="primary" type="submit" disabled={!this.state.passwordsReady}>
                                                     Actualizar datos
                                                 </Button>
                                             </div>

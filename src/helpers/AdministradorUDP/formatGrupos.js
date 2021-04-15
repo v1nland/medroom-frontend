@@ -8,6 +8,8 @@ export function formatGrupos(data) {
             table_data[i - non_SG]["nombre_grupo"] = data[i]["nombre_grupo"];
             table_data[i - non_SG]["sigla_grupo"] = data[i]["sigla_grupo"];
             table_data[i - non_SG]["id_curso"] = data[i]["id_curso"];
+            table_data[i - non_SG]["evaluadores_grupo"] = data[i]["evaluadores_grupo"];
+            table_data[i - non_SG]["estudiantes_grupo"] = data[i]["estudiantes_grupo"];
         } else non_SG++;
     }
 

@@ -3,15 +3,15 @@ import EstudianteCursos from "views/Estudiante/Cursos.js";
 import EstudianteCurso from "views/Estudiante/Curso.js";
 import EvaluadorPerfil from "views/Evaluador/Perfil.js";
 import EvaluadorEvaluacion from "views/Evaluador/Evaluacion.js";
-import EvaluadorReporte from "views/Evaluador/Reporte.js";
+import EvaluadorModificarEvaluacion from "views/Evaluador/ModificarEvaluacion.js";
+// import EvaluadorReporte from "views/Evaluador/Reporte.js";
 import EvaluadorCurso from "views/Evaluador/Curso.js";
 import EvaluadorCursos from "views/Evaluador/Cursos.js";
 import AdministradorUDPPerfil from "views/AdministradorUDP/Perfil.js";
-import AdministradorUDPGrupos from "views/AdministradorUDP/Grupos.js";
+import AdministradorUDPCursos from "views/AdministradorUDP/Cursos.js";
+import AdministradorUDPCurso from "views/AdministradorUDP/Curso.js";
 import AdministradorTIPerfil from "views/AdministradorTI/Perfil.js";
 import AdministradorTICursos from "views/AdministradorTI/CrearCursos.js";
-// import AdministradorTiCrearUsuarios from "views/AdministradorTI/CrearUsuarios.js";
-// import AdministradorTiAdministrarUsuarios from "views/AdministradorTI/AdministrarUsuarios.js";
 import AdministradorTIEstudiantes from "views/AdministradorTI/Estudiantes.js";
 import AdministradorTIEvaluadores from "views/AdministradorTI/Evaluadores.js";
 import AdministradorTIAdministradores from "views/AdministradorTI/Administradores.js";
@@ -26,24 +26,16 @@ var routes = [
         perfil: "estudiante",
     },
     {
-        path: "/estudiante/cursos",
-        name: "Mis cursos",
+        path: "/estudiante/tablero",
+        name: "Tablero de cursos",
         icon: "nc-icon nc-badge",
         component: EstudianteCursos,
         layout: "/portal",
         perfil: "estudiante",
     },
-    // {
-    //     path: "/estudiante/evaluacion",
-    //     name: "Mis evaluaciones",
-    //     icon: "nc-icon nc-paper",
-    //     component: EstudianteEvaluacion,
-    //     layout: "/portal",
-    //     perfil: "estudiante",
-    // },
     {
-        path: "/estudiante/curso/:idCurso/grupo/:idGrupo",
-        name: "Mi Curso1",
+        path: "/estudiante/cursos/:idCurso/grupo/:idGrupo",
+        name: "No mostrar1",
         icon: "nc-icon nc-paper",
         component: EstudianteCurso,
         layout: "/portal",
@@ -58,16 +50,16 @@ var routes = [
         perfil: "evaluador",
     },
     {
-        path: "/evaluador/curso/:idCurso",
-        name: "Mi Curso2",
+        path: "/evaluador/cursos/:idCurso",
+        name: "No mostrar2",
         icon: "nc-icon nc-single-copy-04",
         component: EvaluadorCurso,
         layout: "/portal",
         perfil: "evaluador",
     },
     {
-        path: "/evaluador/cursos",
-        name: "Mis cursos",
+        path: "/evaluador/tablero",
+        name: "Tablero de cursos",
         icon: "nc-icon nc-badge",
         component: EvaluadorCursos,
         layout: "/portal",
@@ -82,28 +74,51 @@ var routes = [
         perfil: "evaluador",
     },
     {
-        path: "/evaluador/reporte",
-        name: "Ver reportes",
-        icon: "nc-icon nc-single-copy-04",
-        component: EvaluadorReporte,
+        path: "/evaluador/modificar/evaluacion",
+        name: "Modificar Evaluacion",
+        icon: "nc-icon nc-ruler-pencil",
+        component: EvaluadorModificarEvaluacion,
         layout: "/portal",
         perfil: "evaluador",
     },
+    // {
+    //     path: "/evaluador/reporte",
+    //     name: "Ver reportes",
+    //     icon: "nc-icon nc-single-copy-04",
+    //     component: EvaluadorReporte,
+    //     layout: "/portal",
+    //     perfil: "evaluador",
+    // },
+    // {
+    //     path: "/evaluador/agregar",
+    //     name: "Agregar evaluación",
+    //     icon: "nc-icon nc-single-copy-04",
+    //     layout: "/portal",
+    //     perfil: "evaluador",
+    // },
     {
         path: "/administradorUDP/perfil",
         name: "Mi perfil",
-        icon: "nc-icon nc-single-02",
+        icon: "nc-icon nc-badge",
         component: AdministradorUDPPerfil,
         layout: "/portal",
         perfil: "administrador_academico",
     },
     {
-        path: "/administradorUDP/grupos",
-        name: "Grupos",
+        path: "/administradorUDP/tablero",
+        name: "Tablero de cursos",
         icon: "nc-icon nc-vector",
-        component: AdministradorUDPGrupos,
+        component: AdministradorUDPCursos,
         layout: "/portal",
         perfil: "administrador_academico",
+    },
+    {
+        path: "/administradorUDP/cursos/:idCurso",
+        name: "No mostrar3",
+        icon: "nc-icon nc-single-copy-04",
+        component: AdministradorUDPCurso,
+        layout: "/portal",
+        perfil: "evaluador",
     },
     {
         path: "/administradorTI/perfil",
@@ -113,14 +128,6 @@ var routes = [
         layout: "/portal",
         perfil: "administrador_ti",
     },
-    // {
-    //     path: "/administradorTI/crearUsuarios",
-    //     name: "Crear Usuarios",
-    //     icon: "nc-icon nc-tap-01",
-    //     component: AdministradorTiCrearUsuarios,
-    //     layout: "/portal",
-    //     perfil: "administrado_ti",
-    // },
     {
         path: "/administradorTI/crearCursos",
         name: "Crear Cursos",
@@ -129,14 +136,6 @@ var routes = [
         layout: "/portal",
         perfil: "administrador_ti",
     },
-    // {
-    //     path: "/administradorTI/administrarUsuarios",
-    //     name: "Administrar Usuarios",
-    //     icon: "nc-icon nc-book-bookmark",
-    //     component: AdministradorTiAdministrarUsuarios,
-    //     layout: "/portal",
-    //     perfil: "administrador_ti",
-    // },
     {
         path: "/administradorTI/administrarEstudiantes",
         name: "Estudiantes",
