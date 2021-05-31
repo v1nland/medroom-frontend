@@ -32,8 +32,8 @@ class Cursos extends React.Component {
             [event.target.name]: event.target.value,
         });
     }
-    handleClick(idCurso) {
-        window.location.href = "/portal/evaluador/cursos/" + idCurso;
+    handleClick(idPeriodo, siglaCurso) {
+        window.location.href = "periodos/" + idPeriodo + "/cursos/" + siglaCurso;
     }
     render() {
         if (this.state.queriesReady)
@@ -47,8 +47,8 @@ class Cursos extends React.Component {
                     <Row>
                         {this.state.cursos.map((curso) => {
                             return (
-                                <Col sm="12" md="12" xl="4" key={curso["id"]} style={{ cursor: "pointer" }}>
-                                    <Card className="card-user" onClick={() => this.handleClick(curso["id"])}>
+                                <Col sm="12" md="12" xl="4" key={curso["sigla_curso"]} style={{ cursor: "pointer" }}>
+                                    <Card className="card-user" onClick={() => this.handleClick(curso["id_periodo"], curso["sigla_curso"])}>
                                         <div className="image">
                                             <img alt="..." src={require("assets/img/damir-bosnjak.jpg")} />
                                             <div className="centered">Centered</div>
@@ -61,7 +61,7 @@ class Cursos extends React.Component {
                                             <p className="description text-center">
                                                 {curso["sigla_curso"]}
                                                 <br />
-                                                {curso["periodo_curso"]["nombre_periodo"]}
+                                                {curso["id_periodo"]}
                                                 <br />
                                             </p>
                                         </CardBody>

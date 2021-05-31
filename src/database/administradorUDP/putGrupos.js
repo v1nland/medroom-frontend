@@ -1,5 +1,5 @@
-export function putGrupos(token, newGrupo, idCurso, idGrupo) {
-    var FetchURL = `${process.env.REACT_APP_APIURL}/administracion-academica/me/cursos/${idCurso}/grupos/${idGrupo}`;
+export function putGrupos(token, newGrupo, idPeriodo, siglaCurso, siglaGrupo) {
+    var FetchURL = `${process.env.REACT_APP_APIURL}/administracion-academica/me/cursos/${idPeriodo}/${siglaCurso}/grupos/${siglaGrupo}`;
 
     return fetch(FetchURL, {
         method: "PUT",

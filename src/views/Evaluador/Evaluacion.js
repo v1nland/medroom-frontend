@@ -38,8 +38,7 @@ class Evaluacion extends React.Component {
             idEstudiante: 0,
             nombreEvaluador: "",
             nombreEstudiante: "",
-            idPeriodo: 0,
-            periodoEvaluador: "--- Elija un curso ---",
+            idPeriodo: "-- Elija un curso --",
             estudiantes: [],
             cursos: [],
             grupos: [],
@@ -83,12 +82,14 @@ class Evaluacion extends React.Component {
         });
     }
     handleGrupos(event) {
+        var datos = event.target.value.split("||");
         this.setState(
             {
-                [event.target.name]: event.target.value,
+                cursoEvaluador: datos[0],
+                idPeriodo: datos[1],
             },
             () =>
-                Promise.all([getGrupo(cookies.get("token"), this.state.cursoEvaluador)])
+                Promise.all([getGrupo(cookies.get("token"), this.state.idPeriodo, this.state.cursoEvaluador)])
                     .then((values) => {
                         this.setState({
                             grupos: values[0].data,
@@ -119,7 +120,7 @@ class Evaluacion extends React.Component {
             },
             () => {
                 for (let i = 0; i < this.state.grupos.length; i++) {
-                    if (this.state.grupos[i]["id"] === parseInt(this.state.grupoEvaluador)) {
+                    if (this.state.grupos[i]["sigla_grupo"] === this.state.grupoEvaluador) {
                         this.setState({
                             estudiantes: this.state.grupos[i]["estudiantes_grupo"],
                             evaluaciones: this.state.grupos[i]["evaluaciones_grupo"],
@@ -139,56 +140,41 @@ class Evaluacion extends React.Component {
     handleSubmit(event) {
         event.preventDefault();
         var newEvaluacion = {
-            asunto_principal_consulta_calificacion_estudiante: "string",
-            categoria_observador_calificacion_estudiante: "string",
-            complejidad_caso_calificacion_estudiante: "string",
-            entorno_clinico_calificacion_estudiante: "string",
-            id_periodo: parseInt(this.state.periodoId),
-            // id_estudiante: this.state.idEstudiante,
-            nombre_calificacion_estudiante: "string",
-            numero_observaciones_previas_calificacion_estudiante: "string",
             observacion_calificacion_calificacion_estudiante: this.state.comentarioEvaluacion,
-            paciente_calificacion_estudiante: "string",
             valoracion_general_calificacion_estudiante: parseInt(this.state.puntajeGlobal),
             puntajes_calificacion_estudiante: [
                 {
-                    feedback_puntaje: "string",
                     id_competencia: "ANAM",
                     calificacion_puntaje: parseInt(this.state.entrevistaMedica),
                 },
                 {
-                    feedback_puntaje: "string",
                     id_competencia: "EXFI",
                     calificacion_puntaje: parseInt(this.state.examenFisico),
                 },
                 {
-                    feedback_puntaje: "string",
                     id_competencia: "PROF",
                     calificacion_puntaje: parseInt(this.state.profesionalismo),
                 },
                 {
-                    feedback_puntaje: "string",
                     id_competencia: "JUCL",
                     calificacion_puntaje: parseInt(this.state.razonamientoClinico),
                 },
                 {
-                    feedback_puntaje: "string",
                     id_competencia: "HACO",
                     calificacion_puntaje: parseInt(this.state.consejeria),
                 },
                 {
-                    feedback_puntaje: "string",
                     id_competencia: "OREF",
                     calificacion_puntaje: parseInt(this.state.eficiencia),
                 },
             ],
-            tiempo_utilizado_calificacion_estudiante: 0,
         };
         postEvaluaciones(
             cookies.get("token"),
             newEvaluacion,
-            parseInt(this.state.cursoEvaluador),
-            parseInt(this.state.grupoEvaluador),
+            this.state.idPeriodo,
+            this.state.cursoEvaluador,
+            this.state.grupoEvaluador,
             this.state.idEstudiante,
             parseInt(this.state.idEvaluacion)
         ).then((resp) => {
@@ -250,7 +236,10 @@ class Evaluacion extends React.Component {
                                                         </option>
                                                         {this.state.cursos.map((curso) => {
                                                             return (
-                                                                <option key={curso["id"]} value={curso["id"]}>
+                                                                <option
+                                                                    key={curso["sigla_curso"]}
+                                                                    value={curso["sigla_curso"] + "||" + curso["id_periodo"]}
+                                                                >
                                                                     {curso["nombre_curso"]}
                                                                 </option>
                                                             );
@@ -274,7 +263,7 @@ class Evaluacion extends React.Component {
                                                         </option>
                                                         {this.state.grupos.map((grupo) => {
                                                             return (
-                                                                <option key={grupo["id"]} value={grupo["id"]}>
+                                                                <option key={grupo["sigla_grupo"]} value={grupo["sigla_grupo"]}>
                                                                     {grupo["nombre_grupo"]}
                                                                 </option>
                                                             );
@@ -338,9 +327,9 @@ class Evaluacion extends React.Component {
                                                     <Label for="rotacion">Periodo</Label>
                                                     <Input
                                                         type="text"
-                                                        name="periodoEvaluador"
-                                                        id="periodoEvaluador"
-                                                        value={this.state.periodoEvaluador}
+                                                        name="idPeriodo"
+                                                        id="idPeriodo"
+                                                        value={this.state.idPeriodo}
                                                         onChange={this.handleChange}
                                                         disabled={true}
                                                     ></Input>

@@ -42,20 +42,20 @@ class Curso extends React.Component {
     componentDidMount() {
         Promise.all([
             getGrupo(cookies.get("token"), this.props.match.params.idPeriodo, this.props.match.params.siglaCurso, this.props.match.params.siglaGrupo),
-            // getEvolucionCompetencia(
-            //     cookies.get("token"),
-            //     this.props.match.params.idPeriodo,
-            //     this.props.match.params.siglaCurso,
-            //     this.props.match.params.siglaGrupo
-            // ),
+            getEvolucionCompetencia(
+                cookies.get("token"),
+                this.props.match.params.idPeriodo,
+                this.props.match.params.siglaCurso,
+                this.props.match.params.siglaGrupo
+            ),
         ])
             .then((values) => {
                 this.setState({
                     grupo: values[0].data,
                     siglaCurso: this.props.match.params.siglaCurso,
                     siglaGrupo: this.props.match.params.siglaGrupo,
-                    nombreCurso: values[0].data["sigla_curso"],
-                    // evolucionCompetencia: formatEvaluaciones(values[1].data) ?? {},
+                    nombreCurso: values[0].data["nombre_curso"],
+                    evolucionCompetencia: formatEvaluaciones(values[1].data) ?? {},
                     queriesReady: true,
                 });
             })
@@ -72,7 +72,7 @@ class Curso extends React.Component {
         });
     }
     openDetalle(idEvaluacion, nombreEvaluacion) {
-        Promise.all([getCalificacion(cookies.get("token"), this.state.siglaCurso, this.state.siglaGrupo, idEvaluacion)])
+        Promise.all([getCalificacion(cookies.get("token"), this.state.idPeriodo, this.state.siglaCurso, this.state.siglaGrupo, idEvaluacion)])
             .then((values) => {
                 this.setState({
                     data: formatGraficoCompetencias(values[0].data["puntajes_calificacion_estudiante"]),
@@ -109,26 +109,34 @@ class Curso extends React.Component {
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            {this.state.grupo["evaluaciones_grupo"].map((evaluacion) => {
-                                                var fecha = new Date(evaluacion["created_at"]);
-                                                return (
-                                                    <tr key={evaluacion["id"]}>
-                                                        <td>
-                                                            <Button
-                                                                color="success"
-                                                                fab="true"
-                                                                round="true"
-                                                                onClick={() => this.openDetalle(evaluacion["id"], evaluacion["nombre_evaluacion"])}
-                                                            >
-                                                                <i className="fas fa-file-alt"></i>
-                                                            </Button>
-                                                        </td>
-                                                        <td>{evaluacion["nombre_evaluacion"]}</td>
-                                                        <td>{format(fecha, "dd-MM-yyyy")}</td>
-                                                        <td>{format(fecha, "hh:mm:ss")}</td>
-                                                    </tr>
-                                                );
-                                            })}
+                                            {this.state.grupo["evaluaciones_grupo"]
+                                                .sort(function (a, b) {
+                                                    if (a["created_at"] > b["created_at"]) return 1;
+                                                    else if (a["created_at"] < b["created_at"]) return -1;
+                                                    return 0;
+                                                })
+                                                .map((evaluacion) => {
+                                                    var fecha = new Date(evaluacion["created_at"]);
+                                                    return (
+                                                        <tr key={evaluacion["id"]}>
+                                                            <td>
+                                                                <Button
+                                                                    color="success"
+                                                                    fab="true"
+                                                                    round="true"
+                                                                    onClick={() =>
+                                                                        this.openDetalle(evaluacion["id"], evaluacion["nombre_evaluacion"])
+                                                                    }
+                                                                >
+                                                                    <i className="fas fa-file-alt"></i>
+                                                                </Button>
+                                                            </td>
+                                                            <td>{evaluacion["nombre_evaluacion"]}</td>
+                                                            <td>{format(fecha, "dd-MM-yyyy")}</td>
+                                                            <td>{format(fecha, "hh:mm:ss")}</td>
+                                                        </tr>
+                                                    );
+                                                })}
                                         </tbody>
                                     </Table>
                                 </CardBody>

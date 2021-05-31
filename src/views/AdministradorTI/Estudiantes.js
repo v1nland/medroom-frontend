@@ -7,6 +7,7 @@ import Localization from "../../helpers/Localization";
 import { getEstudiantes } from "../../database/administradorTI/getEstudiantes";
 import { postEstudiante } from "../../database/administradorTI/postEstudiante";
 import { putEstudiante } from "../../database/administradorTI/putEstudiante";
+import { reestablecerContraseñaEstudiante } from "../../database/administradorTI/reestablecerContraseñaEstudiante";
 import { deleteEstudiante } from "../../database/administradorTI/deleteEstudiante";
 import { getCursos } from "../../database/administradorTI/getCursos";
 import { cargarEstudiantes } from "../../database/administradorTI/cargarEstudiantes";
@@ -19,6 +20,7 @@ import { sha256 } from "js-sha256";
 import { formatCargaEstudiantes } from "functions/formats/administradorTI/formatCargaEstudiantes";
 import { formatCursos } from "functions/formats/estudiantes/formatCursos";
 import CSVReader from "react-csv-reader";
+import { format } from "rut.js";
 const cookies = new Cookies();
 const papaparseOptions = {
     header: true,
@@ -55,12 +57,13 @@ class Estudiantes extends React.Component {
             telefonoEstudiante: "",
             celularEstudiante: "",
             idEstudiante: "",
-            idCurso: 0,
+            siglaCurso: 0,
 
             modalEliminarEstudiante: false,
             modalAgregarEstudiante: false,
             modalEditarEstudiante: false,
             modalAsociarCurso: false,
+            modalPasswordEstudiante: false,
         };
         this.handleChange = this.handleChange.bind(this);
         this.handleAgregarEstudiante = this.handleAgregarEstudiante.bind(this);
@@ -71,6 +74,8 @@ class Estudiantes extends React.Component {
         this.handleModalAsociarCurso = this.handleModalAsociarCurso.bind(this);
         this.handleEliminarEstudiante = this.handleEliminarEstudiante.bind(this);
         this.handleModalEliminarEstudiante = this.handleModalEliminarEstudiante.bind(this);
+        this.handlePasswordEstudiante = this.handlePasswordEstudiante.bind(this);
+        this.handleModalPasswordEstudiante = this.handleModalPasswordEstudiante.bind(this);
         this.handleCargaMasiva = this.handleCargaMasiva.bind(this);
         this.handleModalCargaMasiva = this.handleModalCargaMasiva.bind(this);
         this.handleForce = this.handleForce.bind(this);
@@ -133,13 +138,14 @@ class Estudiantes extends React.Component {
 
     handleAsociarCurso(event) {
         event.preventDefault();
-        asociarCursoEstudiante(cookies.get("token"), this.state.idCurso, this.state.idEstudiante)
+        var datos = this.state.siglaCurso.split("||");
+        asociarCursoEstudiante(cookies.get("token"), datos[1], datos[0], this.state.idEstudiante)
             .then((resp) => {
                 if (resp.meta === "OK") {
                     this.AlertsHandler.generate("success", "Agregado", "Estudiante asociado con éxito");
                     this.setState(
                         {
-                            idCurso: 0,
+                            siglaCurso: 0,
                             modalAsociarCurso: !this.state.modalAsociarCurso,
                         },
                         () => resp
@@ -238,6 +244,31 @@ class Estudiantes extends React.Component {
             modalEliminarEstudiante: !this.state.modalEliminarEstudiante,
         });
     }
+    handlePasswordEstudiante(event) {
+        event.preventDefault();
+        reestablecerContraseñaEstudiante(cookies.get("token"), this.state.idEstudiante)
+            .then((resp) => {
+                if (resp.meta === "OK") {
+                    this.AlertsHandler.generate("success", "Reestablecido", "Contraseña reestablecida con éxito");
+                    this.setState({
+                        modalPasswordEstudiante: false,
+                    });
+                } else {
+                    this.AlertsHandler.generate("danger", "Oops!", "Parece que hubo un problema");
+                }
+            })
+            .catch((err) => console.log(err));
+    }
+    handleModalPasswordEstudiante(rowData) {
+        if (rowData["id"] != null) {
+            this.setState({
+                idEstudiante: rowData["id"],
+            });
+        }
+        this.setState({
+            modalPasswordEstudiante: !this.state.modalPasswordEstudiante,
+        });
+    }
     handleCargaMasiva() {
         var estudiantes = formatCargaEstudiantes(this.state.cargaEstudiantes);
 
@@ -309,6 +340,11 @@ class Estudiantes extends React.Component {
                                                 tooltip: "Borrar estudiante",
                                                 onClick: (event, rowData) => this.handleModalEliminarEstudiante(rowData),
                                             },
+                                            {
+                                                icon: "lock",
+                                                tooltip: "Reestablecer contraseña",
+                                                onClick: (event, rowData) => this.handleModalPasswordEstudiante(rowData),
+                                            },
                                         ]}
                                         options={{
                                             exportButton: true,
@@ -369,7 +405,7 @@ class Estudiantes extends React.Component {
                                         <small>RUT</small>
                                         <Input
                                             name="rutEstudiante"
-                                            value={this.state.rutEstudiante}
+                                            value={format(this.state.rutEstudiante)}
                                             onChange={this.handleChange}
                                             placeholder="123456789"
                                         />
@@ -407,7 +443,7 @@ class Estudiantes extends React.Component {
                         </ModalFooter>
                     </Modal>
                     <Modal aria-labelledby="contained-modal-title-vcenter" centered isOpen={this.state.modalEditarEstudiante}>
-                        <ModalHeader>Crear Estudiante</ModalHeader>
+                        <ModalHeader>Editar Estudiante</ModalHeader>
                         <ModalBody>
                             <form>
                                 <Row>
@@ -448,7 +484,7 @@ class Estudiantes extends React.Component {
                                         <small>RUT</small>
                                         <Input
                                             name="rutEstudiante"
-                                            value={this.state.rutEstudiante}
+                                            value={format(this.state.rutEstudiante)}
                                             onChange={this.handleChange}
                                             placeholder="123456789"
                                         />
@@ -492,13 +528,13 @@ class Estudiantes extends React.Component {
                                 <Row>
                                     <Col sm="12" md="12">
                                         <small>Curso</small>
-                                        <Input type="select" name="idCurso" value={this.state.idCurso} onChange={this.handleChange} required>
+                                        <Input type="select" name="siglaCurso" value={this.state.siglaCurso} onChange={this.handleChange} required>
                                             <option disabled value={"0"}>
                                                 -- Elija un curso --
                                             </option>
-                                            {this.state.cursos.map((curso) => {
+                                            {this.state.cursos.map((curso, i) => {
                                                 return (
-                                                    <option key={curso["id"]} value={curso["id"]}>
+                                                    <option key={i} value={curso["sigla_curso"] + "||" + curso["periodo_curso"]}>
                                                         {curso["nombre_curso"]}
                                                     </option>
                                                 );
@@ -518,10 +554,19 @@ class Estudiantes extends React.Component {
                     <Modal aria-labelledby="contained-modal-title-vcenter" centered isOpen={this.state.modalEliminarEstudiante}>
                         <ModalHeader>¿Está seguro que desea eliminar al estudiante?</ModalHeader>
                         <ModalFooter>
-                            <Button color="danger" type="submit" onClick={this.handleEliminarEstudiante}>
+                            <Button color="info" type="submit" onClick={this.handleEliminarEstudiante}>
                                 Eliminar
                             </Button>
                             <Button onClick={this.handleModalEliminarEstudiante}>Cancelar</Button>
+                        </ModalFooter>
+                    </Modal>
+                    <Modal aria-labelledby="contained-modal-title-vcenter" centered isOpen={this.state.modalPasswordEstudiante}>
+                        <ModalHeader>¿Está seguro que desea reestablecer la contraseña del estudiante?</ModalHeader>
+                        <ModalFooter>
+                            <Button color="danger" type="submit" onClick={this.handlePasswordEstudiante}>
+                                Reestablecer
+                            </Button>
+                            <Button onClick={this.handleModalPasswordEstudiante}>Cancelar</Button>
                         </ModalFooter>
                     </Modal>
                     <Modal aria-labelledby="contained-modal-title-vcenter" centered isOpen={this.state.modalCargaMasiva}>

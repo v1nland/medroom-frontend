@@ -18,6 +18,8 @@ import LoadingPage from "../../components/LoadingPage/LoadingPage";
 import AlertsHandler from "../../components/AlertsHandler/AlertsHandler";
 import CSVReader from "react-csv-reader";
 import { ExportToCsv } from "export-to-csv";
+import { getPeriodo } from "database/administradorTI/getPeriodo";
+
 const cookies = new Cookies();
 const papaparseOptions = {
     header: true,
@@ -46,7 +48,7 @@ class Cursos extends React.Component {
             columnas: [
                 { title: "NOMBRE CURSO", field: "nombre_curso" },
                 { title: "SIGLA CURSO", field: "sigla_curso" },
-                { title: "PERIODO", field: "nombre_periodo" },
+                { title: "PERIODO", field: "id_periodo" },
                 { title: "N° DE GRUPOS", field: "grupos_curso" },
             ],
             queriesReady: false,
@@ -58,7 +60,7 @@ class Cursos extends React.Component {
             fileCargaGrupos: {},
             nombreCurso: "",
             siglaCurso: "",
-            idCurso: 0,
+            idPeriodo: 0,
             modalEliminarCurso: false,
             modalAgregarCurso: false,
             modalEditarCurso: false,
@@ -81,11 +83,12 @@ class Cursos extends React.Component {
         this.handleDescargarReporte = this.handleDescargarReporte.bind(this);
     }
     componentDidMount() {
-        Promise.all([getCursos(cookies.get("token"))])
+        Promise.all([getCursos(cookies.get("token")), getPeriodo(cookies.get("token"))])
             .then((values) => {
                 this.setState({
                     queriesReady: true,
                     cursos: formatCursos(values[0].data),
+                    periodos: values[1].data,
                 });
             })
             .catch((err) => console.log(err));
@@ -111,9 +114,8 @@ class Cursos extends React.Component {
         var newCurso = {
             nombre_curso: this.state.nombreCurso,
             sigla_curso: this.state.siglaCurso,
-            id_periodo: 1,
         };
-        postCurso(cookies.get("token"), newCurso)
+        postCurso(cookies.get("token"), newCurso, this.state.idPeriodo)
             .then((resp) => {
                 if (resp.meta === "OK") {
                     this.AlertsHandler.generate("success", "Agregado", "Nuevo curso agregado con éxito");
@@ -137,16 +139,13 @@ class Cursos extends React.Component {
     handleEditarCurso(rowData) {
         var newCurso = {
             nombre_curso: this.state.nombreCurso,
-            sigla_curso: this.state.siglaCurso,
-            id_periodo: 1,
         };
-        putCurso(cookies.get("token"), newCurso, this.state.idCurso)
+        putCurso(cookies.get("token"), newCurso, this.state.idPeriodo, this.state.siglaCurso)
             .then((resp) => {
                 if (resp.meta === "OK") {
                     this.AlertsHandler.generate("success", "Agregado", "Curso modificado con éxito");
                     this.setState({
                         nombreCurso: "",
-                        siglaCurso: "",
                         modalEditarCurso: false,
                     });
                 } else {
@@ -156,11 +155,11 @@ class Cursos extends React.Component {
             .catch((err) => console.log(err));
     }
     handleModalEditarCurso(rowData) {
-        if (rowData["id"] != null) {
+        if (rowData["sigla_curso"] != null) {
             this.setState({
                 nombreCurso: rowData["nombre_curso"],
                 siglaCurso: rowData["sigla_curso"],
-                idCurso: rowData["id"],
+                idPeriodo: rowData["id_periodo"],
             });
         }
 
@@ -170,7 +169,7 @@ class Cursos extends React.Component {
     }
 
     handleEliminarCurso(rowData) {
-        deleteCurso(cookies.get("token"), this.state.idCurso)
+        deleteCurso(cookies.get("token"), this.state.siglaCurso)
             .then((resp) => {
                 if (resp.meta === "OK") {
                     this.AlertsHandler.generate("success", "Agregado", "Curso eliminado con éxito");
@@ -184,9 +183,10 @@ class Cursos extends React.Component {
             .catch((err) => console.log(err));
     }
     handleModalEliminarCurso(rowData) {
-        if (rowData["id"] != null) {
+        if (rowData["sigla_curso"] != null) {
             this.setState({
-                idCurso: rowData["id"],
+                idPeriodo: rowData["id_periodo"],
+                siglaCurso: rowData["sigla_curso"],
             });
         }
 
@@ -239,8 +239,7 @@ class Cursos extends React.Component {
         });
     }
     handleDescargarReporte(rowData) {
-        // console.log(rowData);
-        getReporteCurso(cookies.get("token"), rowData["id"])
+        getReporteCurso(cookies.get("token"), rowData["id_periodo"], rowData["sigla_curso"])
             .then((resp) => {
                 if (resp.meta === "OK") {
                     // console.log(resp.data);
@@ -342,11 +341,27 @@ class Cursos extends React.Component {
                                     id="nombreCurso"
                                     placeholder="Habilidades Médicas I"
                                     onChange={this.handleChange}
+                                    required
                                 />
                                 <Label for="siglaCurso" style={{ marginTop: "10px" }}>
                                     Nombre sigla curso
                                 </Label>
-                                <Input type="text" name="siglaCurso" id="siglaCurso" placeholder="HMED-1000" onChange={this.handleChange} />
+                                <Input type="text" name="siglaCurso" id="siglaCurso" placeholder="HMED-1000" onChange={this.handleChange} required />
+                                <Label for="idPeriodo" style={{ marginTop: "10px" }}>
+                                    Periodo
+                                </Label>
+                                <Input type="select" name="idPeriodo" value={this.state.idPeriodo} onChange={this.handleChange} required>
+                                    <option disabled value={"0"}>
+                                        -- Elija un periodo --
+                                    </option>
+                                    {this.state.periodos.map((periodo, i) => {
+                                        return (
+                                            <option key={i} value={periodo["id"]}>
+                                                {periodo["id"]}
+                                            </option>
+                                        );
+                                    })}
+                                </Input>
                             </FormGroup>
                         </ModalBody>
                         <ModalFooter>
@@ -364,10 +379,6 @@ class Cursos extends React.Component {
                                     Nombre curso
                                 </Label>
                                 <Input type="text" name="nombreCurso" id="nombreCurso" value={this.state.nombreCurso} onChange={this.handleChange} />
-                                <Label for="siglaCurso" style={{ marginTop: "10px" }}>
-                                    Nombre sigla
-                                </Label>
-                                <Input type="text" name="siglaCurso" id="siglaCurso" value={this.state.siglaCurso} onChange={this.handleChange} />
                             </FormGroup>
                         </ModalBody>
                         <ModalFooter>

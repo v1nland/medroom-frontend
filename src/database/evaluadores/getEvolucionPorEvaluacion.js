@@ -1,5 +1,5 @@
-export function getEvolucionPorEvaluacion(token, idCurso, idGrupo) {
-    var FetchURL = `${process.env.REACT_APP_APIURL}/evaluadores/me/cursos/${idCurso}/grupos/${idGrupo}/estadisticas/evolucion-evaluacion`;
+export function getEvolucionPorEvaluacion(token, idPeriodo, siglaCurso, siglaGrupo) {
+    var FetchURL = `${process.env.REACT_APP_APIURL}/evaluadores/me/cursos/${idPeriodo}/${siglaCurso}/grupos/${siglaGrupo}/estadisticas/evolucion-evaluacion`;
 
     return fetch(FetchURL, {
         method: "GET",

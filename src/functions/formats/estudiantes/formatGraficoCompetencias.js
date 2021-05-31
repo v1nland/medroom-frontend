@@ -1,5 +1,4 @@
 export function formatGraficoCompetencias(data) {
-    console.log(data);
     var graphic_data = {
         labels: [],
         datasets: [

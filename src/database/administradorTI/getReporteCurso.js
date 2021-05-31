@@ -1,5 +1,5 @@
-export function getReporteCurso(token, idCurso) {
-    var FetchURL = `${process.env.REACT_APP_APIURL}/administracion-ti/cursos/${idCurso}/reporte-notas`;
+export function getReporteCurso(token, idPeriodo, siglaCurso) {
+    var FetchURL = `${process.env.REACT_APP_APIURL}/administracion-ti/cursos/${idPeriodo}/${siglaCurso}/reporte-notas`;
 
     return fetch(FetchURL, {
         method: "GET",

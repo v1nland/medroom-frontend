@@ -7,6 +7,7 @@ import Localization from "../../helpers/Localization";
 import { getEvaluadores } from "../../database/administradorTI/getEvaluadores";
 import { postEvaluador } from "../../database/administradorTI/postEvaluador";
 import { putEvaluador } from "../../database/administradorTI/putEvaluador";
+import { reestablecerContraseñaEvaluador } from "../../database/administradorTI/reestablecerContraseñaEvaluador";
 import { deleteEvaluador } from "../../database/administradorTI/deleteEvaluador";
 import { getCursos } from "../../database/administradorTI/getCursos";
 import { asociarCursoEvaluador } from "../../database/administradorTI/asociarCursoEvaluador";
@@ -16,6 +17,7 @@ import LoadingPage from "../../components/LoadingPage/LoadingPage";
 import AlertsHandler from "../../components/AlertsHandler/AlertsHandler";
 import { sha256 } from "js-sha256";
 import { formatCursos } from "functions/formats/estudiantes/formatCursos";
+import { format } from "rut.js";
 const cookies = new Cookies();
 
 class Evaluadores extends React.Component {
@@ -45,11 +47,12 @@ class Evaluadores extends React.Component {
             cargoEvaluador: "",
             recintoEvaluador: "",
             idEvaluador: "",
-            idCurso: 0,
+            siglaCurso: 0,
             modalEliminarEvaluador: false,
             modalAgregarEvaluador: false,
             modalEditarEvaluador: false,
             modalAsociarCurso: false,
+            modalPasswordEvaluador: false,
         };
         this.handleChange = this.handleChange.bind(this);
         this.handleAgregarEvaluador = this.handleAgregarEvaluador.bind(this);
@@ -60,6 +63,8 @@ class Evaluadores extends React.Component {
         this.handleModalAsociarCurso = this.handleModalAsociarCurso.bind(this);
         this.handleEliminarEvaluador = this.handleEliminarEvaluador.bind(this);
         this.handleModalEliminarEvaluador = this.handleModalEliminarEvaluador.bind(this);
+        this.handlePasswordEvaluador = this.handlePasswordEvaluador.bind(this);
+        this.handleModalPasswordEvaluador = this.handleModalPasswordEvaluador.bind(this);
     }
     componentDidMount() {
         Promise.all([getEvaluadores(cookies.get("token")), getCursos(cookies.get("token"))])
@@ -122,13 +127,14 @@ class Evaluadores extends React.Component {
     }
     handleAsociarCurso(event) {
         event.preventDefault();
-        asociarCursoEvaluador(cookies.get("token"), this.state.idCurso, this.state.idEvaluador)
+        var datos = this.state.siglaCurso.split("||");
+        asociarCursoEvaluador(cookies.get("token"), datos[1], datos[0], this.state.idEvaluador)
             .then((resp) => {
                 if (resp.meta === "OK") {
                     this.AlertsHandler.generate("success", "Agregado", "Evaluador asociado con éxito");
                     this.setState(
                         {
-                            idCurso: 0,
+                            siglaCurso: 0,
                             modalAsociarCurso: !this.state.modalAsociarCurso,
                         },
                         () => resp
@@ -204,6 +210,7 @@ class Evaluadores extends React.Component {
 
     handleEliminarEvaluador(event) {
         event.preventDefault();
+
         deleteEvaluador(cookies.get("token"), this.state.idEvaluador)
             .then((resp) => {
                 if (resp.meta === "OK") {
@@ -228,6 +235,35 @@ class Evaluadores extends React.Component {
         }
         this.setState({
             modalEliminarEvaluador: !this.state.modalEliminarEvaluador,
+        });
+    }
+    handlePasswordEvaluador(event) {
+        event.preventDefault();
+
+        reestablecerContraseñaEvaluador(cookies.get("token"), this.state.idEvaluador)
+            .then((resp) => {
+                if (resp.meta === "OK") {
+                    this.AlertsHandler.generate("success", "Reestablecido", "Contraseña reestablecida con éxito");
+                    this.setState(
+                        {
+                            modalPasswordEvaluador: !this.state.modalPasswordEvaluador,
+                        },
+                        () => resp
+                    );
+                } else {
+                    this.AlertsHandler.generate("danger", "Oops!", "Parece que hubo un problema");
+                }
+            })
+            .catch((err) => console.log(err));
+    }
+    handleModalPasswordEvaluador(rowData) {
+        if (rowData["id"] != null) {
+            this.setState({
+                idEvaluador: rowData["id"],
+            });
+        }
+        this.setState({
+            modalPasswordEvaluador: !this.state.modalPasswordEvaluador,
         });
     }
 
@@ -273,6 +309,11 @@ class Evaluadores extends React.Component {
                                                 icon: "delete",
                                                 tooltip: "Borrar evaluador",
                                                 onClick: (event, rowData) => this.handleModalEliminarEvaluador(rowData),
+                                            },
+                                            {
+                                                icon: "lock",
+                                                tooltip: "Reestablecer contraseña",
+                                                onClick: (event, rowData) => this.handleModalPasswordEvaluador(rowData),
                                             },
                                         ]}
                                         options={{
@@ -334,7 +375,7 @@ class Evaluadores extends React.Component {
                                         <small>RUT</small>
                                         <Input
                                             name="rutEvaluador"
-                                            value={this.state.rutEvaluador}
+                                            value={format(this.state.rutEvaluador)}
                                             onChange={this.handleChange}
                                             placeholder="123456789"
                                         />
@@ -394,7 +435,7 @@ class Evaluadores extends React.Component {
                         </ModalFooter>
                     </Modal>
                     <Modal aria-labelledby="contained-modal-title-vcenter" centered isOpen={this.state.modalEditarEvaluador}>
-                        <ModalHeader>Crear Evaluador</ModalHeader>
+                        <ModalHeader>Editar Evaluador</ModalHeader>
                         <ModalBody>
                             <form>
                                 <Row>
@@ -435,7 +476,7 @@ class Evaluadores extends React.Component {
                                         <small>RUT</small>
                                         <Input
                                             name="rutEvaluador"
-                                            value={this.state.rutEvaluador}
+                                            value={format(this.state.rutEvaluador)}
                                             onChange={this.handleChange}
                                             placeholder="123456789"
                                         />
@@ -501,13 +542,13 @@ class Evaluadores extends React.Component {
                                 <Row>
                                     <Col sm="12" md="12">
                                         <small>Curso</small>
-                                        <Input type="select" name="idCurso" value={this.state.idCurso} onChange={this.handleChange} required>
+                                        <Input type="select" name="siglaCurso" value={this.state.siglaCurso} onChange={this.handleChange} required>
                                             <option disabled value={"0"}>
                                                 -- Elija un curso --
                                             </option>
-                                            {this.state.cursos.map((curso) => {
+                                            {this.state.cursos.map((curso, i) => {
                                                 return (
-                                                    <option key={curso["id"]} value={curso["id"]}>
+                                                    <option key={i} value={curso["sigla_curso"] + "||" + curso["periodo_curso"]}>
                                                         {curso["nombre_curso"]}
                                                     </option>
                                                 );
@@ -527,10 +568,19 @@ class Evaluadores extends React.Component {
                     <Modal aria-labelledby="contained-modal-title-vcenter" centered isOpen={this.state.modalEliminarEvaluador}>
                         <ModalHeader>¿Está seguro que desea eliminar al evaluador?</ModalHeader>
                         <ModalFooter>
-                            <Button color="danger" type="submit" onClick={this.handleEliminarEvaluador}>
+                            <Button color="info" type="submit" onClick={this.handleEliminarEvaluador}>
                                 Eliminar
                             </Button>
                             <Button onClick={this.handleModalEliminarEvaluador}>Cancelar</Button>
+                        </ModalFooter>
+                    </Modal>
+                    <Modal aria-labelledby="contained-modal-title-vcenter" centered isOpen={this.state.modalPasswordEvaluador}>
+                        <ModalHeader>¿Está seguro que desea reestablecer la contraseña del evaluador?</ModalHeader>
+                        <ModalFooter>
+                            <Button color="danger" type="submit" onClick={this.handlePasswordEvaluador}>
+                                Reestablecer
+                            </Button>
+                            <Button onClick={this.handleModalPasswordEvaluador}>Cancelar</Button>
                         </ModalFooter>
                     </Modal>
                     <AlertsHandler onRef={(ref) => (this.AlertsHandler = ref)} />

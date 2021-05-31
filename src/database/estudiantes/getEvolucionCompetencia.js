@@ -1,5 +1,5 @@
 export function getEvolucionCompetencia(token, idPeriodo, siglaCurso, siglaGrupo) {
-    var FetchURL = `${process.env.REACT_APP_APIURL}/estudiantes/me/cursos/${idPeriodo}/${siglaCurso}/grupos/${siglaGrupo}/estadisticas/evolucion-por-competencia`;
+    var FetchURL = `${process.env.REACT_APP_APIURL}/estudiantes/me/cursos/${idPeriodo}/${siglaCurso}/grupos/${siglaGrupo}/estadisticas/evolucion-competencia`;
 
     return fetch(FetchURL, {
         method: "GET",

@@ -26,7 +26,7 @@ import {
     FormGroup,
 } from "reactstrap";
 import LoadingPage from "../../components/LoadingPage/LoadingPage";
-import { getCurso } from "../../database/evaluadores/getCurso";
+// import { getCurso } from "../../database/evaluadores/getCurso";
 import { getGrupo } from "../../database/evaluadores/getGrupo";
 import { getEvolucionPorCompetencia } from "../../database/evaluadores/getEvolucionPorCompetencia";
 import { getEvolucionPorEvaluacion } from "../../database/evaluadores/getEvolucionPorEvaluacion";
@@ -51,12 +51,14 @@ class Curso extends React.Component {
             competencias: {},
             evaluaciones: {},
             evaluacionesEstudiante: [],
+            nombreCurso: "",
             nombreEvaluacion: "",
             comentarioEvaluacion: "",
-            idCurso: 0,
-            idGrupo: 0,
+            siglaCurso: 0,
+            siglaGrupo: 0,
             idEstudiante: 0,
             idEvaluacion: 0,
+            idPeriodo: 0,
             activeTab: 1,
             modificarEvaluacion: {},
         };
@@ -70,21 +72,21 @@ class Curso extends React.Component {
         this.handleIdEvaluacion = this.handleIdEvaluacion.bind(this);
     }
     componentDidMount() {
-        Promise.all([
-            getCurso(cookies.get("token"), this.props.match.params.idCurso),
-            getGrupo(cookies.get("token"), this.props.match.params.idCurso),
-        ])
+        Promise.all([getGrupo(cookies.get("token"), this.props.match.params.idPeriodo, this.props.match.params.siglaCurso)])
             .then((values) => {
                 this.setState(
                     {
-                        curso: values[0].data,
-                        grupos: values[1].data,
-                        activeTab: values[1].data[0]["id"] ?? 1,
-                        idCurso: values[0].data["id"],
-                        idGrupo: values[1].data[0]["id"],
+                        grupos: values[0].data,
+                        activeTab: values[0].data[0]["sigla_grupo"] ?? 1,
+                        siglaCurso: this.props.match.params.siglaCurso,
+                        idPeriodo: this.props.match.params.idPeriodo,
+                        siglaGrupo: values[0].data[0]["sigla_grupo"],
+                        nombreCurso: values[0].data["nombre_curso"],
                         queriesReady: true,
                     },
-                    () => this.handleEstadistica(this.state.idGrupo)
+                    () => {
+                        this.handleEstadistica(this.state.siglaGrupo);
+                    }
                 );
             })
             .catch((err) => console.log(err));
@@ -124,13 +126,13 @@ class Curso extends React.Component {
         var newEvaluacion = {
             nombre_evaluacion: this.state.nombreEvaluacion,
         };
-        postEvaluacion(cookies.get("token"), newEvaluacion, parseInt(this.state.idCurso), parseInt(this.state.idGrupo))
+        postEvaluacion(cookies.get("token"), newEvaluacion, this.state.idPeriodo, this.state.siglaCurso, this.state.siglaGrupo)
             .then((resp) => {
                 if (resp.meta === "OK") {
                     this.AlertsHandler.generate("success", "Agregado", "Nueva evaluación agregada con éxito");
                     this.setState({
-                        idCurso: 0,
-                        idGrupo: 0,
+                        siglaCurso: 0,
+                        siglaGrupo: 0,
                         modalNewEvaluacion: false,
                     });
                 } else {
@@ -139,10 +141,10 @@ class Curso extends React.Component {
             })
             .catch((err) => console.log(err));
     }
-    handleEstadistica(idGrupo) {
+    handleEstadistica(siglaGrupo) {
         Promise.all([
-            getEvolucionPorCompetencia(cookies.get("token"), this.props.match.params.idCurso, idGrupo),
-            getEvolucionPorEvaluacion(cookies.get("token"), this.props.match.params.idCurso, idGrupo),
+            getEvolucionPorCompetencia(cookies.get("token"), this.state.idPeriodo, this.state.siglaCurso, siglaGrupo),
+            getEvolucionPorEvaluacion(cookies.get("token"), this.state.idPeriodo, this.state.siglaCurso, siglaGrupo),
         ])
             .then((values) => {
                 this.setState({
@@ -153,19 +155,20 @@ class Curso extends React.Component {
             .catch((err) => console.log(err));
     }
     handleEditarEvaluacion() {
-        console.log(this.props.match.params.idCurso, this.state.idGrupo, this.state.idEstudiante, this.state.idEvaluacion);
+        console.log(this.props.match.params.siglaCurso, this.state.siglaGrupo, this.state.idEstudiante, this.state.idEvaluacion);
     }
-    handleModalEditarEvaluacion(idEstudiante, idGrupo, nombreGrupo, nombreEstudiante) {
+    handleModalEditarEvaluacion(idEstudiante, siglaGrupo, nombreGrupo, nombreEstudiante) {
         if (!this.state.modalEditarEvaluacion) {
-            Promise.all([getEvaluacionPorEstudiante(cookies.get("token"), this.props.match.params.idCurso, idGrupo, idEstudiante)])
+            Promise.all([getEvaluacionPorEstudiante(cookies.get("token"), this.state.idPeriodo, this.state.siglaCurso, siglaGrupo, idEstudiante)])
                 .then((values) => {
                     var newModificarEvaluacion = {
                         pathname: "/portal/evaluador/modificar/evaluacion",
                         nombreEstudiante: nombreEstudiante,
                         nombreCurso: this.state.curso["nombre_curso"],
                         nombreGrupo: nombreGrupo,
-                        idCurso: this.props.match.params.idCurso,
-                        idGrupo: idGrupo,
+                        siglaCurso: this.state.siglaCurso,
+                        siglaGrupo: siglaGrupo,
+                        idPeriodo: this.state.idPeriodo,
                         idEstudiante: idEstudiante,
                         idEvaluacion: 0,
                     };
@@ -184,48 +187,11 @@ class Curso extends React.Component {
         if (this.state.queriesReady)
             return (
                 <div className="content">
-                    <Modal aria-labelledby="contained-modal-title-vcenter" centered isOpen={this.state.modalNewEvaluacion}>
-                        <ModalHeader>Agregar nueva evaluación</ModalHeader>
-                        <ModalBody>
-                            <FormGroup>
-                                <Label for="idGrupo">Grupo</Label>
-                                <Input type="select" name="idGrupo" value={this.state.idGrupo} onChange={this.handleChange} required>
-                                    <option disabled value={0}>
-                                        -- Elija un grupo --
-                                    </option>
-                                    {this.state.grupos.map((grupo) => {
-                                        return (
-                                            <option key={grupo["id"]} value={grupo["id"]}>
-                                                {grupo["nombre_grupo"]}
-                                            </option>
-                                        );
-                                    })}
-                                </Input>
-                                <Label for="nombreEvaluacion" style={{ marginTop: "10px" }}>
-                                    Nombre nueva evaluación
-                                </Label>
-                                <Input
-                                    type="text"
-                                    name="nombreEvaluacion"
-                                    id="nombreEvaluacion"
-                                    placeholder="CONTROL 1"
-                                    onChange={this.handleChange}
-                                />
-                                <FormText color="muted">Se recomienda mantener consistencia en los nombres de las evaluaciones.</FormText>
-                            </FormGroup>
-                        </ModalBody>
-                        <ModalFooter>
-                            <Button color="success" type="submit" onClick={this.handleSubmitNewEvaluacion}>
-                                Agregar
-                            </Button>
-                            <Button onClick={this.handleNewEvaluacion}>Salir</Button>
-                        </ModalFooter>
-                    </Modal>
                     <Row>
                         <Col md="12">
                             <Card>
                                 <CardHeader>
-                                    <CardTitle tag="h4">{this.state.curso["nombre_curso"]}</CardTitle>
+                                    <CardTitle tag="h4">{this.state.nombreCurso}</CardTitle>
                                 </CardHeader>
                             </Card>
                             <Card>
@@ -238,11 +204,11 @@ class Curso extends React.Component {
                                             <Nav pills>
                                                 {this.state.grupos.map((grupo) => {
                                                     return (
-                                                        <NavItem key={grupo["id"]}>
+                                                        <NavItem key={grupo["sigla_grupo"]}>
                                                             <NavLink
-                                                                className={this.state.activeTab === grupo["id"] ? "active" : ""}
+                                                                className={this.state.activeTab === grupo["sigla_grupo"] ? "active" : ""}
                                                                 onClick={() => {
-                                                                    this.toggle(grupo["id"]);
+                                                                    this.toggle(grupo["sigla_grupo"]);
                                                                 }}
                                                             >
                                                                 {grupo["nombre_grupo"]}
@@ -255,143 +221,115 @@ class Curso extends React.Component {
                                         <CardBody>
                                             <TabContent activeTab={this.state.activeTab} className="text-center">
                                                 {this.state.grupos.map((grupo) => {
-                                                    if (grupo["sigla_grupo"] === "SG")
-                                                        return (
-                                                            <TabPane tabId={grupo["id"]} key={grupo["id"]}>
-                                                                <Table responsive bordered>
-                                                                    <thead className="text-primary">
-                                                                        <tr>
-                                                                            <th>Apellidos</th>
-                                                                            <th>Nombres</th>
-                                                                            <th>Correo</th>
-                                                                            <th>Número</th>
-                                                                        </tr>
-                                                                    </thead>
-                                                                    <tbody>
-                                                                        {grupo["estudiantes_grupo"].map((estudiante) => {
-                                                                            return (
-                                                                                <tr key={estudiante["id"]}>
-                                                                                    <td>{estudiante["apellidos_estudiante"]}</td>
-                                                                                    <td>{estudiante["nombres_estudiante"]}</td>
-                                                                                    <td>{estudiante["correo_electronico_estudiante"]}</td>
-                                                                                    <td>{estudiante["telefono_celular_estudiante"]}</td>
-                                                                                </tr>
-                                                                            );
-                                                                        })}
-                                                                    </tbody>
-                                                                </Table>
-                                                            </TabPane>
-                                                        );
-                                                    else
-                                                        return (
-                                                            <TabPane tabId={grupo["id"]} key={grupo["id"]}>
-                                                                <Table responsive bordered>
-                                                                    <thead className="text-primary">
-                                                                        <tr>
-                                                                            <th></th>
-                                                                            <th>Apellidos</th>
-                                                                            <th>Nombres</th>
-                                                                            <th>Correo</th>
-                                                                            <th>Número</th>
-                                                                        </tr>
-                                                                    </thead>
-                                                                    <tbody>
-                                                                        {grupo["estudiantes_grupo"].map((estudiante) => {
-                                                                            return (
-                                                                                <tr key={estudiante["id"]}>
-                                                                                    <td>
-                                                                                        <Button
-                                                                                            onClick={() =>
-                                                                                                this.handleModalEditarEvaluacion(
-                                                                                                    estudiante["id"],
-                                                                                                    grupo["id"],
-                                                                                                    grupo["nombre_grupo"],
-                                                                                                    `${estudiante["nombres_estudiante"]} ${estudiante["apellidos_estudiante"]}`
-                                                                                                )
-                                                                                            }
-                                                                                            style={{ width: "40%" }}
-                                                                                        >
-                                                                                            <i className="fas fa-pen"></i>
-                                                                                        </Button>
-                                                                                    </td>
-                                                                                    <td>{estudiante["apellidos_estudiante"]}</td>
-                                                                                    <td>{estudiante["nombres_estudiante"]}</td>
-                                                                                    <td>{estudiante["correo_electronico_estudiante"]}</td>
-                                                                                    <td>{estudiante["telefono_celular_estudiante"]}</td>
-                                                                                </tr>
-                                                                            );
-                                                                        })}
-                                                                    </tbody>
-                                                                </Table>
-                                                                <hr />
-                                                                <h4 style={{ textAlign: "left" }}>Evaluaciones</h4>
-                                                                <Table responsive striped hover bordered>
-                                                                    <thead className="text-primary">
-                                                                        <tr>
-                                                                            <th>Nombre Evaluación</th>
-                                                                            <th>Fecha de Evaluación</th>
-                                                                            <th>Hora de Evaluación</th>
-                                                                        </tr>
-                                                                    </thead>
-                                                                    <tbody key={grupo["id"]}>
-                                                                        {grupo["evaluaciones_grupo"].map((evaluacion) => {
-                                                                            var fecha = new Date(evaluacion["created_at"]);
-                                                                            return (
-                                                                                <tr key={evaluacion["id"]}>
-                                                                                    <td>{evaluacion["nombre_evaluacion"]}</td>
-                                                                                    <td>{format(fecha, "dd-MM-yyyy")}</td>
-                                                                                    <td>{format(fecha, "hh:mm:ss")}</td>
-                                                                                </tr>
-                                                                            );
-                                                                        })}
-                                                                    </tbody>
-                                                                </Table>
-                                                                <hr />
-                                                                <h4 style={{ textAlign: "left" }}>Evaluadores del grupo</h4>
-                                                                <Table responsive striped hover bordered>
-                                                                    <thead className="text-primary">
-                                                                        <tr>
-                                                                            <th>Apellidos Evaluador</th>
-                                                                            <th>Nombres Evaluador</th>
-                                                                            <th>Cargo Evaluador</th>
-                                                                            <th>Recinto Evaluador</th>
-                                                                            <th>Correo Evaluador</th>
-                                                                        </tr>
-                                                                    </thead>
-                                                                    <tbody key={grupo["id"]}>
-                                                                        {grupo["evaluadores_grupo"].map((evaluador) => {
-                                                                            return (
-                                                                                <tr key={evaluador["id"]}>
-                                                                                    <td>{evaluador["apellidos_evaluador"]}</td>
-                                                                                    <td>{evaluador["nombres_evaluador"]}</td>
-                                                                                    <td>{evaluador["cargo_evaluador"]}</td>
-                                                                                    <td>{evaluador["recinto_evaluador"]}</td>
-                                                                                    <td>{evaluador["correo_electronico_evaluador"]}</td>
-                                                                                </tr>
-                                                                            );
-                                                                        })}
-                                                                    </tbody>
-                                                                </Table>
-                                                                <Col xl="12">
-                                                                    <h5 style={{ marginTop: "40px" }}>Evolución grupal por competencia</h5>
-                                                                    <Line
-                                                                        data={this.state.competencias}
-                                                                        options={evaluadorOptions.options}
-                                                                        width={400}
-                                                                        height={100}
-                                                                    />
-                                                                </Col>
-                                                                <Col xl="12">
-                                                                    <h5 style={{ marginTop: "40px" }}>Evolución grupal por evaluación</h5>
-                                                                    <Bar
-                                                                        data={this.state.evaluaciones}
-                                                                        options={evaluacionesOptions.options}
-                                                                        width={400}
-                                                                        height={100}
-                                                                    />
-                                                                </Col>
-                                                            </TabPane>
-                                                        );
+                                                    return (
+                                                        <TabPane tabId={grupo["sigla_grupo"]} key={grupo["sigla_grupo"]}>
+                                                            <Table responsive bordered>
+                                                                <thead className="text-primary">
+                                                                    <tr>
+                                                                        <th></th>
+                                                                        <th>Apellidos</th>
+                                                                        <th>Nombres</th>
+                                                                        <th>Correo</th>
+                                                                        <th>Número</th>
+                                                                    </tr>
+                                                                </thead>
+                                                                <tbody>
+                                                                    {grupo["estudiantes_grupo"].map((estudiante) => {
+                                                                        return (
+                                                                            <tr key={estudiante["id"]}>
+                                                                                <td>
+                                                                                    <Button
+                                                                                        onClick={() =>
+                                                                                            this.handleModalEditarEvaluacion(
+                                                                                                estudiante["id"],
+                                                                                                grupo["sigla_grupo"],
+                                                                                                grupo["nombre_grupo"],
+                                                                                                `${estudiante["nombres_estudiante"]} ${estudiante["apellidos_estudiante"]}`
+                                                                                            )
+                                                                                        }
+                                                                                        style={{ width: "40%" }}
+                                                                                    >
+                                                                                        <i className="fas fa-pen"></i>
+                                                                                    </Button>
+                                                                                </td>
+                                                                                <td>{estudiante["apellidos_estudiante"]}</td>
+                                                                                <td>{estudiante["nombres_estudiante"]}</td>
+                                                                                <td>{estudiante["correo_electronico_estudiante"]}</td>
+                                                                                <td>{estudiante["telefono_celular_estudiante"]}</td>
+                                                                            </tr>
+                                                                        );
+                                                                    })}
+                                                                </tbody>
+                                                            </Table>
+                                                            <hr />
+                                                            <h4 style={{ textAlign: "left" }}>Evaluaciones</h4>
+                                                            <Table responsive striped hover bordered>
+                                                                <thead className="text-primary">
+                                                                    <tr>
+                                                                        <th>Nombre Evaluación</th>
+                                                                        <th>Fecha de Evaluación</th>
+                                                                        <th>Hora de Evaluación</th>
+                                                                    </tr>
+                                                                </thead>
+                                                                <tbody key={grupo["id"]}>
+                                                                    {grupo["evaluaciones_grupo"].map((evaluacion) => {
+                                                                        var fecha = new Date(evaluacion["created_at"]);
+                                                                        return (
+                                                                            <tr key={evaluacion["id"]}>
+                                                                                <td>{evaluacion["nombre_evaluacion"]}</td>
+                                                                                <td>{format(fecha, "dd-MM-yyyy")}</td>
+                                                                                <td>{format(fecha, "hh:mm:ss")}</td>
+                                                                            </tr>
+                                                                        );
+                                                                    })}
+                                                                </tbody>
+                                                            </Table>
+                                                            <hr />
+                                                            <h4 style={{ textAlign: "left" }}>Evaluadores del grupo</h4>
+                                                            <Table responsive striped hover bordered>
+                                                                <thead className="text-primary">
+                                                                    <tr>
+                                                                        <th>Apellidos Evaluador</th>
+                                                                        <th>Nombres Evaluador</th>
+                                                                        <th>Cargo Evaluador</th>
+                                                                        <th>Recinto Evaluador</th>
+                                                                        <th>Correo Evaluador</th>
+                                                                    </tr>
+                                                                </thead>
+                                                                <tbody key={grupo["id"]}>
+                                                                    {grupo["evaluadores_grupo"].map((evaluador) => {
+                                                                        return (
+                                                                            <tr key={evaluador["id"]}>
+                                                                                <td>{evaluador["apellidos_evaluador"]}</td>
+                                                                                <td>{evaluador["nombres_evaluador"]}</td>
+                                                                                <td>{evaluador["cargo_evaluador"]}</td>
+                                                                                <td>{evaluador["recinto_evaluador"]}</td>
+                                                                                <td>{evaluador["correo_electronico_evaluador"]}</td>
+                                                                            </tr>
+                                                                        );
+                                                                    })}
+                                                                </tbody>
+                                                            </Table>
+                                                            <Col xl="12">
+                                                                <h5 style={{ marginTop: "40px" }}>Evolución grupal por competencia</h5>
+                                                                <Line
+                                                                    data={this.state.competencias}
+                                                                    options={evaluadorOptions.options}
+                                                                    width={400}
+                                                                    height={100}
+                                                                />
+                                                            </Col>
+                                                            <Col xl="12">
+                                                                <h5 style={{ marginTop: "40px" }}>Evolución grupal por evaluación</h5>
+                                                                <Bar
+                                                                    data={this.state.evaluaciones}
+                                                                    options={evaluacionesOptions.options}
+                                                                    width={400}
+                                                                    height={100}
+                                                                />
+                                                            </Col>
+                                                        </TabPane>
+                                                    );
                                                 })}
                                             </TabContent>
                                         </CardBody>
@@ -423,10 +361,46 @@ class Curso extends React.Component {
                             <Link to={this.state.modificarEvaluacion}>
                                 <Button disabled={this.state.idEvaluacion === 0} color="success" type="submit">
                                     Modificar
-                                    {/* Modificar */}
                                 </Button>
                             </Link>
                             <Button onClick={this.handleModalEditarEvaluacion}>Cancelar</Button>
+                        </ModalFooter>
+                    </Modal>
+                    <Modal aria-labelledby="contained-modal-title-vcenter" centered isOpen={this.state.modalNewEvaluacion}>
+                        <ModalHeader>Agregar nueva evaluación</ModalHeader>
+                        <ModalBody>
+                            <FormGroup>
+                                <Label for="siglaGrupo">Grupo</Label>
+                                <Input type="select" name="siglaGrupo" value={this.state.siglaGrupo} onChange={this.handleChange} required>
+                                    <option disabled value={0}>
+                                        -- Elija un grupo --
+                                    </option>
+                                    {this.state.grupos.map((grupo) => {
+                                        return (
+                                            <option key={grupo["sigla_grupo"]} value={grupo["sigla_grupo"]}>
+                                                {grupo["nombre_grupo"]}
+                                            </option>
+                                        );
+                                    })}
+                                </Input>
+                                <Label for="nombreEvaluacion" style={{ marginTop: "10px" }}>
+                                    Nombre nueva evaluación
+                                </Label>
+                                <Input
+                                    type="text"
+                                    name="nombreEvaluacion"
+                                    id="nombreEvaluacion"
+                                    placeholder="CONTROL 1"
+                                    onChange={this.handleChange}
+                                />
+                                <FormText color="muted">Se recomienda mantener consistencia en los nombres de las evaluaciones.</FormText>
+                            </FormGroup>
+                        </ModalBody>
+                        <ModalFooter>
+                            <Button color="success" type="submit" onClick={this.handleSubmitNewEvaluacion}>
+                                Agregar
+                            </Button>
+                            <Button onClick={this.handleNewEvaluacion}>Salir</Button>
                         </ModalFooter>
                     </Modal>
                     <AlertsHandler onRef={(ref) => (this.AlertsHandler = ref)} />

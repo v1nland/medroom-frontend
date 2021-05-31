@@ -1,5 +1,5 @@
-export function asociarCursoEvaluador(token, idCurso, idEvaluador) {
-    var FetchURL = `${process.env.REACT_APP_APIURL}/administracion-ti/cursos/${idCurso}/evaluadores/${idEvaluador}`;
+export function asociarCursoEvaluador(token, idPeriodo, siglaCurso, idEvaluador) {
+    var FetchURL = `${process.env.REACT_APP_APIURL}/administracion-ti/cursos/${idPeriodo}/${siglaCurso}/evaluadores/${idEvaluador}`;
 
     return fetch(FetchURL, {
         method: "PUT",

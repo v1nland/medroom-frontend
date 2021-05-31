@@ -1,5 +1,5 @@
-export function postCurso(token, newCurso) {
-    var FetchURL = `${process.env.REACT_APP_APIURL}/administracion-ti/cursos`;
+export function postCurso(token, newCurso, idPeriodo) {
+    var FetchURL = `${process.env.REACT_APP_APIURL}/administracion-ti/cursos/${idPeriodo}`;
 
     return fetch(FetchURL, {
         method: "POST",

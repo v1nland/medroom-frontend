@@ -1,5 +1,5 @@
-export function asociarCursoEstudiante(token, idCurso, idEstudiante) {
-    var FetchURL = `${process.env.REACT_APP_APIURL}/administracion-ti/cursos/${idCurso}/estudiantes/${idEstudiante}`;
+export function asociarCursoEstudiante(token, idPeriodo, siglaCurso, idEstudiante) {
+    var FetchURL = `${process.env.REACT_APP_APIURL}/administracion-ti/cursos/${idPeriodo}/${siglaCurso}/estudiantes/${idEstudiante}`;
 
     return fetch(FetchURL, {
         method: "PUT",

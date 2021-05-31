@@ -6,7 +6,7 @@ export function formatCursos(data) {
         table_data[i]["key"] = i;
         table_data[i]["grupos_curso"] = data[i]["grupos_curso"];
         table_data[i]["nombre_curso"] = data[i]["nombre_curso"];
-        table_data[i]["periodo_curso"] = data[i]["periodo_curso"];
+        table_data[i]["periodo_curso"] = data[i]["id_periodo"];
         table_data[i]["sigla_curso"] = data[i]["sigla_curso"];
     }
 

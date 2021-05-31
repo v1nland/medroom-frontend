@@ -11,7 +11,7 @@ import AdministradorUDPPerfil from "views/AdministradorUDP/Perfil.js";
 import AdministradorUDPCursos from "views/AdministradorUDP/Cursos.js";
 import AdministradorUDPCurso from "views/AdministradorUDP/Curso.js";
 import AdministradorTIPerfil from "views/AdministradorTI/Perfil.js";
-import AdministradorTICursos from "views/AdministradorTI/CrearCursos.js";
+import AdministradorTICursos from "views/AdministradorTI/Cursos.js";
 import AdministradorTIEstudiantes from "views/AdministradorTI/Estudiantes.js";
 import AdministradorTIEvaluadores from "views/AdministradorTI/Evaluadores.js";
 import AdministradorTIAdministradores from "views/AdministradorTI/Administradores.js";
@@ -50,7 +50,7 @@ var routes = [
         perfil: "evaluador",
     },
     {
-        path: "/evaluador/cursos/:idCurso",
+        path: "/evaluador/periodos/:idPeriodo/cursos/:siglaCurso",
         name: "No mostrar2",
         icon: "nc-icon nc-single-copy-04",
         component: EvaluadorCurso,
@@ -113,7 +113,7 @@ var routes = [
         perfil: "administrador_academico",
     },
     {
-        path: "/administradorUDP/cursos/:idCurso",
+        path: "/administradorUDP/periodos/:idPeriodo/cursos/:siglaCurso",
         name: "No mostrar3",
         icon: "nc-icon nc-single-copy-04",
         component: AdministradorUDPCurso,

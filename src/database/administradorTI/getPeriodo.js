@@ -1,5 +1,5 @@
-export function getPeriodo() {
-    var FetchURL = `${process.env.REACT_APP_APIURL}/periodos`;
+export function getPeriodo(token) {
+    var FetchURL = `${process.env.REACT_APP_APIURL}/administracion-ti/periodos`;
 
     return fetch(FetchURL, {
         method: "GET",

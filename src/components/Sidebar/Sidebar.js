@@ -52,13 +52,10 @@ class Sidebar extends React.Component {
     handleNewEvaluacion() {
         Promise.all([getCursos(cookies.get("token"))])
             .then((values) => {
-                this.setState(
-                    {
-                        cursos: values[0].data,
-                        modalNewEvaluacion: !this.state.modalNewEvaluacion,
-                    },
-                    () => console.log(this.state.cursos)
-                );
+                this.setState({
+                    cursos: values[0].data,
+                    modalNewEvaluacion: !this.state.modalNewEvaluacion,
+                });
             })
             .catch((err) => console.log(err));
     }

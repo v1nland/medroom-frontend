@@ -12,6 +12,8 @@ import { putGrupos } from "../../database/administradorUDP/putGrupos";
 import { deleteGrupos } from "../../database/administradorUDP/deleteGrupos";
 import { asociarGrupoEstudiante } from "../../database/administradorUDP/asociarGrupoEstudiante";
 import { asociarGrupoEvaluador } from "../../database/administradorUDP/asociarGrupoEvaluador";
+import { disociarGrupoEstudiante } from "../../database/administradorUDP/disociarGrupoEstudiante";
+import { disociarGrupoEvaluador } from "../../database/administradorUDP/disociarGrupoEvaluador";
 import Cookies from "universal-cookie";
 import LoadingPage from "../../components/LoadingPage/LoadingPage";
 import AlertsHandler from "../../components/AlertsHandler/AlertsHandler";
@@ -24,6 +26,7 @@ class Curso extends React.Component {
             columnas: [
                 { title: "NOMBRE GRUPO", field: "nombre_grupo" },
                 { title: "SIGLA GRUPO", field: "sigla_grupo" },
+                { title: "SIGLA GRUPO", field: "sigla_grupo" },
             ],
             queriesReady: false,
             periodos: [],
@@ -33,18 +36,21 @@ class Curso extends React.Component {
             evaluadores: [],
             estudiantes: [],
             nombreGrupo: "",
+            idPeriodo: "",
             siglaGrupo: "",
-            idGrupo: 0,
-            idCurso: 0,
+            siglaCurso: "",
             idEvaluador: 0,
             idEstudiante: 0,
-
+            idRol: 0,
+            idUsuario: 0,
             //Modales
             modalEliminarGrupo: false,
             modalAgregarGrupo: false,
             modalEditarGrupo: false,
             modalAsociarEstudiante: false,
             modalAsociarEvaluador: false,
+            modalDisociarEstudiante: false,
+            modalDisociarEvaluador: false,
         };
         this.handleChange = this.handleChange.bind(this);
         this.handleAgregarGrupo = this.handleAgregarGrupo.bind(this);
@@ -57,9 +63,11 @@ class Curso extends React.Component {
         this.handleModalAsociarEvaluador = this.handleModalAsociarEvaluador.bind(this);
         this.handleAsociarEstudiante = this.handleAsociarEstudiante.bind(this);
         this.handleModalAsociarEstudiante = this.handleModalAsociarEstudiante.bind(this);
+        this.handleDisociar = this.handleDisociar.bind(this);
+        this.handleModalDisociar = this.handleModalDisociar.bind(this);
     }
     componentDidMount() {
-        Promise.all([getGrupos(cookies.get("token"), this.props.match.params.idCurso)])
+        Promise.all([getGrupos(cookies.get("token"), this.props.match.params.idPeriodo, this.props.match.params.siglaCurso)])
             .then((values) => {
                 this.setState({
                     queriesReady: true,
@@ -79,7 +87,7 @@ class Curso extends React.Component {
             nombre_grupo: this.state.nombreGrupo,
             sigla_grupo: this.state.siglaGrupo,
         };
-        postGrupos(cookies.get("token"), newGrupo, this.props.match.params.idCurso)
+        postGrupos(cookies.get("token"), newGrupo, this.props.match.params.idPeriodo, this.props.match.params.siglaCurso)
             .then((resp) => {
                 if (resp.meta === "OK") {
                     this.AlertsHandler.generate("success", "Agregado", "Nuevo grupo agregado con éxito");
@@ -99,19 +107,16 @@ class Curso extends React.Component {
             modalAgregarGrupo: !this.state.modalAgregarGrupo,
         });
     }
-
     handleEditarGrupo(rowData) {
         var newGrupo = {
             nombre_grupo: this.state.nombreGrupo,
-            sigla_grupo: this.state.siglaGrupo,
         };
-        putGrupos(cookies.get("token"), newGrupo, this.props.match.params.idCurso, this.state.idGrupo)
+        putGrupos(cookies.get("token"), newGrupo, this.props.match.params.idPeriodo, this.props.match.params.siglaCurso, this.state.siglaGrupo)
             .then((resp) => {
                 if (resp.meta === "OK") {
                     this.AlertsHandler.generate("success", "Agregado", "Grupo modificado con éxito");
                     this.setState({
                         nombreGrupo: "",
-                        siglaGrupo: "",
                         modalEditarGrupo: false,
                     });
                 } else {
@@ -121,11 +126,10 @@ class Curso extends React.Component {
             .catch((err) => console.log(err));
     }
     handleModalEditarGrupo(rowData) {
-        if (rowData["id"] != null) {
+        if (rowData["sigla_grupo"] != null) {
             this.setState({
                 nombreGrupo: rowData["nombre_grupo"],
                 siglaGrupo: rowData["sigla_grupo"],
-                idGrupo: rowData["id"],
             });
         }
 
@@ -135,7 +139,7 @@ class Curso extends React.Component {
     }
     handleEliminarGrupo(event) {
         event.preventDefault();
-        deleteGrupos(cookies.get("token"), this.props.match.params.idCurso, this.state.idGrupo)
+        deleteGrupos(cookies.get("token"), this.props.match.params.idPeriodo, this.props.match.params.siglaCurso, this.state.siglaGrupo)
             .then((resp) => {
                 if (resp.meta === "OK") {
                     this.AlertsHandler.generate("success", "Eliminado", "Grupo eliminado con éxito");
@@ -149,9 +153,9 @@ class Curso extends React.Component {
             .catch((err) => console.log(err));
     }
     handleModalEliminarGrupo(rowData) {
-        if (rowData["id"] != null) {
+        if (rowData["sigla_grupo"] != null) {
             this.setState({
-                idGrupo: rowData["id"],
+                siglaGrupo: rowData["sigla_grupo"],
             });
         }
         this.setState({
@@ -159,7 +163,13 @@ class Curso extends React.Component {
         });
     }
     handleAsociarEvaluador() {
-        asociarGrupoEvaluador(cookies.get("token"), this.props.match.params.idCurso, this.state.idGrupo, this.state.idEvaluador)
+        asociarGrupoEvaluador(
+            cookies.get("token"),
+            this.props.match.params.idPeriodo,
+            this.props.match.params.siglaCurso,
+            this.state.siglaGrupo,
+            this.state.idEvaluador
+        )
             .then((resp) => {
                 if (resp.meta === "OK") {
                     this.AlertsHandler.generate("success", "Agregado", "Nuevo grupo agregado con éxito");
@@ -175,13 +185,20 @@ class Curso extends React.Component {
             .catch((err) => console.log(err));
     }
     handleModalAsociarEvaluador(rowData) {
+        console.log(rowData);
         this.setState({
-            idGrupo: rowData["id"],
+            siglaGrupo: rowData["sigla_grupo"],
             modalAsociarEvaluador: !this.state.modalAsociarEvaluador,
         });
     }
     handleAsociarEstudiante() {
-        asociarGrupoEstudiante(cookies.get("token"), this.props.match.params.idCurso, this.state.idGrupo, this.state.idEstudiante)
+        asociarGrupoEstudiante(
+            cookies.get("token"),
+            this.props.match.params.idPeriodo,
+            this.props.match.params.siglaCurso,
+            this.state.siglaGrupo,
+            this.state.idEstudiante
+        )
             .then((resp) => {
                 if (resp.meta === "OK") {
                     this.AlertsHandler.generate("success", "Agregado", "Nuevo grupo agregado con éxito");
@@ -198,8 +215,65 @@ class Curso extends React.Component {
     }
     handleModalAsociarEstudiante(rowData) {
         this.setState({
-            idGrupo: rowData["id"],
+            siglaGrupo: rowData["sigla_grupo"],
             modalAsociarEstudiante: !this.state.modalAsociarEstudiante,
+        });
+    }
+    handleDisociar() {
+        if (parseInt(this.state.idRol) === 1) {
+            disociarGrupoEstudiante(
+                cookies.get("token"),
+                this.props.match.params.idPeriodo,
+                this.props.match.params.siglaCurso,
+                this.state.siglaGrupo,
+                this.state.idUsuario
+            )
+                .then((resp) => {
+                    if (resp.meta === "OK") {
+                        this.AlertsHandler.generate("success", "Disociado", "Estudiante disociado con éxito");
+                        this.setState({
+                            nombreGrupo: "",
+                            siglaGrupo: "",
+                            modalDisociar: false,
+                        });
+                    } else {
+                        this.AlertsHandler.generate("danger", "Oops!", "Parece que hubo un problema");
+                    }
+                })
+                .catch((err) => console.log(err));
+        } else if (parseInt(this.state.idRol) === 2) {
+            disociarGrupoEvaluador(
+                cookies.get("token"),
+                this.props.match.params.idPeriodo,
+                this.props.match.params.siglaCurso,
+                this.state.siglaGrupo,
+                this.state.idUsuario
+            )
+                .then((resp) => {
+                    if (resp.meta === "OK") {
+                        this.AlertsHandler.generate("success", "Disociado", "Estudiante disociado con éxito");
+                        this.setState({
+                            nombreGrupo: "",
+                            siglaGrupo: "",
+                            modalDisociar: false,
+                        });
+                    } else {
+                        this.AlertsHandler.generate("danger", "Oops!", "Parece que hubo un problema");
+                    }
+                })
+                .catch((err) => console.log(err));
+        }
+    }
+    handleModalDisociar(rowData) {
+        if (!this.state.modalDisociar) {
+            this.setState({
+                siglaGrupo: rowData["sigla_grupo"],
+                estudiantes: rowData["estudiantes_grupo"],
+                evaluadores: rowData["evaluadores_grupo"],
+            });
+        }
+        this.setState({
+            modalDisociar: !this.state.modalDisociar,
         });
     }
     render() {
@@ -246,6 +320,11 @@ class Curso extends React.Component {
                                                 onClick: (event, rowData) => this.handleModalEditarGrupo(rowData),
                                             },
                                             {
+                                                icon: "backspace",
+                                                tooltip: "Disociar",
+                                                onClick: (event, rowData) => this.handleModalDisociar(rowData),
+                                            },
+                                            {
                                                 icon: "delete",
                                                 tooltip: "Borrar grupo",
                                                 onClick: (event, rowData) => this.handleModalEliminarGrupo(rowData),
@@ -269,7 +348,7 @@ class Curso extends React.Component {
                                                     <Typography variant="h6" gutterBottom component="div" style={{ marginLeft: "10px" }}>
                                                         Detalle Grupo
                                                     </Typography>
-                                                    <Table size="small" aria-label="purchases">
+                                                    <Table size="small">
                                                         <TableHead>
                                                             <TableRow>
                                                                 <TableCell style={{ fontWeight: "bold" }}>Rol</TableCell>
@@ -338,10 +417,6 @@ class Curso extends React.Component {
                                     Nombre grupo
                                 </Label>
                                 <Input type="text" name="nombreGrupo" id="nombreGrupo" value={this.state.nombreGrupo} onChange={this.handleChange} />
-                                <Label for="siglaGrupo" style={{ marginTop: "10px" }}>
-                                    Nombre sigla
-                                </Label>
-                                <Input type="text" name="siglaGrupo" id="siglaGrupo" value={this.state.siglaGrupo} onChange={this.handleChange} />
                             </FormGroup>
                         </ModalBody>
                         <ModalFooter>
@@ -414,6 +489,59 @@ class Curso extends React.Component {
                                 Asociar
                             </Button>
                             <Button onClick={this.handleModalAsociarEstudiante}>Cancelar</Button>
+                        </ModalFooter>
+                    </Modal>
+                    <Modal aria-labelledby="contained-modal-title-vcenter" centered isOpen={this.state.modalDisociar}>
+                        <ModalHeader>Disociar integrante del grupo</ModalHeader>
+                        <ModalBody>
+                            <FormGroup>
+                                <Label for="idRol" style={{ marginTop: "10px" }}>
+                                    Rol
+                                </Label>
+                                <Input type="select" name="idRol" value={this.state.idRol} onChange={this.handleChange} required>
+                                    <option disabled value={"0"}>
+                                        -- Elija un rol --
+                                    </option>
+                                    <option value={1}>Estudiante</option>
+                                    <option value={2}>Evaluador</option>
+                                </Input>
+                                <Label for="idUsuario" style={{ marginTop: "10px" }}>
+                                    Nombre integrante
+                                </Label>
+                                <Input type="select" name="idUsuario" value={this.state.idUsuario} onChange={this.handleChange} required>
+                                    <option disabled value={"0"}>
+                                        -- Elija un integrante --
+                                    </option>
+                                    {parseInt(this.state.idRol) === 1 ? (
+                                        this.state.estudiantes.map((estudiante) => {
+                                            return (
+                                                <option key={estudiante["id"]} value={estudiante["id"]}>
+                                                    {estudiante["nombres_estudiante"] + " " + estudiante["apellidos_estudiante"]}
+                                                </option>
+                                            );
+                                        })
+                                    ) : (
+                                        <></>
+                                    )}
+                                    {parseInt(this.state.idRol) === 2 ? (
+                                        this.state.evaluadores.map((evaluador) => {
+                                            return (
+                                                <option key={evaluador["id"]} value={evaluador["id"]}>
+                                                    {evaluador["nombres_evaluador"] + " " + evaluador["apellidos_evaluador"]}
+                                                </option>
+                                            );
+                                        })
+                                    ) : (
+                                        <></>
+                                    )}
+                                </Input>
+                            </FormGroup>
+                        </ModalBody>
+                        <ModalFooter>
+                            <Button color="success" type="submit" onClick={this.handleDisociar}>
+                                Disociar
+                            </Button>
+                            <Button onClick={this.handleModalDisociar}>Cancelar</Button>
                         </ModalFooter>
                     </Modal>
                     <AlertsHandler onRef={(ref) => (this.AlertsHandler = ref)} />

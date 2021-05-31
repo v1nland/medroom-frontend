@@ -52,7 +52,7 @@ class Cursos extends React.Component {
                         {this.state.cursos.map((curso) => {
                             if (curso["grupo_estudiante"] !== "SG")
                                 return (
-                                    <Col sm="12" md="4" key={curso["sigla_curso"]} style={{ cursor: "pointer" }}>
+                                    <Col sm="12" md="6" xl="4" key={curso["sigla_curso"]} style={{ cursor: "pointer" }}>
                                         <Card
                                             className="card-user"
                                             onClick={() => this.handleClick(curso["id_periodo"], curso["sigla_curso"], curso["grupo_estudiante"])}

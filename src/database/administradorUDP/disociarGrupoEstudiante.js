@@ -1,15 +1,14 @@
-export function postEvaluaciones(token, newEvaluacion, idPeriodo, siglaCurso, siglaGrupo, idEstudiante, idEvaluacion) {
-    var FetchURL = `${process.env.REACT_APP_APIURL}/evaluadores/me/cursos/${idPeriodo}/${siglaCurso}/grupos/${siglaGrupo}/estudiantes/${idEstudiante}/evaluaciones/${idEvaluacion}/calificacion`;
+export function disociarGrupoEstudiante(token, idPeriodo, siglaCurso, siglaGrupo, idEstudiante) {
+    var FetchURL = `${process.env.REACT_APP_APIURL}/administracion-academica/me/cursos/${idPeriodo}/${siglaCurso}/grupos/${siglaGrupo}/estudiantes/${idEstudiante}`;
 
     return fetch(FetchURL, {
-        method: "POST",
+        method: "DELETE",
         mode: "cors",
         cache: "no-cache",
         headers: {
             "Content-Type": "application/json; charset=utf-8",
             Authorization: token,
         },
-        body: JSON.stringify(newEvaluacion),
     })
         .then((response) => response.json())
         .then((resp) => {

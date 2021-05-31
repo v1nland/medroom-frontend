@@ -50,16 +50,22 @@ class ModificarEvaluacion extends React.Component {
     componentDidMount() {
         var location = this.props.location;
         Promise.all([
-            getCalificacionPorEstudiante(cookies.get("token"), location.idCurso, location.idGrupo, location.idEstudiante, location.idEvaluacion),
+            getCalificacionPorEstudiante(
+                cookies.get("token"),
+                location.idPeriodo,
+                location.siglaCurso,
+                location.siglaGrupo,
+                location.idEstudiante,
+                location.idEvaluacion
+            ),
         ])
             .then((values) => {
-                console.log(values[0].data);
                 this.setState({
-                    cursoEvaluador: location.nombreCurso,
+                    cursoEvaluador: location.siglaCurso,
                     grupoEvaluador: location.nombreGrupo,
                     idEstudiante: location.nombreEstudiante,
                     idEvaluacion: values[0].data["evaluacion_calificacion_estudiante"]["nombre_evaluacion"],
-                    periodoEvaluador: values[0].data["periodo_calificacion_estudiante"]["nombre_periodo"],
+                    periodoEvaluador: location.idPeriodo,
                     nombreEvaluador:
                         values[0].data["evaluador_calificacion_estudiante"]["nombres_evaluador"] +
                         " " +
@@ -87,40 +93,26 @@ class ModificarEvaluacion extends React.Component {
     handleSubmit(event) {
         event.preventDefault();
         var newEvaluacion = {
-            asunto_principal_consulta_calificacion_estudiante: "string",
-            categoria_observador_calificacion_estudiante: "string",
-            complejidad_caso_calificacion_estudiante: "string",
-            entorno_clinico_calificacion_estudiante: "string",
-            id_periodo: parseInt(this.state.periodoId),
-            // id_estudiante: this.state.idEstudiante,
-            nombre_calificacion_estudiante: "string",
-            numero_observaciones_previas_calificacion_estudiante: "string",
             observacion_calificacion_calificacion_estudiante: this.state.comentarioEvaluacion,
-            paciente_calificacion_estudiante: "string",
             valoracion_general_calificacion_estudiante: parseInt(this.state.puntajeGlobal),
             puntajes_calificacion_estudiante: [
                 {
-                    feedback_puntaje: "string",
                     id_competencia: "ANAM",
                     calificacion_puntaje: parseInt(this.state.entrevistaMedica),
                 },
                 {
-                    feedback_puntaje: "string",
                     id_competencia: "EXFI",
                     calificacion_puntaje: parseInt(this.state.examenFisico),
                 },
                 {
-                    feedback_puntaje: "string",
                     id_competencia: "PROF",
                     calificacion_puntaje: parseInt(this.state.profesionalismo),
                 },
                 {
-                    feedback_puntaje: "string",
                     id_competencia: "JUCL",
                     calificacion_puntaje: parseInt(this.state.razonamientoClinico),
                 },
                 {
-                    feedback_puntaje: "string",
                     id_competencia: "HACO",
                     calificacion_puntaje: parseInt(this.state.consejeria),
                 },
@@ -130,12 +122,12 @@ class ModificarEvaluacion extends React.Component {
                     calificacion_puntaje: parseInt(this.state.eficiencia),
                 },
             ],
-            tiempo_utilizado_calificacion_estudiante: 0,
         };
         putEvaluacionPorEstudiante(
             cookies.get("token"),
-            parseInt(this.state.location.idCurso),
-            parseInt(this.state.location.idGrupo),
+            this.state.location.idPeriodo,
+            this.state.location.siglaCurso,
+            this.state.location.siglaGrupo,
             this.state.location.idEstudiante,
             parseInt(this.state.location.idEvaluacion),
             newEvaluacion

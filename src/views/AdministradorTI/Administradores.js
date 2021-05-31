@@ -7,6 +7,8 @@ import Localization from "../../helpers/Localization";
 import { getAdministradores } from "../../database/administradorTI/getAdministradores";
 import { postAdministrador } from "../../database/administradorTI/postAdministrador";
 import { putAdministrador } from "../../database/administradorTI/putAdministrador";
+import { reestablecerContraseñaAdministrador } from "../../database/administradorTI/reestablecerContraseñaAdministrador";
+import { deleteAdministrador } from "../../database/administradorTI/deleteAdministrador";
 import { asociarCursoAdministrador } from "../../database/administradorTI/asociarCursoAdministrador";
 import Cookies from "universal-cookie";
 import { getCursos } from "../../database/administradorTI/getCursos";
@@ -15,6 +17,7 @@ import LoadingPage from "../../components/LoadingPage/LoadingPage";
 import AlertsHandler from "../../components/AlertsHandler/AlertsHandler";
 import { formatCursos } from "functions/formats/estudiantes/formatCursos";
 import { sha256 } from "js-sha256";
+import { format } from "rut.js";
 const cookies = new Cookies();
 
 class Administradores extends React.Component {
@@ -42,17 +45,22 @@ class Administradores extends React.Component {
             telefonoAdministrador: "",
             celularAdministrador: "",
             idAdministrador: "",
-            idCurso: 0,
+            siglaCurso: 0,
 
             modalEliminarAdministrador: false,
             modalAgregarAdministrador: false,
             modalEditarAdministrador: false,
+            modalPasswordAdministrador: false,
         };
         this.handleChange = this.handleChange.bind(this);
         this.handleAgregarAdministrador = this.handleAgregarAdministrador.bind(this);
         this.handleModalAgregarAdministrador = this.handleModalAgregarAdministrador.bind(this);
         this.handleEditarAdministrador = this.handleEditarAdministrador.bind(this);
         this.handleModalEditarAdministrador = this.handleModalEditarAdministrador.bind(this);
+        this.handlePasswordAdministrador = this.handlePasswordAdministrador.bind(this);
+        this.handleModalPasswordAdministrador = this.handleModalPasswordAdministrador.bind(this);
+        this.handleEliminarAdministrador = this.handleEliminarAdministrador.bind(this);
+        this.handleModalEliminarAdministrador = this.handleModalEliminarAdministrador.bind(this);
         this.handleAsociarCurso = this.handleAsociarCurso.bind(this);
         this.handleModalAsociarCurso = this.handleModalAsociarCurso.bind(this);
     }
@@ -74,13 +82,14 @@ class Administradores extends React.Component {
     }
     handleAsociarCurso(event) {
         event.preventDefault();
-        asociarCursoAdministrador(cookies.get("token"), this.state.idCurso, this.state.idAdministrador)
+        var datos = this.state.siglaCurso.split("||");
+        asociarCursoAdministrador(cookies.get("token"), datos[1], datos[0], this.state.idAdministrador)
             .then((resp) => {
                 if (resp.meta === "OK") {
                     this.AlertsHandler.generate("success", "Agregado", "Administrador asociado con éxito");
                     this.setState(
                         {
-                            idCurso: 0,
+                            siglaCurso: 0,
                             modalAsociarCurso: !this.state.modalAsociarCurso,
                         },
                         () => resp
@@ -153,7 +162,7 @@ class Administradores extends React.Component {
         putAdministrador(cookies.get("token"), newAdministrador, this.state.idAdministrador)
             .then((resp) => {
                 if (resp.meta === "OK") {
-                    this.AlertsHandler.generate("success", "Agregado", "Curso modificado con éxito");
+                    this.AlertsHandler.generate("success", "Agregado", "Administrador modificado con éxito");
                     this.setState({
                         apellidosAdministrador: "",
                         correoElectronicoAdministrador: "",
@@ -184,6 +193,56 @@ class Administradores extends React.Component {
 
         this.setState({
             modalEditarAdministrador: !this.state.modalEditarAdministrador,
+        });
+    }
+    handleEliminarAdministrador(rowData) {
+        deleteAdministrador(cookies.get("token"), this.state.idAdministrador)
+            .then((resp) => {
+                if (resp.meta === "OK") {
+                    this.AlertsHandler.generate("success", "Eliminado", "Administrador eliminado con éxito");
+                    this.setState({
+                        modalEliminarAdministrador: false,
+                    });
+                } else {
+                    this.AlertsHandler.generate("danger", "Oops!", "Parece que hubo un problema");
+                }
+            })
+            .catch((err) => console.log(err));
+    }
+    handleModalEliminarAdministrador(rowData) {
+        if (rowData["id"] != null) {
+            this.setState({
+                idAdministrador: rowData["id"],
+            });
+        }
+
+        this.setState({
+            modalEliminarAdministrador: !this.state.modalEliminarAdministrador,
+        });
+    }
+    handlePasswordAdministrador(rowData) {
+        reestablecerContraseñaAdministrador(cookies.get("token"), this.state.idAdministrador)
+            .then((resp) => {
+                if (resp.meta === "OK") {
+                    this.AlertsHandler.generate("success", "Reestablecido", "Contraseña reestablecida con éxito");
+                    this.setState({
+                        modalPasswordAdministrador: false,
+                    });
+                } else {
+                    this.AlertsHandler.generate("danger", "Oops!", "Parece que hubo un problema");
+                }
+            })
+            .catch((err) => console.log(err));
+    }
+    handleModalPasswordAdministrador(rowData) {
+        if (rowData["id"] != null) {
+            this.setState({
+                idAdministrador: rowData["id"],
+            });
+        }
+
+        this.setState({
+            modalPasswordAdministrador: !this.state.modalPasswordAdministrador,
         });
     }
     render() {
@@ -227,7 +286,12 @@ class Administradores extends React.Component {
                                             {
                                                 icon: "delete",
                                                 tooltip: "Borrar administrador",
-                                                onClick: (event, rowData) => this.handleModalEditarAdministrador(rowData),
+                                                onClick: (event, rowData) => this.handleModalEliminarAdministrador(rowData),
+                                            },
+                                            {
+                                                icon: "lock",
+                                                tooltip: "Reestablecer contraseña",
+                                                onClick: (event, rowData) => this.handleModalPasswordAdministrador(rowData),
                                             },
                                         ]}
                                         options={{
@@ -289,7 +353,7 @@ class Administradores extends React.Component {
                                         <small>RUT</small>
                                         <Input
                                             name="rutAdministrador"
-                                            value={this.state.rutAdministrador}
+                                            value={format(this.state.rutAdministrador)}
                                             onChange={this.handleChange}
                                             placeholder="123456789"
                                         />
@@ -327,7 +391,7 @@ class Administradores extends React.Component {
                         </ModalFooter>
                     </Modal>
                     <Modal aria-labelledby="contained-modal-title-vcenter" centered isOpen={this.state.modalEditarAdministrador}>
-                        <ModalHeader>Crear Administrador</ModalHeader>
+                        <ModalHeader>Editar Administrador</ModalHeader>
                         <ModalBody>
                             <form>
                                 <Row>
@@ -368,7 +432,7 @@ class Administradores extends React.Component {
                                         <small>RUT</small>
                                         <Input
                                             name="rutAdministrador"
-                                            value={this.state.rutAdministrador}
+                                            value={format(this.state.rutAdministrador)}
                                             onChange={this.handleChange}
                                             placeholder="123456789"
                                         />
@@ -412,13 +476,13 @@ class Administradores extends React.Component {
                                 <Row>
                                     <Col sm="12" md="12">
                                         <small>Curso</small>
-                                        <Input type="select" name="idCurso" value={this.state.idCurso} onChange={this.handleChange} required>
+                                        <Input type="select" name="siglaCurso" value={this.state.siglaCurso} onChange={this.handleChange} required>
                                             <option disabled value={"0"}>
                                                 -- Elija un curso --
                                             </option>
-                                            {this.state.cursos.map((curso) => {
+                                            {this.state.cursos.map((curso, i) => {
                                                 return (
-                                                    <option key={curso["id"]} value={curso["id"]}>
+                                                    <option key={i} value={curso["sigla_curso"] + "||" + curso["periodo_curso"]}>
                                                         {curso["nombre_curso"]}
                                                     </option>
                                                 );
@@ -433,6 +497,24 @@ class Administradores extends React.Component {
                                 Asociar
                             </Button>
                             <Button onClick={this.handleModalAsociarCurso}>Salir</Button>
+                        </ModalFooter>
+                    </Modal>
+                    <Modal aria-labelledby="contained-modal-title-vcenter" centered isOpen={this.state.modalEliminarAdministrador}>
+                        <ModalHeader>¿Está seguro que desea eliminar al administrador?</ModalHeader>
+                        <ModalFooter>
+                            <Button color="info" type="submit" onClick={this.handleEliminarAdministrador}>
+                                Eliminar
+                            </Button>
+                            <Button onClick={this.handleModalEliminarAdministrador}>Cancelar</Button>
+                        </ModalFooter>
+                    </Modal>
+                    <Modal aria-labelledby="contained-modal-title-vcenter" centered isOpen={this.state.modalPasswordAdministrador}>
+                        <ModalHeader>¿Está seguro que desea reestablecer la contraseña del administrador?</ModalHeader>
+                        <ModalFooter>
+                            <Button color="danger" type="submit" onClick={this.handlePasswordAdministrador}>
+                                Reestablecer
+                            </Button>
+                            <Button onClick={this.handleModalPasswordAdministrador}>Cancelar</Button>
                         </ModalFooter>
                     </Modal>
                     <AlertsHandler onRef={(ref) => (this.AlertsHandler = ref)} />

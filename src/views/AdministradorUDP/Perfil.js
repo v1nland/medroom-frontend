@@ -208,7 +208,6 @@ class Perfil extends React.Component {
                                                         onChange={this.handleChange}
                                                         placeholder="******"
                                                         type="password"
-                                                        required
                                                     />
                                                     {this.renderAlertPassword()}
                                                 </FormGroup>
@@ -222,7 +221,6 @@ class Perfil extends React.Component {
                                                         onChange={this.handleChange}
                                                         placeholder="******"
                                                         type="password"
-                                                        required
                                                     />
                                                     {this.renderAlertPassword()}
                                                 </FormGroup>

@@ -1,5 +1,5 @@
-export function postEvaluacion(token, newEvaluacion, idCurso, idGrupo) {
-    var FetchURL = `${process.env.REACT_APP_APIURL}/evaluadores/me/cursos/${idCurso}/grupos/${idGrupo}/evaluaciones`;
+export function postEvaluacion(token, newEvaluacion, idPeriodo, siglaCurso, siglaGrupo) {
+    var FetchURL = `${process.env.REACT_APP_APIURL}/evaluadores/me/cursos/${idPeriodo}/${siglaCurso}/grupos/${siglaGrupo}/evaluaciones`;
 
     return fetch(FetchURL, {
         method: "POST",
