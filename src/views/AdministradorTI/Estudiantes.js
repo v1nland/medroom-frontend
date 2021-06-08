@@ -20,7 +20,7 @@ import { sha256 } from "js-sha256";
 import { formatCargaEstudiantes } from "functions/formats/administradorTI/formatCargaEstudiantes";
 import { formatCursos } from "functions/formats/estudiantes/formatCursos";
 import CSVReader from "react-csv-reader";
-import { format } from "rut.js";
+
 const cookies = new Cookies();
 const papaparseOptions = {
     header: true,
@@ -405,7 +405,7 @@ class Estudiantes extends React.Component {
                                         <small>RUT</small>
                                         <Input
                                             name="rutEstudiante"
-                                            value={format(this.state.rutEstudiante)}
+                                            value={this.state.rutEstudiante}
                                             onChange={this.handleChange}
                                             placeholder="123456789"
                                         />
@@ -484,7 +484,7 @@ class Estudiantes extends React.Component {
                                         <small>RUT</small>
                                         <Input
                                             name="rutEstudiante"
-                                            value={format(this.state.rutEstudiante)}
+                                            value={this.state.rutEstudiante}
                                             onChange={this.handleChange}
                                             placeholder="123456789"
                                         />

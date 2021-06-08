@@ -17,7 +17,7 @@ import LoadingPage from "../../components/LoadingPage/LoadingPage";
 import AlertsHandler from "../../components/AlertsHandler/AlertsHandler";
 import { formatCursos } from "functions/formats/estudiantes/formatCursos";
 import { sha256 } from "js-sha256";
-import { format } from "rut.js";
+
 const cookies = new Cookies();
 
 class Administradores extends React.Component {
@@ -353,7 +353,7 @@ class Administradores extends React.Component {
                                         <small>RUT</small>
                                         <Input
                                             name="rutAdministrador"
-                                            value={format(this.state.rutAdministrador)}
+                                            value={this.state.rutAdministrador}
                                             onChange={this.handleChange}
                                             placeholder="123456789"
                                         />
@@ -432,7 +432,7 @@ class Administradores extends React.Component {
                                         <small>RUT</small>
                                         <Input
                                             name="rutAdministrador"
-                                            value={format(this.state.rutAdministrador)}
+                                            value={this.state.rutAdministrador}
                                             onChange={this.handleChange}
                                             placeholder="123456789"
                                         />

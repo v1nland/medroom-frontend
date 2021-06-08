@@ -1,5 +1,5 @@
 import React from "react";
-import { Card, CardHeader, CardTitle, Label, Input, Row, Col, Tooltip } from "reactstrap";
+import { Card, CardHeader, CardTitle, Label, Input, Row, Col } from "reactstrap";
 import CardBody from "reactstrap/lib/CardBody";
 
 class Referencia extends React.Component {
@@ -29,17 +29,8 @@ class Referencia extends React.Component {
                 <Card>
                     <CardHeader>
                         <CardTitle tag="h6" style={{}}>
-                            {this.props.label}&nbsp;
-                            <i
-                                className="nc-icon nc-alert-circle-i"
-                                onClick={this.handlePopOver}
-                                id={"Popover" + this.props.idModal}
-                                style={{ cursor: "pointer" }}
-                            ></i>
+                            {this.props.label}
                         </CardTitle>
-                        <Tooltip placement="right" isOpen={this.state.isOpen} target={"Popover" + this.props.idModal} toggle={this.handlePopOver}>
-                            {this.props.descripcion}
-                        </Tooltip>
                     </CardHeader>
                     <CardBody style={{ marginBottom: "5px" }}>
                         <Row>

@@ -185,7 +185,6 @@ class Curso extends React.Component {
             .catch((err) => console.log(err));
     }
     handleModalAsociarEvaluador(rowData) {
-        console.log(rowData);
         this.setState({
             siglaGrupo: rowData["sigla_grupo"],
             modalAsociarEvaluador: !this.state.modalAsociarEvaluador,

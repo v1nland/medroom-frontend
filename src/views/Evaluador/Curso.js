@@ -67,7 +67,6 @@ class Curso extends React.Component {
         this.handleNewEvaluacion = this.handleNewEvaluacion.bind(this);
         this.handleSubmitNewEvaluacion = this.handleSubmitNewEvaluacion.bind(this);
         this.handleEstadistica = this.handleEstadistica.bind(this);
-        this.handleEditarEvaluacion = this.handleEditarEvaluacion.bind(this);
         this.handleModalEditarEvaluacion = this.handleModalEditarEvaluacion.bind(this);
         this.handleIdEvaluacion = this.handleIdEvaluacion.bind(this);
     }
@@ -153,9 +152,6 @@ class Curso extends React.Component {
                 });
             })
             .catch((err) => console.log(err));
-    }
-    handleEditarEvaluacion() {
-        console.log(this.props.match.params.siglaCurso, this.state.siglaGrupo, this.state.idEstudiante, this.state.idEvaluacion);
     }
     handleModalEditarEvaluacion(idEstudiante, siglaGrupo, nombreGrupo, nombreEstudiante) {
         if (!this.state.modalEditarEvaluacion) {

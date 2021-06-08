@@ -17,7 +17,7 @@ import LoadingPage from "../../components/LoadingPage/LoadingPage";
 import AlertsHandler from "../../components/AlertsHandler/AlertsHandler";
 import { sha256 } from "js-sha256";
 import { formatCursos } from "functions/formats/estudiantes/formatCursos";
-import { format } from "rut.js";
+
 const cookies = new Cookies();
 
 class Evaluadores extends React.Component {
@@ -375,7 +375,7 @@ class Evaluadores extends React.Component {
                                         <small>RUT</small>
                                         <Input
                                             name="rutEvaluador"
-                                            value={format(this.state.rutEvaluador)}
+                                            value={this.state.rutEvaluador}
                                             onChange={this.handleChange}
                                             placeholder="123456789"
                                         />
@@ -476,7 +476,7 @@ class Evaluadores extends React.Component {
                                         <small>RUT</small>
                                         <Input
                                             name="rutEvaluador"
-                                            value={format(this.state.rutEvaluador)}
+                                            value={this.state.rutEvaluador}
                                             onChange={this.handleChange}
                                             placeholder="123456789"
                                         />
