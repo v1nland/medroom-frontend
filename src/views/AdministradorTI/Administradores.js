@@ -40,7 +40,7 @@ class Administradores extends React.Component {
             nombresAdministrador: "",
             apellidosAdministrador: "",
             correoElectronicoAdministrador: "",
-            contraseñaAdministrador: "",
+            passwordAdministrador: "",
             rutAdministrador: "",
             telefonoAdministrador: "",
             celularAdministrador: "",
@@ -82,6 +82,10 @@ class Administradores extends React.Component {
     }
     handleAsociarCurso(event) {
         event.preventDefault();
+        if (this.state.siglaCurso === "" || this.state.siglaCurso === null || this.state.siglaCurso === 0) {
+            this.AlertsHandler.generate("danger", "Error", "Seleccione un curso");
+            return;
+        }
         var datos = this.state.siglaCurso.split("||");
         asociarCursoAdministrador(cookies.get("token"), datos[1], datos[0], this.state.idAdministrador)
             .then((resp) => {
@@ -115,7 +119,7 @@ class Administradores extends React.Component {
         var newAdministrador = {
             apellidos_administrador_academico: this.state.apellidosAdministrador,
             correo_electronico_administrador_academico: this.state.correoElectronicoAdministrador,
-            hash_contrasena_administrador_academico: sha256(this.state.rutAdministrador),
+            hash_contrasena_administrador_academico: sha256(this.state.passwordAdministrador),
             id_rol: 3,
             nombres_administrador_academico: this.state.nombresAdministrador,
             rut_administrador_academico: this.state.rutAdministrador,
@@ -378,6 +382,18 @@ class Administradores extends React.Component {
                                             value={this.state.celularAdministrador}
                                             onChange={this.handleChange}
                                             placeholder="96050000"
+                                        />
+                                    </Col>
+                                </Row>
+                                <Row>
+                                    <Col sm="12" md="12">
+                                        <small>Contraseña</small>
+                                        <Input
+                                            name="passwordAdministrador"
+                                            value={this.state.passwordAdministrador}
+                                            onChange={this.handleChange}
+                                            type="password"
+                                            placeholder="******"
                                         />
                                     </Col>
                                 </Row>

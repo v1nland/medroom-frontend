@@ -1,5 +1,5 @@
 export function cargarGrupos(token, archivoCSV) {
-    var FetchURL = `${process.env.REACT_APP_APIURL}/administracion-ti/grupos/carga-masiva`;
+    var FetchURL = `${process.env.REACT_APP_APIURL}/administracion-ti/carga-masiva/grupos`;
 
     return fetch(FetchURL, {
         method: "POST",

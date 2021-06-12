@@ -1,5 +1,5 @@
 export function cargarEstudiantes(token, archivoCSV) {
-    var FetchURL = `${process.env.REACT_APP_APIURL}/administracion-ti/estudiantes/carga-masiva`;
+    var FetchURL = `${process.env.REACT_APP_APIURL}/administracion-ti/carga-masiva/estudiantes`;
 
     return fetch(FetchURL, {
         method: "POST",

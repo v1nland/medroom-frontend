@@ -40,7 +40,7 @@ class Evaluadores extends React.Component {
             nombresEvaluador: "",
             apellidosEvaluador: "",
             correoElectronicoEvaluador: "",
-            contraseñaEvaluador: "",
+            passwordEvaluador: "",
             rutEvaluador: "",
             telefonoEvaluador: "",
             celularEvaluador: "",
@@ -88,7 +88,7 @@ class Evaluadores extends React.Component {
             apellidos_evaluador: this.state.apellidosEvaluador,
             cargo_evaluador: this.state.cargoEvaluador,
             correo_electronico_evaluador: this.state.correoElectronicoEvaluador,
-            hash_contrasena_evaluador: sha256(this.state.rutEvaluador),
+            hash_contrasena_evaluador: sha256(this.state.passwordEvaluador),
             id_rol: 2,
             nombres_evaluador: this.state.nombresEvaluador,
             recinto_evaluador: this.state.recintoEvaluador,
@@ -127,6 +127,10 @@ class Evaluadores extends React.Component {
     }
     handleAsociarCurso(event) {
         event.preventDefault();
+        if (this.state.siglaCurso === "" || this.state.siglaCurso === null || this.state.siglaCurso === 0) {
+            this.AlertsHandler.generate("danger", "Error", "Seleccione un curso");
+            return;
+        }
         var datos = this.state.siglaCurso.split("||");
         asociarCursoEvaluador(cookies.get("token"), datos[1], datos[0], this.state.idEvaluador)
             .then((resp) => {
@@ -422,6 +426,18 @@ class Evaluadores extends React.Component {
                                             value={this.state.recintoEvaluador}
                                             onChange={this.handleChange}
                                             placeholder="UDP"
+                                        />
+                                    </Col>
+                                </Row>
+                                <Row>
+                                    <Col sm="12" md="12">
+                                        <small>Contraseña</small>
+                                        <Input
+                                            name="passwordEvaluador"
+                                            value={this.state.passwordEvaluador}
+                                            onChange={this.handleChange}
+                                            type="password"
+                                            placeholder="******"
                                         />
                                     </Col>
                                 </Row>

@@ -16,7 +16,6 @@ import Cookies from "universal-cookie";
 import { formatEstudiantes } from "../../helpers/AdministradorTI/formatEstudiantes";
 import LoadingPage from "../../components/LoadingPage/LoadingPage";
 import AlertsHandler from "../../components/AlertsHandler/AlertsHandler";
-import { sha256 } from "js-sha256";
 import { formatCargaEstudiantes } from "functions/formats/administradorTI/formatCargaEstudiantes";
 import { formatCursos } from "functions/formats/estudiantes/formatCursos";
 import CSVReader from "react-csv-reader";
@@ -101,7 +100,6 @@ class Estudiantes extends React.Component {
         var newEstudiante = {
             apellidos_estudiante: this.state.apellidosEstudiante,
             correo_electronico_estudiante: this.state.correoElectronicoEstudiante,
-            hash_contrasena_estudiante: sha256(this.state.rutEstudiante),
             id_rol: 1,
             nombres_estudiante: this.state.nombresEstudiante,
             rut_estudiante: this.state.rutEstudiante,
@@ -138,6 +136,10 @@ class Estudiantes extends React.Component {
 
     handleAsociarCurso(event) {
         event.preventDefault();
+        if (this.state.siglaCurso === "" || this.state.siglaCurso === null || this.state.siglaCurso === 0) {
+            this.AlertsHandler.generate("danger", "Error", "Seleccione un curso");
+            return;
+        }
         var datos = this.state.siglaCurso.split("||");
         asociarCursoEstudiante(cookies.get("token"), datos[1], datos[0], this.state.idEstudiante)
             .then((resp) => {
@@ -167,9 +169,6 @@ class Estudiantes extends React.Component {
         });
     }
     handleForce(data, fileInfo) {
-        for (let i = 0; i < data.length; i++) {
-            data[i]["id_grupos"] = data[i]["id_grupos"].replace("[", "").replace("]", "").split(",").map(Number);
-        }
         this.setState({
             cargaEstudiantes: data,
             fileCargaEstudiantes: fileInfo,
